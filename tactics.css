@@ -1,0 +1,24 @@
+
+/* PHASE 2 - Tactical Editor */
+#tacticsEditor{margin-top:22px;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;background:rgba(255,255,255,.025)}
+.tactics-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px}
+.tactics-control{display:flex;flex-direction:column;gap:5px;min-width:125px}
+.tactics-control label{font-size:11px;opacity:.65;text-transform:uppercase;letter-spacing:.08em}
+.tactics-control select,.tactics-control input{min-height:38px}
+.tactics-range{width:130px}.tactics-value{font-size:12px;opacity:.7;margin-left:4px}
+.tactics-actions{display:flex;gap:8px;flex-wrap:wrap}
+.tactics-pitch-wrap{overflow:auto;border-radius:16px}
+.tactics-pitch{position:relative;width:100%;min-width:650px;aspect-ratio:16/9;overflow:hidden;border-radius:14px;border:2px solid rgba(255,255,255,.35);background:linear-gradient(to right,transparent 49.85%,rgba(255,255,255,.55) 50%,transparent 50.15%),repeating-linear-gradient(to bottom,rgba(255,255,255,.035) 0,rgba(255,255,255,.035) 1px,transparent 1px,transparent 12%)}
+.tactics-pitch:before{content:"";position:absolute;inset:9%;border:2px solid rgba(255,255,255,.45);pointer-events:none}
+.tactics-pitch:after{content:"";position:absolute;left:50%;top:50%;width:15%;aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,.45);border-radius:50%;pointer-events:none}
+.tactics-line{position:absolute;background:rgba(255,255,255,.45);pointer-events:none}
+.tactics-line.top,.tactics-line.bottom{left:9%;right:9%;height:2px}.tactics-line.top{top:9%}.tactics-line.bottom{bottom:9%}
+.tactics-line.left,.tactics-line.right{top:9%;bottom:9%;width:2px}.tactics-line.left{left:9%}.tactics-line.right{right:9%}
+.tactic-player{position:absolute;transform:translate(-50%,-50%);width:76px;min-height:72px;border-radius:12px;padding:7px 5px;border:1px solid rgba(85,199,255,.28);background:rgba(7,23,43,.94);box-shadow:0 8px 22px rgba(0,0,0,.25);cursor:grab;user-select:none;touch-action:none;text-align:center;z-index:5;transition:box-shadow .18s ease,border-color .18s ease}
+.tactic-player:active{cursor:grabbing}.tactic-player.selected{outline:2px solid var(--gold);outline-offset:2px;box-shadow:0 0 0 5px rgba(85,199,255,.12),0 12px 26px rgba(0,0,0,.35)}
+.tactic-player .tp-name{display:block;font-size:11px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tactic-player .tp-role{display:block;margin-top:4px;font-size:10px;opacity:.65}.tactic-player .tp-ovr{display:block;margin-top:3px;font-size:10px;opacity:.5}
+.tactics-help{margin-top:10px;font-size:12px;opacity:.62}
+.tactics-rolebar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.tactics-rolebar select{min-height:36px}
+@media(max-width:700px){.tactics-pitch{min-width:560px}.tactic-player{width:68px}}
