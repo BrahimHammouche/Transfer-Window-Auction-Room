@@ -125,9 +125,10 @@ def public_state(room, state):
     for match in (out.get("tournament") or {}).get("matches", []):
         match.pop("simulation", None)
     out["profiles"] = {}
+    users = game_store.get_users_by_ids(team.get("userId") for team in out.get("teams", {}).values())
     for name, team in out.get("teams", {}).items():
         user_id = team.get("userId")
-        user = game_store.get_user_by_id(user_id) if user_id else None
+        user = users.get(user_id)
         if user:
             out["profiles"][name] = public_user(user)
     out["online"] = sorted(_presence.get(room, set()))
@@ -185,8 +186,8 @@ async def run_live_match(room, match_id):
         _live_match_tasks.pop(task_key, None)
 
 
-async def broadcast(room, state):
-    message = json.dumps({"type": "state", "state": public_state(room, state)}, ensure_ascii=False)
+async def broadcast(room, state, snapshot=None):
+    message = json.dumps({"type": "state", "state": snapshot or public_state(room, state)}, ensure_ascii=False)
     dead = []
     for ws in list(_connections.get(room, set())):
         try:
@@ -522,11 +523,12 @@ async def create_room(body: TokenBody):
         state = default_state(user["username"], user["id"])
         game_store.add_member(room, user["id"], user["username"], int(time.time() * 1000))
         persist_room(room, state)
-    await broadcast(room, state)
+    snapshot = public_state(room, state)
+    await broadcast(room, state, snapshot)
     return {
         "ok": True,
         "room": room,
-        "state": public_state(room, state),
+        "state": snapshot,
         "you": user["username"],
         "host": user["username"],
         "user": public_user(user),
@@ -575,8 +577,9 @@ async def join(body: JoinBody):
             state["host"] = member["team_name"]
             state["hostUserId"] = user["id"]
         persist_room(room, state)
-    await broadcast(room, state)
-    return {"ok": True, "state": public_state(room, state), "you": member["team_name"], "host": state.get("host"), "user": public_user(user)}
+    snapshot = public_state(room, state)
+    await broadcast(room, state, snapshot)
+    return {"ok": True, "state": snapshot, "you": member["team_name"], "host": state.get("host"), "user": public_user(user)}
 
 
 @app.post("/api/action")
@@ -921,10 +924,11 @@ async def action(body: ActionBody):
 
         persist_room(room, state)
 
-    await broadcast(room, state)
+    snapshot = public_state(room, state)
+    await broadcast(room, state, snapshot)
     if live_match_to_start and live_match_to_start not in _live_match_tasks:
         _live_match_tasks[live_match_to_start] = asyncio.create_task(run_live_match(*live_match_to_start))
-    return {"ok": True, "state": public_state(room, state)}
+    return {"ok": True, "state": snapshot}
 
 
 @app.websocket("/ws/{room}/{player}")

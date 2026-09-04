@@ -11,6 +11,13 @@ class GameDatabase:
         self.sqlite = self.url.startswith("sqlite:///")
         self.sqlite_path = self.url.removeprefix("sqlite:///") if self.sqlite else None
         self.memory_connection = None
+        self.pool = None
+        if not self.sqlite:
+            try:
+                from psycopg_pool import ConnectionPool
+            except ImportError as error:
+                raise RuntimeError("PostgreSQL requires psycopg-pool. Install requirements.txt first.") from error
+            self.pool = ConnectionPool(conninfo=self.url, min_size=1, max_size=6, open=True)
         self._init_schema()
 
     def _connect(self):
@@ -23,11 +30,7 @@ class GameDatabase:
             connection = sqlite3.connect(self.sqlite_path)
             connection.row_factory = sqlite3.Row
             return connection
-        try:
-            import psycopg
-        except ImportError as error:
-            raise RuntimeError("PostgreSQL requires psycopg. Install requirements.txt first.") from error
-        return psycopg.connect(self.url)
+        return self.pool.connection()
 
     def _init_schema(self):
         statements = [
@@ -69,6 +72,14 @@ class GameDatabase:
     def get_user_by_id(self, user_id):
         return self._query("SELECT * FROM users WHERE id = ?", (user_id,), one=True)
 
+    def get_users_by_ids(self, user_ids):
+        unique_ids = list(dict.fromkeys(user_id for user_id in user_ids if user_id))
+        if not unique_ids:
+            return {}
+        placeholders = ", ".join("?" for _ in unique_ids)
+        users = self._query(f"SELECT * FROM users WHERE id IN ({placeholders})", tuple(unique_ids))
+        return {user["id"]: user for user in users}
+
     def update_user_record(self, user_id, wins, titles, games):
         self._query("UPDATE users SET wins = wins + ?, titles = titles + ?, games_played = games_played + ? WHERE id = ?", (wins, titles, games, user_id))
 
@@ -80,11 +91,11 @@ class GameDatabase:
 
     def save_room(self, code, owner_id, state, timestamp):
         payload = json.dumps(state, ensure_ascii=False)
-        existing = self.get_room(code)
-        if existing:
-            self._query("UPDATE rooms SET owner_id = ?, state_json = ?, updated_at = ? WHERE code = ?", (owner_id, payload, timestamp, code))
-        else:
-            self._query("INSERT INTO rooms (code, owner_id, state_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?)", (code, owner_id, payload, timestamp, timestamp))
+        self._query(
+            "INSERT INTO rooms (code, owner_id, state_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT (code) DO UPDATE SET owner_id = excluded.owner_id, state_json = excluded.state_json, updated_at = excluded.updated_at",
+            (code, owner_id, payload, timestamp, timestamp),
+        )
 
     def get_member(self, room_code, user_id):
         return self._query("SELECT * FROM room_members WHERE room_code = ? AND user_id = ?", (room_code, user_id), one=True)
