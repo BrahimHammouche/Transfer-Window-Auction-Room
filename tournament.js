@@ -87,6 +87,32 @@
     return 'Dangerous attack';
   }
 
+  function teamIdentity(state, name) {
+    const team = state.teams?.[name] || {};
+    return {name: team.displayName || name, logo: team.logo || '', initial: String(team.displayName || name || '?').trim().charAt(0).toUpperCase() || '?'};
+  }
+
+  function teamMark(team, side) {
+    return team.logo
+      ? `<img class="broadcast-crest ${side}" src="${esc(team.logo)}" alt="${esc(team.name)} crest">`
+      : `<span class="broadcast-crest ${side} crest-fallback" aria-label="${esc(team.name)}">${esc(team.initial)}</span>`;
+  }
+
+  function livePulse(events) {
+    const pulse = {home: {attacks: 0, shots: 0}, away: {attacks: 0, shots: 0}};
+    events.forEach(event => {
+      const side = event.side || 'home';
+      if (!pulse[side]) return;
+      if (['pass', 'dribble', 'corner', 'save', 'miss', 'goal'].includes(event.type)) pulse[side].attacks += 1;
+      if (['save', 'miss', 'goal'].includes(event.type)) pulse[side].shots += 1;
+    });
+    return pulse;
+  }
+
+  function eventIcon(type) {
+    return ({goal: 'GOAL', save: 'SAVE', corner: 'CK', miss: 'SHOT', yellow: 'YC', red: 'RC', penalties: 'PEN'}[type] || 'LIVE');
+  }
+
   function momentum(match) {
     const events = match.events || [];
     const values = Array.from({length: 28}, (_, index) => {
@@ -106,12 +132,25 @@
     const ballY = latest?.type === 'corner' ? 15 : 48;
     const speed = Number(state.tournament?.liveSpeed || 1);
     const attackTeam = latest?.team || match.home;
+    const home = teamIdentity(state, match.home);
+    const away = teamIdentity(state, match.away);
+    const pulse = livePulse(events);
+    const progress = Math.min(100, Math.max(0, Number(match.currentMinute || 0) / 90 * 100));
     return `<section class="live-match broadcast-live" id="liveMatch" data-match="${esc(match.id)}">
-      <div class="live-head"><div><span class="live-badge">LIVE</span><b>${esc(match.currentMinute || 0)}'</b></div><div class="live-score"><strong>${esc(match.home)}</strong><b>${match.score?.home ?? 0}</b><i>–</i><b>${match.score?.away ?? 0}</b><strong>${esc(match.away)}</strong></div></div>
-      <div class="broadcast-pitch"><div class="broadcast-center-circle"></div><div class="broadcast-halfway"></div><div class="broadcast-box left"></div><div class="broadcast-box right"></div><div class="broadcast-flag top-left"></div><div class="broadcast-flag top-right"></div><div class="broadcast-flag bottom-left"></div><div class="broadcast-flag bottom-right"></div><div class="broadcast-ball" style="left:${ballX}%;top:${ballY}%"></div><div class="attack-overlay ${side}"><i></i><div><b>${esc(attackTeam)}</b><span>${esc(attackLabel(latest))}</span><small>${esc(latest?.text || 'The match is under way')}</small></div></div></div>
+      <div class="broadcast-topline"><span><i></i> LIVE FROM THE KNOCKOUT STAGE</span><span>${esc(match.round)} · SERVER SYNC</span></div>
+      <header class="broadcast-scoreboard">
+        <div class="score-team home-team">${teamMark(home, 'home')}<strong>${esc(home.name)}</strong></div>
+        <div class="score-core"><span class="live-badge">LIVE</span><div class="score-numbers"><b>${match.score?.home ?? 0}</b><i>–</i><b>${match.score?.away ?? 0}</b></div><time>${esc(match.currentMinute || 0)}'</time></div>
+        <div class="score-team away-team"><strong>${esc(away.name)}</strong>${teamMark(away, 'away')}</div>
+      </header>
+      <div class="match-progress" aria-label="Match time"><i style="width:${progress}%"></i></div>
+      <div class="broadcast-stage">
+        <div class="broadcast-pitch"><div class="pitch-lights"></div><div class="broadcast-center-circle"></div><div class="broadcast-halfway"></div><div class="broadcast-box left"></div><div class="broadcast-box right"></div><div class="broadcast-flag top-left"></div><div class="broadcast-flag top-right"></div><div class="broadcast-flag bottom-left"></div><div class="broadcast-flag bottom-right"></div><div class="broadcast-ball" style="left:${ballX}%;top:${ballY}%"></div><div class="attack-overlay ${side}"><span class="event-siren">${eventIcon(latest?.type)}</span><i></i><div><b>${esc(attackTeam)}</b><span>${esc(attackLabel(latest))}</span><small>${esc(latest?.text || 'The match is under way')}</small></div></div><div class="pitch-caption"><span>TRANSFER AUCTION CUP</span><b>${esc(match.round)}</b></div></div>
+        <aside class="live-pulse"><div class="pulse-heading"><span>LIVE PULSE</span><b>${events.length} EVENTS</b></div><div class="pulse-row"><span>${esc(home.name)}</span><b>${pulse.home.attacks}</b><i><em style="width:${Math.min(100, pulse.home.attacks * 10)}%"></em></i></div><div class="pulse-row away"><span>${esc(away.name)}</span><b>${pulse.away.attacks}</b><i><em style="width:${Math.min(100, pulse.away.attacks * 10)}%"></em></i></div><div class="pulse-split"><div><b>${pulse.home.shots}</b><span>SHOTS</span></div><div><b>${pulse.away.shots}</b><span>SHOTS</span></div></div><p>Pressure is recalculated with every server event.</p></aside>
+      </div>
       ${momentum(match)}
-      <div class="live-controls"><span>The server broadcasts each event live. Full match stats unlock at full time.</span>${host ? `<div class="live-speed"><small>LIVE SPEED</small>${[0.5, 1, 1.5, 2, 3].map(value => `<button class="live-speed-btn ${speed === value ? 'active' : ''}" data-speed="${value}">×${value}</button>`).join('')}</div>` : ''}</div>
-      <div class="live-commentary">${[...events].reverse().slice(0, 4).map(event => `<div class="live-event ${esc(event.type || '')}"><b>${event.minute}'</b><span>${esc(event.team ? `${event.team} — ` : '')}${esc(event.text)}</span></div>`).join('') || '<div class="commentary-empty">Kick-off. The first key moment is coming...</div>'}</div>
+      <div class="live-controls"><span><i class="sync-dot"></i> The match engine is broadcasting every key moment.</span>${host ? `<div class="live-speed"><small>LIVE SPEED</small>${[0.5, 1, 1.5, 2, 3].map(value => `<button class="live-speed-btn ${speed === value ? 'active' : ''}" data-speed="${value}">×${value}</button>`).join('')}</div>` : ''}</div>
+      <div class="live-commentary"><div class="commentary-title"><span>COMMENTARY FEED</span><b>NOW</b></div>${[...events].reverse().slice(0, 4).map(event => `<div class="live-event ${esc(event.type || '')}"><b>${event.minute}'</b><i>${eventIcon(event.type)}</i><span>${esc(event.team ? `${event.team} — ` : '')}${esc(event.text)}</span></div>`).join('') || '<div class="commentary-empty">Kick-off. The first key moment is coming...</div>'}</div>
     </section>`;
   }
 
