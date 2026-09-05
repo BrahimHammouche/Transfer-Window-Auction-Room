@@ -24,7 +24,11 @@ DATA = ROOT / "data"
 PLAYERS_FILE = DATA / "players.json"
 BUDGET = 100
 SQUAD_SIZE = 11
-MAX_MANAGERS = 4
+MIN_MANAGERS = 2
+MAX_MANAGERS = 8
+TEST_TEAM_MIN = 4
+AUCTION_CARDS = ("freeze", "scout_report", "bid_shield", "hijack")
+MATCH_CARDS = ("out_of_position", "captains_gambit", "counter_attack", "park_the_bus", "team_talk")
 AUTH_SECRET = os.getenv("AUTH_SECRET", "local-development-secret-change-before-deploy").encode("utf-8")
 FORMATION_ROLES = {
     "4-3-3": ["GK", "LB", "CB", "CB", "RB", "CM", "CM", "CM", "LW", "ST", "RW"],
@@ -40,6 +44,7 @@ DEFENCE_ROLES = {"GK", "LB", "LWB", "CB", "RB", "RWB", "CDM"}
 
 app = FastAPI(title="Transfer Auction Multiplayer")
 app.mount("/data", StaticFiles(directory=DATA), name="data")
+app.mount("/assets", StaticFiles(directory=ROOT / "assets"), name="assets")
 _db_lock = threading.RLock()
 _connections: Dict[str, Set[WebSocket]] = {}
 _presence: Dict[str, Set[str]] = {}
@@ -49,11 +54,141 @@ game_store = GameDatabase(ROOT)
 
 
 def new_team(user_id=None):
-    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id}
+    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id, "displayName": None, "logo": None}
 
 
 def team_names(state):
     return list((state.get("teams") or {}).keys())
+
+
+def deal_cards(card_types, count, excluded=()):
+    available = [card for card in card_types if card not in set(excluded)]
+    return random.sample(available, min(count, len(available)))
+
+
+def ensure_card_hand(state, team_name):
+    cards = state.setdefault("cards", {}).setdefault("hands", {})
+    if team_name not in cards:
+        hand = deal_cards(AUCTION_CARDS, 2)
+        squad_count = len(state.get("teams", {}).get(team_name, {}).get("squad", []))
+        if squad_count >= 5:
+            hand.extend(deal_cards(AUCTION_CARDS, 1, hand))
+        if squad_count >= SQUAD_SIZE:
+            hand.extend(deal_cards(MATCH_CARDS, 2, hand))
+        cards[team_name] = hand
+    return cards[team_name]
+
+
+def use_card_from_hand(state, team_name, card):
+    hand = ensure_card_hand(state, team_name)
+    if card not in hand:
+        raise HTTPException(400, "You do not own that card")
+    hand.remove(card)
+
+
+def grant_signing_rewards(state, team_name):
+    squad_count = len(state["teams"][team_name].get("squad", []))
+    hand = ensure_card_hand(state, team_name)
+    rewards = state.setdefault("cards", {}).setdefault("rewards", {}).setdefault(team_name, {})
+    if squad_count >= 5 and not rewards.get("five_signings"):
+        hand.extend(deal_cards(AUCTION_CARDS, 1, hand))
+        rewards["five_signings"] = True
+    if squad_count >= SQUAD_SIZE and not rewards.get("complete_xi"):
+        hand.extend(deal_cards(MATCH_CARDS, 2, hand))
+        rewards["complete_xi"] = True
+
+
+def supported_manager_count(names):
+    """Every phase after the auction needs a real multiplayer room."""
+    return MIN_MANAGERS <= len(names) <= MAX_MANAGERS
+
+
+def tournament_table(tournament, names):
+    """Return a deterministic league table for any room size from 2 to 8."""
+    table = {name: {"points": 0, "wins": 0, "goalsFor": 0, "goalsAgainst": 0} for name in names}
+    for match in tournament.get("matches", []):
+        if match.get("status") != "finished":
+            continue
+        home, away = match.get("home"), match.get("away")
+        if home not in table or away not in table:
+            continue
+        score = match.get("score") or {}
+        home_goals, away_goals = int(score.get("home", 0)), int(score.get("away", 0))
+        table[home]["goalsFor"] += home_goals
+        table[home]["goalsAgainst"] += away_goals
+        table[away]["goalsFor"] += away_goals
+        table[away]["goalsAgainst"] += home_goals
+        winner = match.get("winner")
+        if winner in table:
+            table[winner]["wins"] += 1
+            table[winner]["points"] += 3
+    return sorted(names, key=lambda name: (table[name]["points"], table[name]["goalsFor"] - table[name]["goalsAgainst"], table[name]["goalsFor"], table[name]["wins"], name.lower()), reverse=True)
+
+
+def complete_tournament_if_ready(state):
+    tournament = state.get("tournament") or {}
+    final = next((match for match in tournament.get("matches", []) if match.get("id") == tournament.get("finalMatchId")), None)
+    if final and final.get("status") in {"finished", "bye"} and final.get("winner"):
+        champion = final["winner"]
+        tournament["champion"] = champion
+        state["finalResult"] = {"type": "tournament", "winner": champion}
+        return True
+    return False
+
+
+def advance_bracket_winner(tournament, match):
+    next_id = match.get("nextMatch")
+    if not next_id and match.get("id") != tournament.get("finalMatchId"):
+        try:
+            round_number, match_number = (int(part[1:]) for part in match["id"].split("-"))
+            next_id = f"r{round_number + 1}-m{(match_number + 1) // 2}"
+            match["nextSide"] = "home" if match_number % 2 else "away"
+        except (KeyError, ValueError):
+            return
+    if not next_id:
+        return
+    next_match = next((item for item in tournament["matches"] if item.get("id") == next_id), None)
+    if not next_match:
+        return
+    next_match["home" if match.get("nextSide") == "home" else "away"] = match.get("winner")
+
+
+def resolve_bracket(tournament):
+    """Turn empty first-round slots into byes and unlock downstream fixtures."""
+    changed = True
+    while changed:
+        changed = False
+        for match in tournament.get("matches", []):
+            if match.get("status") not in {"locked", "void"}:
+                continue
+            sources = match.get("sources", [])
+            if sources and not all(next(item for item in tournament["matches"] if item["id"] == source).get("status") in {"finished", "bye", "void"} for source in sources):
+                continue
+            home, away = match.get("home"), match.get("away")
+            if home and away:
+                if match.get("status") != "ready":
+                    match["status"] = "ready"; changed = True
+            elif home or away:
+                match["status"] = "bye"; match["winner"] = home or away; advance_bracket_winner(tournament, match); changed = True
+            elif sources or match.get("id", "").startswith("r1-"):
+                match["status"] = "void"; advance_bracket_winner(tournament, match); changed = True
+
+
+def team_for_match(state, team_name, effects):
+    """Apply the cards assigned to this fixture without changing the saved squad."""
+    team = json.loads(json.dumps(state["teams"][team_name]))
+    tactics = team.setdefault("tactics", {})
+    roles = tactics.setdefault("roles", {})
+    active = [effect for effect in effects or [] if effect.get("targetTeam") == team_name]
+    tactics["cardEffects"] = [effect.get("type") for effect in active]
+    for effect in active:
+        if effect.get("type") == "out_of_position":
+            roles[str(effect["playerId"])] = effect["role"]
+        elif effect.get("type") == "captains_gambit":
+            captain = next((player for player in team.get("squad", []) if str(player.get("id") or player.get("name")) == str(effect.get("playerId"))), None)
+            if captain:
+                tactics["captainName"] = captain.get("name")
+    return team
 
 
 def default_state(host=None, host_user_id=None):
@@ -67,6 +202,7 @@ def default_state(host=None, host_user_id=None):
         "evaluation": None,
         "results": None,
         "tournament": None,
+        "cards": {"hands": {host: deal_cards(AUCTION_CARDS, 2)} if host else {}, "rewards": {}},
         "host": host,
         "hostUserId": host_user_id,
         "phase": "auction",
@@ -83,6 +219,8 @@ def normalize_state(state, host=None):
         t.setdefault("spent", 0)
         t.setdefault("squad", [])
         t.setdefault("userId", None)
+        t.setdefault("displayName", None)
+        t.setdefault("logo", None)
     state.setdefault("usedPlayers", [])
     state.setdefault("positionCounts", {})
     state.setdefault("currentOffer", None)
@@ -90,6 +228,12 @@ def normalize_state(state, host=None):
     state.setdefault("evaluation", None)
     state.setdefault("results", None)
     state.setdefault("tournament", None)
+    state.setdefault("cards", {"hands": {}})
+    state["cards"].setdefault("hands", {})
+    state["cards"].setdefault("rewards", {})
+    for name in state["teams"]:
+        ensure_card_hand(state, name)
+        grant_signing_rewards(state, name)
     state.setdefault("host", host)
     state.setdefault("hostUserId", None)
     state.setdefault("phase", "auction")
@@ -100,6 +244,11 @@ def normalize_state(state, host=None):
         o.setdefault("highestBidder", None)
         o.setdefault("dropped", [])
         o.setdefault("passed", [])
+    if (state.get("tournament") or {}).get("format") == "knockout":
+        for match in state["tournament"].get("matches", []):
+            if match.get("status") in {"finished", "bye"} and match.get("winner"):
+                advance_bracket_winner(state["tournament"], match)
+        resolve_bracket(state["tournament"])
     return state
 
 
@@ -120,7 +269,7 @@ def persist_room(room, state):
     return state
 
 
-def public_state(room, state):
+def public_state(room, state, viewer=None):
     out = json.loads(json.dumps(state))
     for match in (out.get("tournament") or {}).get("matches", []):
         match.pop("simulation", None)
@@ -132,6 +281,12 @@ def public_state(room, state):
         if user:
             out["profiles"][name] = public_user(user)
     out["online"] = sorted(_presence.get(room, set()))
+    cards = out.get("cards") or {}
+    hands = cards.get("hands") or {}
+    cards["hands"] = {name: hand if name == viewer else ["hidden"] * len(hand) for name, hand in hands.items()}
+    if (cards.get("lastScout") or {}).get("owner") != viewer:
+        cards.pop("lastScout", None)
+    out["cards"] = cards
     return out
 
 
@@ -162,22 +317,17 @@ async def run_live_match(room, match_id):
                     match["currentMinute"] = event.get("minute", 0)
                     if event.get("type") == "goal":
                         side = event.get("side") or ("away" if event.get("team") == match.get("away") else "home")
-                        match.setdefault("score", {"home": 0, "away": 0})[side] += 1
+                        match.setdefault("score", {"home": 0, "away": 0})[side] += int(event.get("goalValue", 1))
                 else:
                     round_name = match.get("round")
+                    bracket_meta = {key: match.get(key) for key in ("sources", "nextMatch", "nextSide")}
                     match.clear()
-                    match.update({"round": round_name, **simulation})
+                    match.update({"round": round_name, **bracket_meta, **simulation})
                     match.pop("simulation", None)
                     finished = True
-                    if match_id in ("semi1", "semi2"):
-                        final = next(item for item in tournament["matches"] if item.get("id") == "final")
-                        semi1 = next(item for item in tournament["matches"] if item.get("id") == "semi1")
-                        semi2 = next(item for item in tournament["matches"] if item.get("id") == "semi2")
-                        if semi1.get("status") == "finished" and semi2.get("status") == "finished":
-                            final.update({"home": semi1["winner"], "away": semi2["winner"], "status": "ready"})
-                    else:
-                        tournament["champion"] = simulation["winner"]
-                        state["finalResult"] = {"type": "tournament", "winner": simulation["winner"]}
+                    advance_bracket_winner(tournament, match)
+                    resolve_bracket(tournament)
+                    complete_tournament_if_ready(state)
                 persist_room(room, state)
             await broadcast(room, state)
             if finished:
@@ -187,10 +337,11 @@ async def run_live_match(room, match_id):
 
 
 async def broadcast(room, state, snapshot=None):
-    message = json.dumps({"type": "state", "state": snapshot or public_state(room, state)}, ensure_ascii=False)
     dead = []
     for ws in list(_connections.get(room, set())):
         try:
+            viewer = _socket_players.get(ws, (None, None))[1]
+            message = json.dumps({"type": "state", "state": public_state(room, state, viewer)}, ensure_ascii=False)
             await ws.send_text(message)
         except Exception:
             dead.append(ws)
@@ -215,6 +366,12 @@ class ActionBody(BaseModel):
     player_index: int | None = None
     result: dict | None = None
     tactics: dict | None = None
+    card: str | None = None
+    target: str | None = None
+    target_match: str | None = None
+    player_id: str | None = None
+    display_name: str | None = None
+    logo: str | None = None
 
 
 class AuthBody(BaseModel):
@@ -388,12 +545,13 @@ def calculate_final_results(state):
         record["averagePossession"] = round(average(record.pop("possession"), 50), 1)
     champion = tournament.get("champion")
     evaluation = (state.get("evaluation") or {}).get("teams", {})
-    final_match = next((match for match in tournament.get("matches", []) if match.get("id") == "final"), {})
-    finalists = {final_match.get("home"), final_match.get("away")}
+    league_order = tournament_table(tournament, team_names(state))
+    league_rank = {name: index for index, name in enumerate(league_order)}
     manager_scores = {}
     for name in team_names(state):
         evaluation_score = number((evaluation.get(name) or {}).get("overall"), 70)
-        tournament_score = 45 + records[name]["wins"] * 16 + (25 if name == champion else 10 if name in finalists else 0)
+        # The league winner is rewarded, while every win still matters in larger rooms.
+        tournament_score = 45 + records[name]["wins"] * 16 + (25 if name == champion else max(0, 10 - league_rank.get(name, 0) * 2))
         manager_scores[name] = round(evaluation_score * 0.55 + min(100, tournament_score) * 0.45, 2)
     best_manager = max(team_names(state), key=lambda name: manager_scores[name])
     best_attack = max(team_names(state), key=lambda name: (records[name]["goalsFor"], records[name]["xg"]))
@@ -425,6 +583,7 @@ def complete_sale(state):
     team["squad"].append(player_record)
     team["spent"] = round(float(team.get("spent", 0)) + price, 2)
     team["budget"] = round(float(team.get("budget", BUDGET)) - price, 2)
+    grant_signing_rewards(state, winner)
     state["currentOffer"] = None
 
 
@@ -523,7 +682,7 @@ async def create_room(body: TokenBody):
         state = default_state(user["username"], user["id"])
         game_store.add_member(room, user["id"], user["username"], int(time.time() * 1000))
         persist_room(room, state)
-    snapshot = public_state(room, state)
+    snapshot = public_state(room, state, user["username"])
     await broadcast(room, state, snapshot)
     return {
         "ok": True,
@@ -566,18 +725,19 @@ async def join(body: JoinBody):
         member = game_store.get_member(room, user["id"])
         if not member:
             if len(team_names(state)) >= MAX_MANAGERS:
-                raise HTTPException(400, "This room already has four managers")
+                raise HTTPException(400, f"This room already has {MAX_MANAGERS} managers")
             team_name = user["username"]
             state["teams"][team_name] = new_team(user["id"])
             game_store.add_member(room, user["id"], team_name, int(time.time() * 1000))
             member = game_store.get_member(room, user["id"])
         if member["team_name"] not in state["teams"]:
             state["teams"][member["team_name"]] = new_team(user["id"])
+        ensure_card_hand(state, member["team_name"])
         if not state.get("host"):
             state["host"] = member["team_name"]
             state["hostUserId"] = user["id"]
         persist_room(room, state)
-    snapshot = public_state(room, state)
+    snapshot = public_state(room, state, member["team_name"])
     await broadcast(room, state, snapshot)
     return {"ok": True, "state": snapshot, "you": member["team_name"], "host": state.get("host"), "user": public_user(user)}
 
@@ -604,6 +764,7 @@ async def action(body: ActionBody):
             for room_member in game_store.members(room):
                 if room_member["team_name"] != actor:
                     state["teams"][room_member["team_name"]] = new_team(room_member["user_id"])
+                    ensure_card_hand(state, room_member["team_name"])
 
         elif act == "next_player":
             require_host(state, actor)
@@ -620,7 +781,8 @@ async def action(body: ActionBody):
                     counts[pos] = counts.get(pos, 0) + 1
             min_count = min((counts.get(p.get("position"), 0) for p in available), default=0)
             candidates = [p for p in available if counts.get(p.get("position"), 0) <= min_count + 1]
-            p = random.choice(candidates or available)
+            scouted = state.get("cards", {}).get("scoutedQueue", [])
+            p = scouted.pop(0) if scouted else random.choice(candidates or available)
             state["usedPlayers"].append(p["name"])
             pos = p.get("position", "?")
             state["positionCounts"][pos] = state["positionCounts"].get(pos, 0) + 1
@@ -652,6 +814,8 @@ async def action(body: ActionBody):
             offer = state.get("currentOffer")
             if not offer:
                 raise HTTPException(400, "There is no active auction")
+            if actor in offer.get("frozen", []):
+                raise HTTPException(400, "A Freeze card blocks you from bidding on this player")
             if actor in offer.get("dropped", []):
                 raise HTTPException(400, "You already dropped out of this auction")
             team = state["teams"][actor]
@@ -696,6 +860,90 @@ async def action(body: ActionBody):
             require_host(state, actor)
             state["currentOffer"] = None
 
+        elif act == "use_card":
+            card = (body.card or "").strip().lower()
+            offer = state.get("currentOffer")
+            target = (body.target or "").strip()
+            if card in AUCTION_CARDS:
+                if state.get("phase") != "auction":
+                    raise HTTPException(400, "Auction cards can only be used during the auction")
+                if card != "scout_report" and not offer:
+                    raise HTTPException(400, "Open an auction before using that card")
+                if card == "freeze":
+                    if target not in state["teams"] or target == actor:
+                        raise HTTPException(400, "Choose another manager to freeze")
+                    shields = offer.setdefault("shields", [])
+                    if target in shields:
+                        shields.remove(target)
+                        state["cards"]["notice"] = f"{target}'s Bid Shield blocked the Freeze"
+                    else:
+                        offer.setdefault("frozen", []).append(target)
+                        state["cards"]["notice"] = f"{target} is frozen for this auction"
+                    use_card_from_hand(state, actor, card)
+                elif card == "bid_shield":
+                    shields = offer.setdefault("shields", [])
+                    if actor in shields:
+                        raise HTTPException(400, "Your Bid Shield is already active")
+                    shields.append(actor)
+                    use_card_from_hand(state, actor, card)
+                elif card == "hijack":
+                    highest = offer.get("highestBidder")
+                    if not highest or highest == actor:
+                        raise HTTPException(400, "Hijack needs an opponent's active highest bid")
+                    shields = offer.setdefault("shields", [])
+                    if highest in shields:
+                        shields.remove(highest)
+                        use_card_from_hand(state, actor, card)
+                        state["cards"]["notice"] = f"{highest}'s Bid Shield blocked the Hijack"
+                    else:
+                        amount = round(float(offer.get("currentBid", 0)) + 2, 2)
+                        if amount > float(state["teams"][actor]["budget"]):
+                            raise HTTPException(400, "You cannot afford the Hijack price")
+                        offer["currentBid"] = amount
+                        offer["highestBidder"] = actor
+                        offer["passed"] = [name for name in offer.get("passed", []) if name != actor]
+                        use_card_from_hand(state, actor, card)
+                        state["cards"]["notice"] = f"{actor} hijacked the bid for ${amount:g}M"
+                else:  # scout_report
+                    if state.get("cards", {}).get("scoutedQueue"):
+                        raise HTTPException(400, "Use the current scout report before drawing another")
+                    used = {str(x).strip().lower() for x in state.get("usedPlayers", [])}
+                    available = [player for player in load_players() if str(player.get("name", "")).strip().lower() not in used]
+                    report = random.sample(available, min(3, len(available)))
+                    state["cards"]["scoutedQueue"] = report
+                    state["cards"]["lastScout"] = {"owner": actor, "players": [{"name": player.get("name"), "position": player.get("position", "?")} for player in report]}
+                    use_card_from_hand(state, actor, card)
+
+            elif card in MATCH_CARDS:
+                tournament = state.get("tournament")
+                match = next((item for item in (tournament or {}).get("matches", []) if item.get("id") == (body.target_match or "")), None)
+                if state.get("phase") != "tournament" or not match or match.get("status") != "ready":
+                    raise HTTPException(400, "Choose a ready league match for this card")
+                if card == "out_of_position":
+                    if target not in state["teams"] or target == actor or target not in (match.get("home"), match.get("away")):
+                        raise HTTPException(400, "Choose an opponent playing in that match")
+                    player_id = str(body.player_id or "")
+                    target_squad = state["teams"][target].get("squad", [])
+                    if not player_id or not any(str(player.get("id") or player.get("name")) == player_id for player in target_squad):
+                        raise HTTPException(400, "Choose a valid opponent player")
+                    role = (body.position or "").upper()
+                    if role not in FORMATION_ROLES["4-3-3"] + ["CDM", "CAM", "LM", "RM", "LWB", "RWB", "CF", "SS"] or role == "GK":
+                        raise HTTPException(400, "Choose a valid outfield position")
+                    effect = {"type": card, "owner": actor, "targetTeam": target, "playerId": player_id, "role": role}
+                else:
+                    if actor not in (match.get("home"), match.get("away")):
+                        raise HTTPException(400, "You can only use this card in your own match")
+                    effect = {"type": card, "owner": actor, "targetTeam": actor}
+                    if card == "captains_gambit":
+                        player_id = str(body.player_id or "")
+                        if not player_id or not any(str(player.get("id") or player.get("name")) == player_id for player in state["teams"][actor].get("squad", [])):
+                            raise HTTPException(400, "Choose one of your players as captain")
+                        effect["playerId"] = player_id
+                match.setdefault("effects", []).append(effect)
+                use_card_from_hand(state, actor, card)
+            else:
+                raise HTTPException(400, "Unknown card")
+
         elif act == "set_slot":
             if state.get("phase") != "auction":
                 raise HTTPException(400, "Squad slots can only change during the auction")
@@ -703,6 +951,17 @@ async def action(body: ActionBody):
             if idx is None or idx < 0 or idx >= len(state["teams"][actor]["squad"]):
                 raise HTTPException(400, "Invalid squad player")
             state["teams"][actor]["squad"][idx]["slot"] = body.slot or None
+
+        elif act == "set_team_identity":
+            team = state["teams"][actor]
+            display_name = (body.display_name or "").strip()
+            if not 2 <= len(display_name) <= 24:
+                raise HTTPException(400, "Team name must be 2-24 characters")
+            logo = body.logo
+            if logo and (not logo.startswith("data:image/") or len(logo) > 350000):
+                raise HTTPException(400, "Use an image smaller than 250 KB for the team logo")
+            team["displayName"] = display_name
+            team["logo"] = logo or None
 
         elif act == "set_tactics":
             if state.get("phase") != "tactics":
@@ -746,8 +1005,8 @@ async def action(body: ActionBody):
         elif act == "start_tactics":
             require_host(state, actor)
             incomplete = [n for n in team_names(state) if len(state["teams"][n]["squad"]) < SQUAD_SIZE]
-            if len(team_names(state)) != MAX_MANAGERS or incomplete:
-                raise HTTPException(400, "All four teams need 11 players before Phase 2 can start")
+            if not supported_manager_count(team_names(state)) or incomplete:
+                raise HTTPException(400, f"Need {MIN_MANAGERS}-{MAX_MANAGERS} teams, each with {SQUAD_SIZE} players, before Phase 2 can start")
             if state.get("currentOffer"):
                 raise HTTPException(400, "Finish the current auction first")
             state["phase"] = "tactics"
@@ -758,8 +1017,8 @@ async def action(body: ActionBody):
             if state.get("phase") != "tactics":
                 raise HTTPException(400, "Open evaluation from the tactics phase")
             incomplete = [n for n in team_names(state) if len(state["teams"][n]["squad"]) < SQUAD_SIZE]
-            if len(team_names(state)) != MAX_MANAGERS or incomplete:
-                raise HTTPException(400, "All four teams need 11 players before evaluation")
+            if not supported_manager_count(team_names(state)) or incomplete:
+                raise HTTPException(400, f"Need {MIN_MANAGERS}-{MAX_MANAGERS} teams, each with {SQUAD_SIZE} players, before evaluation")
             state["evaluation"] = None
             state["phase"] = "evaluation"
 
@@ -777,19 +1036,38 @@ async def action(body: ActionBody):
                 raise HTTPException(400, "Calculate the team evaluation before starting the tournament")
             names = team_names(state)
             incomplete = [n for n in names if len(state["teams"][n]["squad"]) < SQUAD_SIZE]
-            if len(names) != MAX_MANAGERS or incomplete:
-                raise HTTPException(400, "All four teams need 11 players before the tournament starts")
+            if not supported_manager_count(names) or incomplete:
+                raise HTTPException(400, f"Need {MIN_MANAGERS}-{MAX_MANAGERS} teams, each with {SQUAD_SIZE} players, before the tournament starts")
             seed = random.SystemRandom().randint(100000, 999999999)
+            bracket_size = 2
+            while bracket_size < len(names):
+                bracket_size *= 2
+            rounds = bracket_size.bit_length() - 1
+            labels = {1: "Final", 2: "Semi-final", 3: "Quarter-final"}
+            matches = []
+            for round_number in range(1, rounds + 1):
+                count = bracket_size // (2 ** round_number)
+                label = labels.get(rounds - round_number + 1, f"Round {round_number}")
+                for index in range(count):
+                    match_id = f"r{round_number}-m{index + 1}"
+                    next_id = f"r{round_number + 1}-m{index // 2 + 1}" if round_number < rounds else None
+                    matches.append({"id": match_id, "round": label, "home": None, "away": None, "status": "locked", "sources": [], "nextMatch": next_id, "nextSide": "home" if index % 2 == 0 else "away"})
+            first_round = [match for match in matches if match["id"].startswith("r1-")]
+            for index, name in enumerate(names):
+                first_round[index // 2]["home" if index % 2 == 0 else "away"] = name
+            for match in matches:
+                if not match["id"].startswith("r1-"):
+                    round_number = int(match["id"].split("-")[0][1:])
+                    match["sources"] = [f"r{round_number - 1}-m{(int(match['id'].split('m')[1]) - 1) * 2 + 1}", f"r{round_number - 1}-m{(int(match['id'].split('m')[1]) - 1) * 2 + 2}"]
             state["tournament"] = {
                 "seed": seed,
                 "liveSpeed": 1,
-                "matches": [
-                    {"id": "semi1", "round": "Semi-final 1", "home": names[0], "away": names[1], "status": "ready"},
-                    {"id": "semi2", "round": "Semi-final 2", "home": names[2], "away": names[3], "status": "ready"},
-                    {"id": "final", "round": "Final", "home": None, "away": None, "status": "locked"},
-                ],
+                "format": "knockout",
+                "matches": matches,
+                "finalMatchId": f"r{rounds}-m1",
                 "champion": None,
             }
+            resolve_bracket(state["tournament"])
             state["results"] = None
             state["phase"] = "tournament"
 
@@ -802,18 +1080,15 @@ async def action(body: ActionBody):
             match = next((item for item in tournament.get("matches", []) if item.get("id") == match_id), None)
             if not match or match.get("status") != "ready":
                 raise HTTPException(400, "That match is not ready to simulate")
-            result = simulate_match(match["home"], state["teams"][match["home"]], match["away"], state["teams"][match["away"]], tournament["seed"], match_id)
+            effects = match.get("effects", [])
+            result = simulate_match(match["home"], team_for_match(state, match["home"], effects), match["away"], team_for_match(state, match["away"], effects), tournament["seed"], match_id)
+            round_name = match.get("round", "League match")
+            bracket_meta = {key: match.get(key) for key in ("sources", "nextMatch", "nextSide")}
             match.clear()
-            match.update({"round": "Final" if match_id == "final" else f"Semi-final {match_id[-1]}", **result})
-            if match_id in ("semi1", "semi2"):
-                final = next(item for item in tournament["matches"] if item.get("id") == "final")
-                semi1 = next(item for item in tournament["matches"] if item.get("id") == "semi1")
-                semi2 = next(item for item in tournament["matches"] if item.get("id") == "semi2")
-                if semi1.get("status") == "finished" and semi2.get("status") == "finished":
-                    final.update({"home": semi1["winner"], "away": semi2["winner"], "status": "ready"})
-            else:
-                tournament["champion"] = result["winner"]
-                state["finalResult"] = {"type": "tournament", "winner": result["winner"]}
+            match.update({"round": round_name, **bracket_meta, **result})
+            advance_bracket_winner(tournament, match)
+            resolve_bracket(tournament)
+            complete_tournament_if_ready(state)
 
         elif act == "start_live_match":
             require_host(state, actor)
@@ -824,7 +1099,8 @@ async def action(body: ActionBody):
             match = next((item for item in tournament.get("matches", []) if item.get("id") == match_id), None)
             if not match or match.get("status") != "ready":
                 raise HTTPException(400, "That match is not ready to start")
-            simulation = simulate_match(match["home"], state["teams"][match["home"]], match["away"], state["teams"][match["away"]], tournament["seed"], match_id)
+            effects = match.get("effects", [])
+            simulation = simulate_match(match["home"], team_for_match(state, match["home"], effects), match["away"], team_for_match(state, match["away"], effects), tournament["seed"], match_id)
             round_name = match.get("round")
             match.clear()
             match.update({
@@ -857,9 +1133,8 @@ async def action(body: ActionBody):
         elif act == "open_final_results":
             require_host(state, actor)
             tournament = state.get("tournament")
-            final_match = next((match for match in (tournament or {}).get("matches", []) if match.get("id") == "final"), None)
-            if state.get("phase") != "tournament" or not tournament or not tournament.get("champion") or not final_match or final_match.get("status") != "finished":
-                raise HTTPException(400, "Finish the final before opening the results")
+            if state.get("phase") != "tournament" or not tournament or not tournament.get("champion"):
+                raise HTTPException(400, "Finish every league match before opening the results")
             state["results"] = calculate_final_results(state)
             for team_name, record in state["results"]["records"].items():
                 user_id = state["teams"].get(team_name, {}).get("userId")
@@ -871,7 +1146,7 @@ async def action(body: ActionBody):
             require_host(state, actor)
             players = load_players()
             names = team_names(state)
-            while len(names) < MAX_MANAGERS:
+            while len(names) < TEST_TEAM_MIN:
                 test_name = f"Test Team {len(names) + 1}"
                 state["teams"][test_name] = new_team()
                 names.append(test_name)
@@ -881,7 +1156,7 @@ async def action(body: ActionBody):
             goalkeepers = [p for p in players if p.get("position") == "GK"]
             others = [p for p in players if p.get("position") != "GK"]
             if len(goalkeepers) < len(names):
-                raise HTTPException(400, "Need at least four goalkeepers for the test fill")
+                raise HTTPException(400, f"Need at least {len(names)} goalkeepers for the test fill")
             for i, name in enumerate(names):
                 squad_source = [goalkeepers[i]]
                 # Deterministic, unique round-robin allocation from the remaining pool.
@@ -907,6 +1182,11 @@ async def action(body: ActionBody):
                 }
                 keep.extend(p["name"] for p in squad)
             state["usedPlayers"] = keep
+            # Test fill skips real auction sales, so explicitly award the same milestones.
+            state["cards"] = {"hands": {}, "rewards": {}}
+            for name in names:
+                ensure_card_hand(state, name)
+                grant_signing_rewards(state, name)
             state["positionCounts"] = {}
             state["currentOffer"] = None
             state["finalResult"] = None
@@ -924,7 +1204,7 @@ async def action(body: ActionBody):
 
         persist_room(room, state)
 
-    snapshot = public_state(room, state)
+    snapshot = public_state(room, state, actor)
     await broadcast(room, state, snapshot)
     if live_match_to_start and live_match_to_start not in _live_match_tasks:
         _live_match_tasks[live_match_to_start] = asyncio.create_task(run_live_match(*live_match_to_start))

@@ -1,10 +1,10 @@
 # Football Transfer Auction
 
-Multiplayer football management game with an authoritative FastAPI server, live WebSockets, tactical setup, deterministic evaluation, live match simulation, and a four-team tournament.
+Multiplayer football management game with an authoritative FastAPI server, live WebSockets, tactical setup, deterministic evaluation, live match simulation, and a 2–8 manager league tournament.
 
 ## Accounts and rooms
 
-- Create an account, then create or join a room code with up to three friends.
+- Create an account, then create or join a room code with 1–7 friends (2–8 managers total).
 - The first player in a room becomes host; every member receives a personal team and $100M.
 - User records persist: tournament wins, titles, and games played appear on team cards and the profile chip.
 - Rooms and accounts use SQLite automatically for local development and PostgreSQL when `DATABASE_URL` is configured.
@@ -12,20 +12,21 @@ Multiplayer football management game with an authoritative FastAPI server, live 
 ## Included phases
 
 - **Auction:** live, server-authoritative bidding; pass/drop actions; budgets; unique player ownership; local player database.
+- **Game cards:** private hands with auction disruption cards and one-match tactical cards. Managers start with two auction cards, gain one at five signings, and gain two match cards after completing their XI.
 - **Tactics:** formations, drag-and-drop pitch positions, roles, attacking/defensive styles, and pressing/tempo/width controls.
 - **Evaluation:** deterministic server-side squad and tactical ranking with strengths and risks.
-- **Tournament:** two semi-finals and a final, with server-side live match events, xG, possession, shots, cards, and controlled seeded randomness.
+- **Tournament:** a round-robin league where every manager plays each opponent once, with server-side live match events, xG, possession, shots, cards, and controlled seeded randomness.
 - **Final results:** champion, best manager, tournament records, winner animation, and persistent player titles.
 
 ## Development shortcut
 
-The host can select **Fill Teams for Phase 2 Test**. It prepares four unique squads so later phases can be tested without completing an auction.
+The host can select **Fill Teams for Phase 2 Test**. It prepares unique squads for every current manager (and adds one test team only if needed for a two-team match).
 
 ## Run locally on Windows
 
 Double-click `start.bat`, then open `http://localhost:8000`.
 
-Create four accounts (or use four browser profiles), then join the same room code.
+Create 2–8 accounts (or use browser profiles), then join the same room code.
 
 ## Run locally on macOS / Linux
 

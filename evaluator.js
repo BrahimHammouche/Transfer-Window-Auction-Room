@@ -41,7 +41,9 @@
     const ranking = evaluation.ranking || [];
     view.innerHTML = `<div class="evaluation-heading"><div><div class="eyebrow">PHASE 3 · SERVER EVALUATION</div><h2>Manager Rankings</h2><p>Scores use squad attributes, assigned roles, formation, tactics, and auction spending.</p></div>${host ? '<button class="btn-primary" id="startTournament">START LIVE TOURNAMENT</button>' : ''}</div><div class="evaluation-grid">${ranking.map(name => teamCard(name, teams[name])).join('')}</div>`;
     view.querySelector('#startTournament')?.addEventListener('click', () => {
-      if (confirm('Start the tournament? Team tactics and evaluation will be locked.')) GAME()?.action?.('start_tournament').catch(() => {});
+      GAME()?.confirm?.('Start the live tournament?', 'Team tactics and evaluation will lock for every manager.').then(ok => {
+        if (ok) GAME()?.action?.('start_tournament').catch(() => {});
+      });
     });
   }
 

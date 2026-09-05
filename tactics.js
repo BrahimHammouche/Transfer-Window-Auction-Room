@@ -58,6 +58,11 @@
   const GAME = () => window.__game;
   const getState = () => GAME()?.getState?.();
   const save = () => Promise.resolve(GAME()?.saveState?.(getState())).catch(() => {});
+  let saveTimer = null;
+  const saveSoon = () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 350);
+  };
   const selectedPlayerByTeam = new Map();
 
   function ensureTactics(team) {
@@ -545,7 +550,7 @@
                 movePlayer
               );
 
-              if (didDrag) save();
+              if (didDrag) saveSoon();
             }
 
             window.addEventListener(
@@ -582,7 +587,7 @@
 
       resetPositions(team);
 
-      save();
+      saveSoon();
 
       renderTactics();
     };
@@ -593,6 +598,7 @@
 
       team.tactics.attackStyle =
         event.target.value;
+      saveSoon();
     };
 
     editor.querySelector(
@@ -601,6 +607,7 @@
 
       team.tactics.defenceStyle =
         event.target.value;
+      saveSoon();
     };
 
     const rangeControls = [
@@ -635,6 +642,7 @@
             "#" + valueId
           ).textContent =
             event.target.value;
+          saveSoon();
         };
       }
     );
@@ -649,7 +657,7 @@
         selectedPlayerId
       ] = event.target.value;
 
-      save();
+      saveSoon();
 
       renderTactics();
     };

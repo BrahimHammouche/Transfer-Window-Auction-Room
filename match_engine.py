@@ -100,11 +100,24 @@ def team_profile(team):
     elif formation == "4-4-2":
         attack += 1
 
+    card_effects = set(tactics.get("cardEffects") or [])
+    if "counter_attack" in card_effects:
+        attack += 4
+        pace += 3
+    if "park_the_bus" in card_effects:
+        defence += 5
+        attack -= 2
+    if "team_talk" in card_effects:
+        attack += 2
+        midfield += 2
+        defence += 2
+
     return {
         "attack": attack, "midfield": midfield, "defence": defence,
         "goalkeeping": average("goalkeeping"), "pace": pace, "passing": passing,
         "pressing": pressing, "tempo": tempo, "width": width,
         "attackStyle": attack_style, "defenceStyle": defence_style, "squad": squad, "roles": roles,
+        "captainName": tactics.get("captainName"),
     }
 
 
@@ -160,8 +173,10 @@ def simulate_match(home_name, home_team, away_name, away_team, seed, match_id):
             stats["shotsOnTarget"][side] += 1
             goal_probability = max(0.04, min(0.5, quality * (1.3 - (defence["goalkeeping"] - 70) * 0.008)))
             if rng.random() < goal_probability:
-                score[side] += 1
-                events.append({"minute": minute, "type": "goal", "side": side, "team": team_name, "player": scorer, "assist": creator, "text": f"GOAL! {scorer} finishes the move"})
+                goal_value = 2 if scorer == attack.get("captainName") else 1
+                score[side] += goal_value
+                captain_note = " — captain goal counts double!" if goal_value == 2 else ""
+                events.append({"minute": minute, "type": "goal", "side": side, "team": team_name, "player": scorer, "assist": creator, "goalValue": goal_value, "text": f"GOAL! {scorer} finishes the move{captain_note}"})
             else:
                 stats["saves"][opponent] += 1
                 events.append({"minute": minute, "type": "save", "side": side, "team": team_name, "player": scorer, "text": f"{scorer} shoots — saved"})

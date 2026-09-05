@@ -10,17 +10,40 @@
     return `${regular}${pens === undefined || pens === null ? '' : ` <small>(${pens})</small>`}`;
   }
 
+  function reveal(title, team, opponent = '', champion = false) {
+    const layer = document.createElement('div');
+    layer.className = `tournament-reveal ${champion ? 'champion-reveal' : ''}`;
+    layer.innerHTML = `<div class="reveal-card"><small>${champion ? 'ROAD TO GLORY' : 'OFFICIAL FIXTURE DRAW'}</small>${champion ? '<div class="stadium-lights"></div><img class="champions-trophy-art" src="/assets/champions-trophy.png" alt="Champions trophy">' : ''}<h2>${esc(title)}</h2><div class="reveal-team">${esc(team)}</div>${opponent ? `<div class="reveal-versus">VS</div><div class="reveal-team">${esc(opponent)}</div>` : ''}${champion ? '<p class="road-copy">Auction. Knockout nights. One champion.</p>' : ''}</div>`;
+    document.body.appendChild(layer);
+    (champion ? window.gameSounds?.anthem : window.gameSounds?.draw)?.();
+    if (champion) setTimeout(() => window.gameSounds?.celebration?.(), 1200);
+    setTimeout(() => layer.remove(), champion ? 4200 : 3200);
+  }
+
+  function leaderboard(matches) {
+    const table = {};
+    matches.filter(match => match.status === 'finished').forEach(match => {
+      [match.home, match.away].forEach(name => { if (name) table[name] ??= {wins:0,gf:0,ga:0}; });
+      if (!table[match.home] || !table[match.away]) return;
+      const home = Number(match.score?.home || 0), away = Number(match.score?.away || 0);
+      table[match.home].gf += home; table[match.home].ga += away; table[match.away].gf += away; table[match.away].ga += home;
+      if (match.winner) table[match.winner].wins += 1;
+    });
+    const rows = Object.entries(table).sort((a,b) => b[1].wins - a[1].wins || (b[1].gf-b[1].ga) - (a[1].gf-a[1].ga));
+    return `<section class="champion-leaderboard"><div><small>ROAD TO GLORY</small><h3>Final Leaderboard</h3></div>${rows.map(([name, record], index) => `<div class="leaderboard-row"><b>${index + 1}</b><span>${esc(name)}</span><em>${record.wins} W</em><i>${record.gf}-${record.ga}</i></div>`).join('')}</section>`;
+  }
+
   function matchCard(match, host) {
     const finished = match.status === 'finished';
     const ready = match.status === 'ready';
     const live = match.status === 'live';
     return `<article class="match-card ${finished ? 'finished' : ''} ${live ? 'live' : ''}">
       <div class="match-round">${esc(match.round)}</div>
-      <div class="match-team ${match.winner === match.home ? 'winner' : ''}"><span>${esc(match.home || 'Winner SF1')}</span><b>${finished || live ? score(match, 'home') : '—'}</b></div>
-      <div class="match-team ${match.winner === match.away ? 'winner' : ''}"><span>${esc(match.away || 'Winner SF2')}</span><b>${finished || live ? score(match, 'away') : '—'}</b></div>
+      <div class="match-team ${match.winner === match.home ? 'winner' : ''}"><span>${esc(match.home || 'Home team')}</span><b>${finished || live ? score(match, 'home') : '—'}</b></div>
+      <div class="match-team ${match.winner === match.away ? 'winner' : ''}"><span>${esc(match.away || 'Away team')}</span><b>${finished || live ? score(match, 'away') : '—'}</b></div>
       ${ready && host ? `<button class="btn-primary start-live-match" data-match="${esc(match.id)}">START LIVE MATCH</button>` : ''}
       ${live ? `<div class="match-live-now">● LIVE · ${esc(match.currentMinute || 0)}'</div>` : ''}
-      ${match.status === 'locked' ? '<div class="match-wait">Awaiting semi-finals</div>' : ''}
+      ${match.status === 'locked' ? '<div class="match-wait">Awaiting the next match</div>' : ''}
       ${finished ? `<button class="btn-ghost match-details" data-match="${esc(match.id)}">Match report</button><button class="btn-primary watch-live" data-match="${esc(match.id)}">WATCH LIVE REPLAY</button>` : ''}
     </article>`;
   }
@@ -175,8 +198,33 @@
     const replay = matches.find(match => match.id === container.dataset.replay);
     const liveMatch = matches.find(match => match.status === 'live');
     if (liveMatch) clearInterval(replayTimer);
-    container.innerHTML = `<div class="tournament-heading"><div><div class="eyebrow">PHASE 4 · SERVER SIMULATION</div><h2>Tournament Night</h2><p>Seed #${esc(state.tournament.seed)} · results are authoritative and synchronized live.</p></div>${champion ? `<div class="champion">CHAMPION <b>${esc(champion)}</b>${host ? '<button class="btn-primary open-results">VIEW FINAL RESULTS</button>' : ''}</div>` : ''}</div>
-      <div class="bracket">${matches.map(match => matchCard(match, host)).join('')}</div>${liveMatch ? liveDashboard(state, liveMatch, host) : replay?.status === 'finished' ? liveReplay(state, replay) : selected?.status === 'finished' ? report(selected) : ''}`;
+    container.innerHTML = `<div class="tournament-heading"><div><div class="eyebrow">PHASE 4 · SERVER SIMULATION</div><h2>League Tournament</h2><p>Every manager plays each opponent once · Seed #${esc(state.tournament.seed)} · results are authoritative and synchronized live.</p></div>${champion ? `<div class="champion">CHAMPION <b>${esc(champion)}</b>${host ? '<button class="btn-primary open-results">VIEW FINAL RESULTS</button>' : ''}</div>` : ''}</div>
+      <div class="bracket">${matches.map(match => matchCard(match, host)).join('')}</div>${champion ? leaderboard(matches) : ''}${liveMatch ? liveDashboard(state, liveMatch, host) : replay?.status === 'finished' ? liveReplay(state, replay) : selected?.status === 'finished' ? report(selected) : ''}`;
+    const bracket = container.querySelector('.bracket');
+    const rounds = [...new Set(matches.map(match => match.round))];
+    const cards = [...bracket.children];
+    bracket.className = 'bracket bracket-tree';
+    bracket.innerHTML = rounds.map(round => `<div class="bracket-round"><h3>${esc(round)}</h3><div class="round-matches"></div></div>`).join('') + '<div class="bracket-trophy">🏆<small>CHAMPION</small></div>';
+    matches.forEach((match, index) => bracket.querySelectorAll('.round-matches')[rounds.indexOf(match.round)]?.appendChild(cards[index]));
+    bracket.querySelectorAll('.match-team span').forEach(label => {
+      const team = state.teams?.[label.textContent];
+      if (!team) return;
+      const name = team.displayName || label.textContent;
+      label.innerHTML = `${team.logo ? `<img class="bracket-logo" src="${esc(team.logo)}" alt="">` : '<i class="bracket-logo placeholder"></i>'}${esc(name)}`;
+    });
+    const heading = container.querySelector('.tournament-heading h2');
+    const description = container.querySelector('.tournament-heading p');
+    if (heading) heading.textContent = 'Knockout Tournament';
+    if (description) description.textContent = `Single-elimination bracket · Seed #${state.tournament.seed} · results are authoritative and synchronized live.`;
+    const drawKey = `${state.tournament.seed}-${matches.length}`;
+    if (!champion && container.dataset.drawKey !== drawKey && matches.length) {
+      container.dataset.drawKey = drawKey;
+      reveal('The draw is in', matches[0].home, matches[0].away);
+    }
+    if (champion && container.dataset.championKey !== champion) {
+      container.dataset.championKey = champion;
+      reveal('And the champion is...', champion, '', true);
+    }
     container.querySelectorAll('.start-live-match').forEach(button => button.onclick = () => GAME()?.action?.('start_live_match', {name: button.dataset.match}).catch(() => {}));
     container.querySelector('.open-results')?.addEventListener('click', () => GAME()?.action?.('open_final_results').catch(() => {}));
     container.querySelectorAll('.live-speed-btn').forEach(button => button.onclick = () => GAME()?.action?.('set_live_speed', {amount: Number(button.dataset.speed)}).catch(() => {}));

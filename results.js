@@ -6,6 +6,7 @@
     const key = `${results.champion}-${results.generatedAt}`;
     if (view.dataset.celebration === key) return;
     view.dataset.celebration = key;
+    window.gameSounds?.celebration?.();
     const layer = document.createElement('div');
     layer.className = 'confetti-layer';
     const colors = ['#55C7FF', '#F2C94C', '#9A8CFF', '#63C98B', '#F07B6A'];

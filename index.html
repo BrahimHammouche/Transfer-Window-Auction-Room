@@ -113,6 +113,7 @@
   }
   .team-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.22)}
   .team-card h3{margin:0 0 10px; font-size:18px; font-weight:600; color:var(--c);}
+  .team-mini-logo{width:22px;height:22px;object-fit:cover;border-radius:50%;vertical-align:middle;margin-right:6px;border:1px solid var(--c)}.team-customize{margin-top:12px;width:100%;padding:7px;font-size:11px}
   .team-stat{display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:4px;}
   .team-stat b{color:var(--text); font-weight:600;}
   .squad-count{
@@ -121,6 +122,11 @@
   }
   .bar{flex:1; height:5px; background:var(--panel-2); border-radius:4px; overflow:hidden;}
   .bar i{display:block; height:100%; background:var(--c);}
+
+  /* ---------- Game cards ---------- */
+  #cardsPanel{margin:18px 0 22px;padding:18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(12,36,65,.94),rgba(6,16,31,.94));overflow:hidden;position:relative;}
+  #cardsPanel::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.35;background:radial-gradient(circle at 10% 0,rgba(85,199,255,.18),transparent 32%),repeating-linear-gradient(135deg,transparent 0 13px,rgba(255,255,255,.025) 13px 14px);}
+  .cards-head,.game-card-row,.card-note,.scout-report{position:relative;z-index:1}.cards-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:14px}.cards-head h2{font-size:21px;margin:0;letter-spacing:.02em}.cards-count{font-size:11px;color:var(--gold);border:1px solid rgba(85,199,255,.5);border-radius:999px;padding:5px 9px;white-space:nowrap}.game-card-row{display:flex;gap:13px;flex-wrap:wrap}.game-card{--card:#55C7FF;appearance:none;position:relative;isolation:isolate;width:172px;min-height:244px;padding:0;overflow:hidden;text-align:left;color:var(--text);border:1px solid var(--card);border-radius:13px;background:linear-gradient(155deg,#193b5b,#081526 62%,#040c17);box-shadow:0 10px 22px rgba(0,0,0,.28),inset 0 0 0 2px rgba(255,255,255,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:pointer}.game-card::before{content:'';position:absolute;z-index:-1;inset:7px;border:1px solid rgba(255,255,255,.22);border-radius:8px;background:radial-gradient(circle at 82% 16%,rgba(85,199,255,.28),transparent 31%),linear-gradient(135deg,rgba(255,255,255,.08),transparent 44%)}.game-card::after{content:'';position:absolute;z-index:-1;width:126px;height:126px;right:-44px;bottom:-48px;border:20px solid rgba(85,199,255,.23);border-radius:50%;}.game-card:hover{transform:translateY(-8px) rotate(-1deg);border-color:#fff;box-shadow:0 16px 32px rgba(0,0,0,.38),0 0 20px rgba(85,199,255,.28)}.game-card:focus-visible{outline:3px solid #fff;outline-offset:3px}.game-card.auction{--card:#F2C94C;background:linear-gradient(155deg,#504018,#18160d 62%,#0c0b06)}.game-card.match{--card:#9A8CFF;background:linear-gradient(155deg,#30285e,#100e25 62%,#070610)}.game-card.danger{--card:#F07B6A;background:linear-gradient(155deg,#5b2927,#25100f 62%,#100605)}.card-top{display:flex;justify-content:space-between;align-items:center;padding:12px 13px 0}.card-kind,.card-rarity{font-size:8px;font-weight:700;letter-spacing:.13em}.card-kind{color:rgba(255,255,255,.75)}.card-rarity{color:var(--card)}.card-art{height:93px;display:grid;place-items:center;font-size:55px;line-height:1;filter:drop-shadow(0 6px 9px rgba(0,0,0,.45));text-shadow:0 0 20px rgba(255,255,255,.28)}.card-body{padding:0 15px 14px}.card-name{display:block;font-family:'Fraunces',serif;font-size:22px;line-height:.95;color:#fff;margin-bottom:10px}.card-rule{display:block;border-top:1px solid rgba(255,255,255,.18);padding-top:9px;font-size:11px;line-height:1.35;color:#c9d6e5}.card-play{display:block;margin-top:12px;color:var(--card);font-size:10px;font-weight:700;letter-spacing:.12em}.card-note{margin:13px 0 0;color:var(--muted);font-size:12px}.scout-report{margin:13px 0 0;color:var(--gold);font-size:12px}.empty-hand{color:var(--muted);padding:22px 4px;font-size:13px}
 
   .auction-panel{
     background:var(--panel); border:1px solid var(--border); border-radius:16px;
@@ -212,15 +218,21 @@
   @media(max-width:820px){
     .teams-row, .squads-grid{grid-template-columns:repeat(2,1fr);}
   }
+  .card-body{text-align:center;}
+  .card-name,.card-rule{text-align:center;}
+  .game-modal{display:none;position:fixed;z-index:100;inset:0;padding:18px;background:rgba(2,9,18,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center}.game-modal.show{display:flex}.game-modal-card{width:min(100%,440px);padding:28px;border:1px solid rgba(85,199,255,.55);border-radius:18px;background:radial-gradient(circle at 80% 0,rgba(85,199,255,.18),transparent 40%),#0b1d35;box-shadow:0 24px 70px rgba(0,0,0,.58)}.modal-kicker{font-size:10px;letter-spacing:.14em;color:var(--gold)}.game-modal-card h2{margin:8px 0;font-size:28px}.game-modal-card p{margin:0 0 18px;line-height:1.5;color:var(--muted)}.game-modal-card select{width:100%;padding:12px;margin-bottom:18px;border:1px solid var(--border);border-radius:9px;color:var(--text);background:var(--panel-2);font-family:inherit}.game-modal-actions{display:flex;justify-content:flex-end;gap:10px}.modal-danger{background:var(--red);color:#fff}
+  .team-identity-form label{display:block;margin:16px 0 7px;color:var(--muted);font-size:10px;letter-spacing:.1em}.team-identity-form input{display:block;width:100%;margin-top:7px;padding:11px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2);color:var(--text);font:inherit}.team-logo-preview{display:none;width:86px;height:86px;object-fit:cover;border-radius:50%;margin:14px auto;border:3px solid var(--gold);box-shadow:0 0 20px rgba(85,199,255,.35)}.team-identity-form small{display:block;color:var(--muted);font-size:11px;margin:8px 0 18px}
   @media(max-width:520px){
     .teams-row, .squads-grid{grid-template-columns:1fr;}
     .room-actions{grid-template-columns:1fr;}
+    .game-card-row{justify-content:center;}
+    .game-card{width:min(100%,240px);}
   }
 </style>
 <link rel="stylesheet" href="/tactics.css?v=blue-theme-2">
 <link rel="stylesheet" href="/evaluator.css?v=blue-theme-2">
-<link rel="stylesheet" href="/tournament.css?v=broadcast-live-2">
-<link rel="stylesheet" href="/results.css?v=phase5-cinematic-2">
+<link rel="stylesheet" href="/tournament.css?v=champions-road-2">
+<link rel="stylesheet" href="/results.css?v=knockout-cinematic-1">
 </head>
 <body>
 <div class="wrap">
@@ -229,7 +241,7 @@
   <div id="landing">
     <div class="kickoff"><span class="dot"></span> DEADLINE DAY IS OPEN</div>
     <h1>Transfer Window<br>Auction Room</h1>
-    <p class="sub">Create an account, invite up to three friends, and build your tournament legacy together.</p>
+    <p class="sub">Create an account, invite 1–7 friends, and build your tournament legacy together.</p>
     <div class="room-box">
       <label for="authUsername">YOUR MANAGER NAME</label>
       <input id="authUsername" placeholder="e.g. Football King" autocomplete="username">
@@ -243,7 +255,7 @@
       <input id="roomInput" placeholder="Enter invite code, e.g. match-AB12CD" autocomplete="off">
       <div class="room-actions"><button class="btn-primary" id="enterBtn">Join with code</button><button class="btn-ghost" id="copyInviteBtn" type="button">Copy invite link</button></div>
       <div class="hint-row">
-        <span>Rooms support up to four managers</span>
+        <span>Rooms support 2–8 managers</span>
       </div>
     </div>
   </div>
@@ -263,6 +275,8 @@
     </div>
 
     <div class="teams-row" id="teamsRow"></div>
+
+    <section id="cardsPanel"></section>
 
     <div class="auction-panel" id="auctionPanel">
       <div class="eyebrow" id="offerEyebrow">ON THE BLOCK</div>
@@ -309,6 +323,8 @@
 
 </div>
 <div class="invite-toast" id="inviteToast"></div>
+<div class="game-modal" id="gameModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle"><span class="modal-kicker">MATCH CONTROL</span><h2 id="gameModalTitle"></h2><p id="gameModalText"></p><select id="gameModalSelect" style="display:none"></select><div class="game-modal-actions"><button class="btn-ghost" id="gameModalCancel">Cancel</button><button class="btn-primary" id="gameModalConfirm">Confirm</button></div></div></div>
+<div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
 
 <script>
 (() => {
@@ -321,6 +337,35 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const teamNames = () => Object.keys(state?.teams || {});
   const teamColor = name => TEAM_COLORS[Math.max(0, teamNames().indexOf(name)) % TEAM_COLORS.length];
+
+  function gameDialog({title, message='', options=[], confirmLabel='Confirm', danger=false}) {
+    return new Promise(resolve => {
+      const modal = $('gameModal'), select = $('gameModalSelect');
+      $('gameModalTitle').textContent = title; $('gameModalText').textContent = message;
+      $('gameModalConfirm').textContent = confirmLabel;
+      $('gameModalConfirm').className = danger ? 'btn-primary modal-danger' : 'btn-primary';
+      select.innerHTML = options.map(option => `<option value="${esc(option.value)}">${esc(option.label)}</option>`).join('');
+      select.style.display = options.length ? 'block' : 'none';
+      modal.classList.add('show'); modal.setAttribute('aria-hidden', 'false');
+      const close = value => { modal.classList.remove('show'); modal.setAttribute('aria-hidden', 'true'); resolve(value); };
+      $('gameModalCancel').onclick = () => close(null);
+      $('gameModalConfirm').onclick = () => close(options.length ? select.value : true);
+    });
+  }
+  const gameConfirm = (title, message, danger=false) => gameDialog({title, message, confirmLabel: danger ? 'Confirm' : 'Continue', danger});
+  const gameSelect = (title, message, options, confirmLabel='Choose') => gameDialog({title, message, options, confirmLabel});
+  function teamIdentityDialog(team) {
+    return new Promise(resolve => {
+      const modal = $('teamIdentityModal'), name = $('teamIdentityName'), file = $('teamIdentityLogo'), preview = $('teamIdentityPreview');
+      let logo = team.logo || null;
+      name.value = team.displayName || me; file.value = ''; preview.src = logo || ''; preview.style.display = logo ? 'block' : 'none';
+      modal.classList.add('show');
+      const close = value => { modal.classList.remove('show'); resolve(value); };
+      file.onchange = () => { const image = file.files?.[0]; if (!image) return; if (image.size > 250000) return showError('Choose a logo smaller than 250 KB.'); const reader = new FileReader(); reader.onload = () => { logo = reader.result; preview.src = logo; preview.style.display = 'block'; }; reader.readAsDataURL(image); };
+      $('teamIdentityCancel').onclick = () => close(null);
+      $('teamIdentitySave').onclick = () => close({display_name:name.value.trim(), logo});
+    });
+  }
 
   function showError(message='') {
     $('errorBanner').innerHTML = message ? `<div class="error-banner">${esc(message)}</div>` : '';
@@ -500,13 +545,18 @@
       const online = (state.online || []).includes(name);
       const pct = Math.min(100, team.squad.length / SQUAD_SIZE * 100);
       return `<div class="team-card" style="--c:${teamColor(name)}">
-        <h3>${esc(name)}${name === me ? ' (you)' : ''}${name === state.host ? '<span class="host-badge">HOST</span>' : ''}</h3>
+        <h3>${team.logo ? `<img class="team-mini-logo" src="${esc(team.logo)}" alt="">` : ''}${esc(team.displayName || name)}${name === me ? ' (you)' : ''}${name === state.host ? '<span class="host-badge">HOST</span>' : ''}</h3>
         <div class="team-stat"><span>Spent</span><b>$${money(team.spent)}M</b></div>
         <div class="team-stat"><span>Remaining</span><b>$${money(team.budget)}M</b></div>
         ${profile ? `<div class="team-stat"><span>Legacy</span><b>${profile.titles} titles · ${profile.wins} wins</b></div>` : ''}
         <div class="squad-count"><span>${team.squad.length}/11 ${online ? '● online' : ''}</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+        ${name === me ? `<button class="team-customize btn-ghost" type="button">Customize team</button>` : ''}
       </div>`;
     }).join('');
+    document.querySelectorAll('.team-customize').forEach(button => button.onclick = async () => {
+      const identity = await teamIdentityDialog(state.teams[me]);
+      if (identity) act('set_team_identity', identity).catch(()=>{});
+    });
   }
 
   function drawOffer() {
@@ -560,7 +610,7 @@
 
     $('finishBtn').style.display = host ? 'inline-block' : 'none';
     $('finishBtn').textContent = 'LOCK AUCTION & OPEN TACTICS';
-    const allDone = teamNames().length === 4 && teamNames().every(n => state.teams[n].squad.length >= SQUAD_SIZE);
+    const allDone = teamNames().length >= 2 && teamNames().length <= 8 && teamNames().every(n => state.teams[n].squad.length >= SQUAD_SIZE);
     $('finishBtn').disabled = !host || !allDone || !!offer;
 
     if (!offer) {
@@ -601,6 +651,67 @@
     });
   }
 
+  const CARD_NAMES = {freeze:'Freeze', scout_report:'Scout Report', bid_shield:'Bid Shield', hijack:'Hijack', out_of_position:'Out of Position', captains_gambit:"Captain's Gambit", counter_attack:'Counter Attack', park_the_bus:'Park the Bus', team_talk:'Team Talk'};
+  const CARD_HELP = {freeze:'Block one rival from bidding on this lot.', scout_report:'Reveal and queue the next three auction players.', bid_shield:'Blocks one Freeze or Hijack against you.', hijack:'Take the highest bid for +$2M.', out_of_position:'Force a rival outfield player into a role such as CB.', captains_gambit:'Your chosen captain scores double goals.', counter_attack:'Attack and pace boost for one match.', park_the_bus:'Defence boost, with less attack, for one match.', team_talk:'Small all-round boost for one match.'};
+  const CARD_ART = {freeze:'&#10052;', scout_report:'&#9673;', bid_shield:'&#11041;', hijack:'&#9889;', out_of_position:'&#8660;', captains_gambit:'&#9733;', counter_attack:'&#10148;', park_the_bus:'&#9648;', team_talk:'&#10022;'};
+  Object.assign(CARD_HELP, {freeze:'Freeze one rival out of this auction.', scout_report:'Preview the next 3 players.', bid_shield:'Cancel one Freeze or Hijack.', hijack:'Steal the lead for +$2M.', out_of_position:'Force a rival outfield player into a new role.', captains_gambit:'Your captain scores double goals.', counter_attack:'Boost pace and attack for one match.', park_the_bus:'Boost defence, reduce attack, for one match.', team_talk:'Give your team an all-round boost.'});
+
+  async function readyMatchFor(team) {
+    const choices = (state?.tournament?.matches || []).filter(match => match.status === 'ready' && (!team || match.home === team || match.away === team));
+    if (!choices.length) return null;
+    if (choices.length === 1) return choices[0];
+    const matchId = await gameSelect('Choose match', 'Select the match this card will affect.', choices.map(match => ({value:match.id, label:`${match.home} vs ${match.away}`})));
+    return choices.find(match => match.id === matchId) || null;
+  }
+
+  async function playCard(card) {
+    if (card === 'scout_report' || card === 'bid_shield' || card === 'hijack') return act('use_card', {card});
+    if (card === 'freeze') {
+      const target = await gameSelect('Play Freeze', 'Choose the manager who cannot bid on this player.', teamNames().filter(name => name !== me).map(name => ({value:name,label:name})), 'Freeze manager');
+      if (target) return act('use_card', {card, target});
+      return;
+    }
+    if (card === 'out_of_position') {
+      const rivals = teamNames().filter(name => name !== me);
+      const target = await gameSelect('Out of Position', 'Choose the opponent to disrupt.', rivals.map(name => ({value:name,label:name})), 'Choose opponent');
+      if (!rivals.includes(target)) return;
+      const squad = state.teams[target].squad.filter(player => player.position !== 'GK');
+      const playerId = await gameSelect('Choose player', 'Select the rival player to move out of position.', squad.map(player => ({value:String(player.id ?? player.name),label:`${player.name} · ${player.position}`})));
+      const player = squad.find(item => String(item.id ?? item.name) === playerId);
+      const match = await readyMatchFor(target);
+      const position = await gameSelect('Choose forced role', 'Pick the position they must play for this match.', ['CB','LB','RB','CDM','CM','CAM','LW','RW','ST'].map(role => ({value:role,label:role})));
+      if (player && match && position) return act('use_card', {card, target, player_id: String(player.id ?? player.name), position, target_match: match.id});
+      return;
+    }
+    const match = await readyMatchFor(me);
+    if (!match) return showError('You do not have a ready league match yet.');
+    if (card === 'captains_gambit') {
+      const playerId = await gameSelect("Captain's Gambit", 'Choose the player whose goals count double.', state.teams[me].squad.map(player => ({value:String(player.id ?? player.name),label:player.name})), 'Choose captain');
+      const player = state.teams[me].squad.find(item => String(item.id ?? item.name) === playerId);
+      if (!player) return;
+      return act('use_card', {card, player_id: String(player.id ?? player.name), target_match: match.id});
+    }
+    return act('use_card', {card, target_match: match.id});
+  }
+
+  function drawCards() {
+    const panel = $('cardsPanel');
+    const hand = state?.cards?.hands?.[me] || [];
+    const scout = state?.cards?.lastScout;
+    const report = scout?.owner === me ? `<p style="margin:10px 0 0;color:var(--gold)">Scout report: ${(scout.players || []).map(player => `${esc(player.name)} (${esc(player.position)})`).join(' · ')}</p>` : '';
+    panel.innerHTML = `<div class="eyebrow">YOUR GAME CARDS · ${hand.length} IN HAND</div><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:9px">${hand.map((card, index) => `<button class="btn-ghost play-card" data-card="${esc(card)}" data-index="${index}" title="${esc(CARD_HELP[card] || '')}"><b>${esc(CARD_NAMES[card] || card)}</b><br><small>${esc(CARD_HELP[card] || '')}</small></button>`).join('') || '<span style="color:var(--muted)">No cards left — earn more by signing players.</span>'}</div>${state?.cards?.notice ? `<p style="margin:10px 0 0;color:var(--muted)">${esc(state.cards.notice)}</p>` : ''}${report}`;
+    const cards = hand.map((card, index) => {
+      const matchCard = ['out_of_position','captains_gambit','counter_attack','park_the_bus','team_talk'].includes(card);
+      const danger = ['freeze','hijack','out_of_position'].includes(card);
+      return `<button class="game-card play-card ${matchCard ? 'match' : 'auction'} ${danger ? 'danger' : ''}" data-card="${esc(card)}" data-index="${index}" title="Play ${esc(CARD_NAMES[card] || card)}"><span class="card-top"><span class="card-kind">${matchCard ? 'MATCH CARD' : 'AUCTION CARD'}</span><span class="card-rarity">TACTICAL</span></span><span class="card-art">${CARD_ART[card] || '&#9670;'}</span><span class="card-body"><strong class="card-name">${esc(CARD_NAMES[card] || card)}</strong><span class="card-rule">${esc(CARD_HELP[card] || '')}</span><span class="card-play">CLICK TO PLAY &rarr;</span></span></button>`;
+    }).join('') || '<span class="empty-hand">No cards left — earn more by signing players.</span>';
+    const scoutReport = scout?.owner === me ? `<p class="scout-report">SCOUT REPORT &middot; ${(scout.players || []).map(player => `${esc(player.name)} (${esc(player.position)})`).join(' &middot; ')}</p>` : '';
+    panel.innerHTML = `<div class="cards-head"><div><div class="eyebrow">PRIVATE COLLECTION</div><h2>Your Game Cards</h2></div><span class="cards-count">${hand.length} IN HAND</span></div><div class="game-card-row">${cards}</div>${state?.cards?.notice ? `<p class="card-note">${esc(state.cards.notice)}</p>` : ''}${scoutReport}`;
+    const displayCards = cards.replace(/<span class="card-play">[\s\S]*?<\/span>/g, '');
+    panel.innerHTML = `<div class="cards-head"><div><div class="eyebrow">PRIVATE COLLECTION</div><h2>Your Game Cards</h2></div><span class="cards-count">${hand.length} IN HAND</span></div><div class="game-card-row">${displayCards}</div>${state?.cards?.notice ? `<p class="card-note">${esc(state.cards.notice)}</p>` : ''}${scoutReport}`;
+    panel.querySelectorAll('.play-card').forEach(button => button.onclick = () => playCard(button.dataset.card).catch(() => {}));
+  }
+
   function draw() {
     if (!state) return;
     const profile = state.profiles?.[me];
@@ -608,7 +719,7 @@
       account = {...account, ...profile};
       $('profileChip').textContent = `${profile.username} · ${profile.titles} titles · ${profile.wins} wins`;
     }
-    drawTeams(); drawOffer(); drawSquads();
+    drawTeams(); drawOffer(); drawSquads(); drawCards();
     window.renderTactics?.(); window.renderEvaluator?.(); window.renderTournament?.(); window.renderResults?.();
   }
 
@@ -634,16 +745,16 @@
   };
   $('priceInput').onkeydown = e => { if (e.key === 'Enter') $('confirmSaleBtn').click(); };
   $('noSaleBtn').onclick = () => act('pass').catch(()=>{});
-  $('dropBtn').onclick = () => confirm('Drop out of this player permanently? You cannot bid again on this lot.') && act('drop').catch(()=>{});
-  $('endAuctionBtn').onclick = () => act('end_auction').catch(()=>{});
-  $('skipAuctionBtn').onclick = () => confirm('Close this lot with no sale?') && act('no_sale').catch(()=>{});
-  $('finishBtn').onclick = () => {
+  $('dropBtn').onclick = async () => (await gameConfirm('Drop out?', 'You cannot bid again on this player.', true)) && act('drop').catch(()=>{});
+  $('endAuctionBtn').onclick = async () => (await gameConfirm('End this auction?', 'Confirm the current highest bid and award the player.', true)) && act('end_auction').catch(()=>{});
+  $('skipAuctionBtn').onclick = async () => (await gameConfirm('Close this lot?', 'This player will leave the auction with no sale.', true)) && act('no_sale').catch(()=>{});
+  $('finishBtn').onclick = async () => {
     const actionName = state?.phase === 'tactics' ? 'start_evaluation' : 'start_tactics';
     const message = actionName === 'start_evaluation' ? 'Lock tactics and open the team evaluation for everyone?' : 'Lock Phase 1 and open the tactics editor for everyone?';
-    if (confirm(message)) act(actionName).catch(()=>{});
+    if (await gameConfirm(actionName === 'start_evaluation' ? 'Open evaluation?' : 'Lock the auction?', message)) act(actionName).catch(()=>{});
   };
-  $('fillTestTeamsBtn').onclick = () => confirm('Fill all four teams with 11 unique test players? This replaces the current squads in this room.') && act('fill_test_teams').catch(()=>{});
-  $('resetBtn').onclick = () => confirm('Reset this room for everyone?') && act('reset').catch(()=>{});
+  $('fillTestTeamsBtn').onclick = async () => (await gameConfirm('Fill test teams?', 'This prepares four test teams with 11 unique players so you can test the full knockout bracket.', true)) && act('fill_test_teams').catch(()=>{});
+  $('resetBtn').onclick = async () => { if (await gameConfirm('Reset this room?', 'This clears the room for every manager.', true)) { window.gameSounds?.stopAnthem?.(); act('reset').catch(()=>{}); } };
   $('leaveBtn').onclick = () => {
     room = null; me = null; state = null; soundSnapshot = null; clearTimeout(reconnectTimer); clearInterval(pingTimer);
     if (ws) { ws.onclose = null; try { ws.close(); } catch (_) {} }
@@ -652,6 +763,7 @@
 
   window.__game = {
     action: act,
+    confirm: gameConfirm,
     getState: () => state,
     getMe: () => me,
     canEditTeam: teamName => teamName === me && state?.phase === 'tactics',
@@ -673,10 +785,10 @@
 })();
 </script>
 <script src="/tactics.js?v=selection-fix-2"></script>
-<script src="/sound.js?v=ui-sounds-2"></script>
-<script src="/evaluator.js?v=phase3-1"></script>
-<script src="/tournament.js?v=broadcast-live-2"></script>
-<script src="/results.js?v=phase5-cinematic-2"></script>
+<script src="/sound.js?v=champions-anthem-3"></script>
+<script src="/evaluator.js?v=knockout-cinematic-1"></script>
+<script src="/tournament.js?v=champions-road-3"></script>
+<script src="/results.js?v=knockout-cinematic-1"></script>
 
 </body>
 </html>
