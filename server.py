@@ -774,15 +774,15 @@ async def action(body: ActionBody):
             available = [p for p in load_players() if str(p.get("name", "")).strip().lower() not in used]
             if not available:
                 raise HTTPException(400, "No players left in players.json")
-            counts = {}
-            for t in state["teams"].values():
-                for signed in t.get("squad", []):
-                    pos = signed.get("position") or "CM"
-                    counts[pos] = counts.get(pos, 0) + 1
-            min_count = min((counts.get(p.get("position"), 0) for p in available), default=0)
-            candidates = [p for p in available if counts.get(p.get("position"), 0) <= min_count + 1]
             scouted = state.get("cards", {}).get("scoutedQueue", [])
-            p = scouted.pop(0) if scouted else random.choice(candidates or available)
+            if scouted:
+                p = scouted.pop(0)
+            else:
+                by_position = {}
+                for player in available:
+                    by_position.setdefault(player.get("position") or "CM", []).append(player)
+                position = random.choice(list(by_position))
+                p = random.choice(by_position[position])
             state["usedPlayers"].append(p["name"])
             pos = p.get("position", "?")
             state["positionCounts"][pos] = state["positionCounts"].get(pos, 0) + 1
