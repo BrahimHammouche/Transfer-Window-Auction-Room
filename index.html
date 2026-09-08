@@ -31,10 +31,11 @@
     color:var(--text);
     font-family:'Space Grotesk', sans-serif;
     min-height:100vh;
-    padding:24px 16px 60px;
+    padding:0;
   }
+  body[data-theme="stadium"]{--bg:#06101F;--panel:#0B1D35;--panel-2:#08172B;--border:#1B4167;--gold:#55C7FF;--text:#ECE6D6;--muted:#8BA6BF}body[data-theme="midnight"]{--bg:#090714;--panel:#18102c;--panel-2:#100a20;--border:#44316d;--gold:#c59bff;--text:#f4eeff;--muted:#b7a8d3}body[data-theme="sunset"]{--bg:#170a0b;--panel:#32151b;--panel-2:#220e13;--border:#6b3031;--gold:#ffb357;--text:#fff0e0;--muted:#d6a99a}body[data-theme="pitch"]{--bg:#06160e;--panel:#0d2a1a;--panel-2:#081d12;--border:#2f6841;--gold:#cbed70;--text:#f2fae7;--muted:#9ab99b}
   h1,h2,h3,.serif{font-family:'Fraunces', serif;}
-  .wrap{max-width:1180px;margin:0 auto;}
+  .wrap{width:100%;max-width:none;margin:0;}
 
   /* ---------- Landing ---------- */
   #landing{
@@ -142,6 +143,7 @@
     margin:6px 0 22px; min-height:60px; display:flex; align-items:center; justify-content:center;
   }
   #offerName.empty{color:var(--muted); font-size:20px; font-weight:400;}
+  .player-showcase{display:none;justify-content:center;margin:4px auto 24px;perspective:900px}.player-showcase.show{display:flex}.player-card{--card-accent:#ffdc45;position:relative;width:252px;min-height:372px;padding:25px 20px 19px;overflow:hidden;clip-path:polygon(13% 0,41% 4%,50% 0,59% 4%,87% 0,100% 9%,95% 91%,77% 100%,50% 96%,23% 100%,5% 91%,0 9%);background:linear-gradient(145deg,#5a3104 0%,#f7b90a 25%,#7a4302 52%,#e99d06 74%,#482501 100%);color:#fff;box-shadow:0 23px 38px rgba(0,0,0,.48),inset 0 0 0 4px #ffda42,inset 0 0 0 7px rgba(68,33,0,.75);transform:rotateX(3deg);isolation:isolate}.player-card::before{content:'';position:absolute;inset:9px;z-index:-1;opacity:.92;background:radial-gradient(circle at 53% 35%,rgba(255,246,178,.84),transparent 22%),repeating-linear-gradient(135deg,rgba(255,242,146,.2) 0 2px,transparent 2px 15px),linear-gradient(162deg,transparent 0 48%,rgba(72,31,0,.45) 49% 51%,transparent 52%),linear-gradient(180deg,#d38403,#f5b416 48%,#914b00);clip-path:polygon(11% 0,43% 4%,50% 0,57% 4%,89% 0,100% 10%,93% 92%,74% 100%,50% 95%,26% 100%,7% 92%,0 10%)}.player-card::after{content:'';position:absolute;left:50%;top:47%;z-index:-1;width:190px;height:190px;transform:translate(-50%,-50%) rotate(45deg);border:1px solid rgba(255,245,184,.58);box-shadow:0 0 0 13px rgba(255,245,184,.09),0 0 36px rgba(255,241,137,.35)}.player-card-head{display:flex;justify-content:space-between;align-items:start;font-weight:900;text-shadow:0 2px 2px rgba(47,21,0,.7)}.player-ovr{font-size:53px;letter-spacing:-.08em;line-height:.8}.player-position{font-size:16px;letter-spacing:.13em;margin:9px 0 0}.player-stamp{font-size:8px;letter-spacing:.15em;text-align:right;margin-top:5px;padding:5px 6px;border:1px solid rgba(255,246,189,.7);border-radius:99px;background:rgba(88,39,0,.3)}.player-avatar{position:relative;height:152px;display:grid;place-items:end center;font-size:110px;line-height:1;filter:drop-shadow(0 10px 5px rgba(45,24,0,.5));text-shadow:0 0 22px rgba(255,255,255,.55)}.player-portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .25s ease}.player-portrait.loaded{opacity:1}.player-card-name{border-top:1px solid rgba(255,244,182,.7);border-bottom:1px solid rgba(79,33,0,.56);padding:8px 0 7px;text-align:center;text-transform:uppercase;font-family:'Fraunces',serif;font-weight:900;font-size:23px;letter-spacing:.01em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 2px rgba(47,21,0,.7)}.player-card-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px 12px;margin-top:11px;font-size:10px;font-weight:800;text-shadow:0 1px 1px rgba(47,21,0,.65)}.player-card-stats span{display:flex;align-items:baseline;justify-content:center;gap:4px}.player-card-stats b{font-size:17px}.player-card-gk{--card-accent:#a8ecff;background:linear-gradient(145deg,#075579,#36a8c5 35%,#063f5a 68%,#062337)}
   .offer-controls{display:flex; flex-direction:column; gap:16px; align-items:center;}
   .winner-row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
   .winner-btn{
@@ -181,10 +183,6 @@
   }
   .player-row:last-child{border-bottom:none;}
   .player-row .pname{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .player-row select{
-    background:var(--panel-2); color:var(--muted); border:1px solid var(--border); border-radius:5px;
-    font-size:11px; padding:3px 4px;
-  }
   .player-row .pprice{color:var(--gold); font-size:11.5px; white-space:nowrap;}
   .empty-slot{color:var(--muted); font-size:12px; padding:10px 0; text-align:center;}
 
@@ -222,14 +220,64 @@
   .card-name,.card-rule{text-align:center;}
   .game-modal{display:none;position:fixed;z-index:100;inset:0;padding:18px;background:rgba(2,9,18,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center}.game-modal.show{display:flex}.game-modal-card{width:min(100%,440px);padding:28px;border:1px solid rgba(85,199,255,.55);border-radius:18px;background:radial-gradient(circle at 80% 0,rgba(85,199,255,.18),transparent 40%),#0b1d35;box-shadow:0 24px 70px rgba(0,0,0,.58)}.modal-kicker{font-size:10px;letter-spacing:.14em;color:var(--gold)}.game-modal-card h2{margin:8px 0;font-size:28px}.game-modal-card p{margin:0 0 18px;line-height:1.5;color:var(--muted)}.game-modal-card select{width:100%;padding:12px;margin-bottom:18px;border:1px solid var(--border);border-radius:9px;color:var(--text);background:var(--panel-2);font-family:inherit}.game-modal-actions{display:flex;justify-content:flex-end;gap:10px}.modal-danger{background:var(--red);color:#fff}
   .team-identity-form label{display:block;margin:16px 0 7px;color:var(--muted);font-size:10px;letter-spacing:.1em}.team-identity-form input{display:block;width:100%;margin-top:7px;padding:11px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2);color:var(--text);font:inherit}.team-logo-preview{display:none;width:86px;height:86px;object-fit:cover;border-radius:50%;margin:14px auto;border:3px solid var(--gold);box-shadow:0 0 20px rgba(85,199,255,.35)}.team-identity-form small{display:block;color:var(--muted);font-size:11px;margin:8px 0 18px}
+  .settings-grid{display:grid;gap:16px}.settings-grid label{display:block;color:var(--muted);font-size:10px;letter-spacing:.12em}.settings-grid select,.settings-grid input{width:100%;margin-top:7px;accent-color:var(--gold)}.settings-grid select{padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2);color:var(--text);font:inherit}.settings-value{float:right;color:var(--gold);font-size:11px;letter-spacing:0}.settings-note{padding:10px;border-left:3px solid var(--gold);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;line-height:1.4}
+  .music-deck{position:fixed;z-index:30;right:18px;bottom:18px;width:238px;overflow:hidden;border:1px solid rgba(255,255,255,.2);border-radius:18px;background:linear-gradient(145deg,rgba(22,24,31,.97),rgba(6,8,13,.98));box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.04) inset;transition:transform .2s ease}.music-deck:hover{transform:translateY(-4px)}.music-deck-art{position:relative;height:154px;overflow:hidden;background:linear-gradient(135deg,#e5e1d4,#a5aaa7 55%,#e8e4d8);isolation:isolate}.music-deck-art::before{content:'TRANSFER FM';position:absolute;right:13px;bottom:12px;color:rgba(13,18,21,.45);font-size:8px;font-weight:800;letter-spacing:.16em}.music-disc{position:absolute;left:-17px;top:-30px;width:194px;height:194px;border:7px solid #121416;border-radius:50%;background:radial-gradient(circle at center,#d7b955 0 5%,#26252a 5.4% 18%,#08090b 18.5% 21%,#202126 21.5% 23%,#0a0b0d 23.5% 29%,#222329 29.5% 31%,#0b0c0e 31.5% 40%,#24252a 40.5% 42%,#090a0c 42.5% 51%,#222329 51.5% 53%,#07080a 53.5% 62%,#1d1f23 62.5% 64%,#08090b 64.5%);box-shadow:inset 0 0 0 1px #54565a,0 12px 20px rgba(0,0,0,.45);animation:spinDisc 8s linear infinite paused}.music-disc::before{content:'';position:absolute;inset:49%;border-radius:50%;background:#0b0c0d;box-shadow:0 0 0 4px #e1c15a,0 0 0 7px #16181a}.music-disc::after{content:'DEADLINE\A DAY';white-space:pre;position:absolute;inset:35%;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,#294d6c,#0d2036);color:#f5dd72;font-size:7px;font-weight:800;letter-spacing:.1em;line-height:1.4;text-align:center}.music-disc.playing{animation-play-state:running}.music-arm{position:absolute;z-index:2;right:22px;top:9px;width:9px;height:142px;transform:rotate(28deg);transform-origin:top;background:linear-gradient(90deg,#f7f7ef,#8b8f91,#f9f9ef);border-radius:9px;box-shadow:0 1px 4px rgba(0,0,0,.35)}.music-arm::before{content:'';position:absolute;top:-7px;left:-7px;width:22px;height:22px;border:4px solid #d9dbd7;border-radius:50%;background:#73797a}.music-arm::after{content:'';position:absolute;bottom:-4px;left:-8px;width:25px;height:19px;border-radius:3px;background:#ecece4;box-shadow:0 2px 3px rgba(0,0,0,.2)}.music-now{padding:12px 14px 6px}.music-kicker{color:var(--gold);font-size:8px;font-weight:700;letter-spacing:.16em}.music-title{display:block;margin-top:4px;overflow:hidden;color:#fff;font-family:'Fraunces',serif;font-size:18px;text-overflow:ellipsis;white-space:nowrap}.music-artist{display:block;margin-top:2px;color:var(--muted);font-size:11px}.music-controls{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 13px}.music-controls button{display:grid;place-items:center;width:34px;height:30px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:#1b2028;color:#eef3eb;font-size:13px}.music-controls button:hover{border-color:var(--gold);color:var(--gold)}.music-controls .music-play{width:42px;background:var(--gold);color:#071019;font-weight:900}.music-wave{display:flex;align-items:center;gap:2px;height:18px}.music-wave i{display:block;width:2px;height:5px;border-radius:3px;background:var(--gold);animation:wave .7s ease-in-out infinite alternate paused}.music-wave.playing i{animation-play-state:running}.music-wave i:nth-child(2){height:13px;animation-delay:.14s}.music-wave i:nth-child(3){height:9px;animation-delay:.28s}.music-wave i:nth-child(4){height:16px;animation-delay:.42s}@keyframes spinDisc{to{transform:rotate(360deg)}}@keyframes wave{to{transform:scaleY(.35)}}
+  /* Live music controls: album label, seeking and user-selected deck scale. */
+  body{--music-deck-width:238px;--music-art-height:154px;--music-disc-size:194px;--music-disc-top:-30px;--music-deck-scale:1}.music-deck{width:var(--music-deck-width)}.music-deck-art{height:var(--music-art-height)}.music-disc{width:var(--music-disc-size);height:var(--music-disc-size);top:var(--music-disc-top)}.music-disc::after{content:'';inset:29%;background:#152b40;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}.music-cover{position:absolute;z-index:1;inset:29%;width:42%;height:42%;border:0;border-radius:50%;object-fit:cover;background:#152b40;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}.music-disc::before{z-index:2}.music-arm{transform:scale(var(--music-deck-scale)) rotate(28deg)}.music-timeline{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:6px;padding:0 14px 5px;color:#94a2af;font-variant-numeric:tabular-nums;font-size:9px}.music-timeline input{width:100%;margin:0;accent-color:var(--gold);cursor:pointer}.music-timeline input:disabled,.music-controls button:disabled{cursor:not-allowed;opacity:.35;filter:grayscale(1)}
+  /* Manager roster cards — inspired by a physical scouting dossier, not a web dashboard. */
+  .team-identity-form{max-height:calc(100vh - 36px);overflow:auto}
+  /* Shared cartoon-card language across the whole game shell. */
+  body{--panel:#f4efe3;--panel-2:#e8e1d2;--text:#1b1b1f;--muted:#4d5954;--border:rgba(27,27,31,.22);--gold:#d9a441;background:radial-gradient(circle at 10% 4%,#225e48 0,transparent 28%),radial-gradient(circle at 90% 95%,#35204e 0,transparent 34%),#0d1512;color:#f4efe3}body[data-theme="stadium"]{background:radial-gradient(circle at 10% 4%,#126b87 0,transparent 29%),radial-gradient(circle at 90% 95%,#172d64 0,transparent 35%),#06101f}body[data-theme="midnight"]{background:radial-gradient(circle at 10% 4%,#653b93 0,transparent 29%),radial-gradient(circle at 90% 95%,#25164d 0,transparent 35%),#090714}body[data-theme="sunset"]{background:radial-gradient(circle at 10% 4%,#cb653a 0,transparent 29%),radial-gradient(circle at 90% 95%,#7b202d 0,transparent 35%),#170a0b}body[data-theme="pitch"]{background:radial-gradient(circle at 10% 4%,#5f9630 0,transparent 29%),radial-gradient(circle at 90% 95%,#215c3a 0,transparent 35%),#06160e}body[data-theme="ocean"]{background:radial-gradient(circle at 12% 5%,#20b6d4 0,transparent 28%),radial-gradient(circle at 88% 95%,#274d9e 0,transparent 36%),#061a31}body[data-theme="berry"]{background:radial-gradient(circle at 12% 5%,#ef4d88 0,transparent 28%),radial-gradient(circle at 88% 95%,#7a245d 0,transparent 36%),#250818}body[data-theme="neon"]{background:radial-gradient(circle at 12% 5%,#d9ff36 0,transparent 24%),radial-gradient(circle at 88% 95%,#0cd6ad 0,transparent 36%),#081a16}body[data-theme="ember"]{background:radial-gradient(circle at 12% 5%,#ffb13b 0,transparent 28%),radial-gradient(circle at 88% 95%,#d63832 0,transparent 36%),#240a0a}body[data-theme="custom"]{--gold:var(--custom-accent,#d9a441);background:radial-gradient(circle at 12% 5%,var(--custom-glow,#225e48) 0,transparent 29%),radial-gradient(circle at 88% 95%,var(--custom-accent,#35204e) 0,transparent 36%),var(--custom-bg,#0d1512)}body::before{opacity:.13;background-image:radial-gradient(#f4efe3 1px,transparent 1px);background-size:20px 20px}.room-box,.topbar,.auction-panel,.squad-col,.rank-card,.game-modal-card{border:2px solid #1b1b1f;border-radius:16px;background:#f4efe3;color:#1b1b1f;box-shadow:0 8px 0 rgba(0,0,0,.34),0 17px 26px rgba(0,0,0,.3)}.topbar{padding:12px 14px}.room-tag,.topbar .profile-chip,.room-box label,.auction-panel .eyebrow,.squads-section h2,.rank-sub,.rank-explain{color:#3a4750}.profile-chip{border-color:#1b1b1f}.auction-panel::before{opacity:.12;background:repeating-linear-gradient(90deg,#1b1b1f 0 1px,transparent 1px 32px)}.auction-panel{overflow:visible}.auction-panel h2,.auction-panel #offerName{color:#1b1b1f}.squad-col h4{color:#1b1b1f}.player-row{border-color:rgba(27,27,31,.14)}.btn-primary,.btn-ghost,.winner-btn,.tactics-actions button{border:2px solid #1b1b1f!important;border-radius:9px!important;box-shadow:0 4px 0 rgba(27,27,31,.55);font-weight:800}.btn-primary{background:#1b1b1f;color:#f4efe3}.btn-ghost,.winner-btn{background:#d9a441;color:#1b1b1f}.btn-primary:hover,.btn-ghost:hover,.winner-btn:hover{transform:translateY(2px);box-shadow:0 2px 0 rgba(27,27,31,.55)}.price-row input,.manual-box input,.room-box input,.game-modal-card input,.game-modal-card select{border:2px solid #1b1b1f!important;border-radius:8px!important;background:#fffdf7!important;color:#1b1b1f!important}.game-modal-card .modal-kicker{color:#8a4a1e}.game-modal-card h2{color:#1b1b1f}.game-modal-card p,.settings-grid label,.team-identity-form label{color:#3a4750}.game-modal-card{background:#f4efe3}.rank-head h3,.rank-head .score{color:#1b1b1f}.rank-card{border-left:6px solid var(--c)}
+  .room-tag span{display:block;font-size:8px;font-weight:800;letter-spacing:.13em}.room-tag b{font-size:14px}.header-menu{position:relative}.header-menu-pop{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:180px;padding:6px;border:2px solid #1b1b1f;border-radius:11px;background:#f4efe3;box-shadow:0 7px 0 rgba(0,0,0,.26)}.header-menu.open .header-menu-pop{display:grid}.header-menu-pop button{padding:9px;background:transparent;color:#1b1b1f;text-align:left;font:inherit;font-size:12px;font-weight:700}.header-menu-pop button:hover{background:#e8e1d2}.profile-chip{cursor:pointer;font:inherit;font-weight:800}.profile-modal{max-width:460px}.friends-head{display:flex;justify-content:space-between;align-items:center;margin-top:16px}.friend-add{display:flex;gap:8px;margin:10px 0}.friend-add input{flex:1}.friends-list{display:grid;gap:7px}.friend-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px;border:1px solid rgba(27,27,31,.2);border-radius:8px;font-size:12px}.friend-row small{display:block;color:#4d5954}.friend-row button{padding:6px 8px;font-size:10px}
+  /* Main menu: illustrated tabletop layers, inspired by a console game screen. */
+  #mainMenu{display:none;position:fixed;inset:0;z-index:90;min-height:100vh;overflow:hidden;isolation:isolate;padding:36px 24px;color:#17130f;background:radial-gradient(circle at 50% 43%,#fff8d5 0 19%,#ead59b 43%,#4a281e 78%,#160d12 100%);box-shadow:inset 0 0 0 3px rgba(20,13,9,.65)}
+  #mainMenu.menu-enter{animation:menuReveal .5s cubic-bezier(.18,.82,.2,1) both}#mainMenu.menu-enter .menu-stack{animation:menuStackIn .48s .1s both}@keyframes menuReveal{from{opacity:0;clip-path:circle(0 at 50% 48%)}to{opacity:1;clip-path:circle(150% at 50% 48%)}}@keyframes menuStackIn{from{opacity:0;transform:translateY(36px) scale(.9) rotate(-2deg)}to{opacity:1;transform:none}}
+  .menu-vortex{display:none;position:absolute;z-index:5;left:50%;top:50%;width:26px;height:26px;border-radius:50%;background:#020308;box-shadow:0 0 0 12px #27122e,0 0 0 23px #cd3c67,0 0 0 38px #101722,0 0 48px 33px rgba(16,6,26,.72);transform:translate(-50%,-50%) scale(0)}.menu-vortex::after{content:'';position:absolute;inset:-45px;border:7px dotted #efcd58;border-radius:50%;animation:vortexSpin 1s linear infinite}.menu-portal-out .menu-vortex{display:block;animation:vortexGrow .7s cubic-bezier(.42,0,.68,.3) forwards}.menu-portal-out .menu-stack,.menu-portal-out .menu-top,.menu-portal-out .menu-ball{animation:menuSuction .55s cubic-bezier(.4,0,.75,.25) forwards}@keyframes vortexGrow{to{transform:translate(-50%,-50%) scale(55)}}@keyframes vortexSpin{to{transform:rotate(360deg)}}@keyframes menuSuction{to{opacity:0;transform:translate(0,10px) scale(.02) rotate(360deg);filter:blur(8px)}}
+  #room{position:relative;min-height:calc(100vh - 48px);padding:22px;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% -10%,#f9eac0 0,transparent 34%),radial-gradient(circle at 100% 100%,#d44763 0,transparent 25%),#172329;box-shadow:inset 0 0 0 3px #16120f}#room::before{content:'';position:absolute;inset:0;z-index:0;opacity:.25;pointer-events:none;background:radial-gradient(#f9eac0 1px,transparent 1.5px) 0 0/17px 17px}#room>*{position:relative;z-index:1}#room.room-arrive{animation:roomEmerge .62s cubic-bezier(.12,.8,.23,1) both}@keyframes roomEmerge{from{opacity:0;clip-path:circle(0 at 50% 50%);transform:scale(.9)}to{opacity:1;clip-path:circle(150% at 50% 50%);transform:none}}@media(max-width:560px){#room{min-height:100vh;padding:13px;border-radius:0}}
+  /* Preserve the established room layout; the portal animates the screen, not its individual panels. */
+  #room{position:static;min-height:0;padding:0;overflow:visible;border-radius:0;background:transparent;box-shadow:none}#room::before{display:none}#room>*{position:static;z-index:auto}#room .music-deck{position:fixed;z-index:30}@media(max-width:560px){#room{min-height:0;padding:0}}
+  /* Room screen — same illustrated board language as the main menu, while retaining the room's grid flow. */
+  #room{position:relative;isolation:isolate;min-height:calc(100vh - 48px);padding:22px;overflow:visible;background:radial-gradient(ellipse at 50% 8%,#fff1bd 0,rgba(255,241,189,.82) 18%,transparent 46%),radial-gradient(circle at 6% 90%,#c33c5d 0,transparent 28%),radial-gradient(circle at 94% 86%,#233b52 0,transparent 30%),#1c151b;box-shadow:inset 0 0 0 3px #17120f}#room::before{display:block;content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.3;background:radial-gradient(#f6d878 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(120deg,transparent 30%,rgba(229,184,74,.16) 30.2% 31%,transparent 31.2% 62%,rgba(255,255,255,.1) 62.2% 63%,transparent 63.2%)}#room>*:not(.music-deck){position:relative;z-index:1}#room .music-deck{position:fixed!important;z-index:30;cursor:grab;will-change:left,top}#room .music-deck.is-dragging{cursor:grabbing;transform:none!important;transition:none;user-select:none}.music-deck button,#room .music-deck input{cursor:pointer}.music-deck-art{touch-action:none}@media(max-width:560px){#room{min-height:100vh;padding:13px}.wrap{width:100%}}
+  #mainMenu::before,#mainMenu::after{content:'';position:absolute;z-index:-1;pointer-events:none}#mainMenu::before{inset:0;opacity:.5;background:radial-gradient(#4a2a16 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(110deg,transparent 28%,rgba(73,38,13,.15) 28.2% 29%,transparent 29.2% 55%,rgba(73,38,13,.13) 55.2% 56%,transparent 56.2%)}#mainMenu::after{width:450px;height:450px;right:-160px;bottom:-210px;border:34px solid #c99a38;border-radius:50%;box-shadow:0 0 0 16px #38241d,0 0 0 24px #dfbc5f;transform:rotate(-15deg)}
+  .menu-action.quit{font-size:13px;background:#e8d5c6;color:#652a2c}
+  .menu-top{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;z-index:2}.menu-brand{font-family:'Fraunces',serif;font-size:clamp(24px,4vw,42px);font-weight:900;font-style:italic;letter-spacing:-.04em;text-shadow:2px 2px 0 #e5bb57}.menu-user{padding:8px 12px;border:2px solid #1b1b1f;border-radius:999px;background:#f7edcc;font-size:12px;font-weight:800;box-shadow:3px 3px 0 #1b1b1f}.menu-stage{display:grid;min-height:calc(100vh - 150px);place-items:center;text-align:center}.menu-stack{width:min(440px,100%);position:relative}.menu-kicker{display:inline-block;margin-bottom:18px;padding:6px 13px;background:#172329;color:#f7edcc;font-size:10px;font-weight:900;letter-spacing:.17em;transform:rotate(-2deg);box-shadow:4px 4px 0 #d53d56}.menu-title{margin:0 0 25px;font-family:'Fraunces',serif;font-size:clamp(42px,7vw,70px);font-style:italic;line-height:.88;letter-spacing:-.06em;text-shadow:3px 4px 0 #f6d362}.menu-nav{display:grid;gap:10px}.menu-action{position:relative;width:100%;padding:15px 20px;border:3px solid #1b1b1f;background:#f8f0d4;color:#1b1b1f;font:900 22px/1 'Space Grotesk',sans-serif;letter-spacing:.04em;text-transform:uppercase;text-align:left;transform:skewY(-2deg);box-shadow:7px 7px 0 #1b1b1f}.menu-action span{display:inline-block;transform:skewY(2deg)}.menu-action::before{content:'▶';display:inline-block;margin-right:12px;color:#d53d56;font-size:16px}.menu-action:hover,.menu-action:focus{background:#d9f122;transform:translate(3px,3px) skewY(-2deg);box-shadow:4px 4px 0 #1b1b1f;outline:0}.menu-action.secondary{font-size:17px;background:#f4b3d1}.menu-action.settings{font-size:15px;background:#b9e7ef}.menu-join{display:none;margin-top:16px;padding:15px;border:3px solid #1b1b1f;background:#172329;color:#f7edcc;text-align:left;box-shadow:6px 6px 0 #d53d56}.menu-join.show{display:block}.menu-join label{display:block;margin-bottom:7px;font-size:10px;font-weight:900;letter-spacing:.13em}.menu-join input{width:100%;padding:12px;border:2px solid #f7edcc;background:#fcf2d5;color:#1b1b1f;font:800 16px 'Space Grotesk',sans-serif;text-transform:uppercase}.menu-join button{width:100%;margin-top:9px}.menu-note{margin:22px 0 0;color:#493629;font-size:12px;font-weight:700}.menu-ball{position:absolute;left:-110px;bottom:-110px;width:280px;height:280px;border:13px solid #1b1b1f;border-radius:50%;background:radial-gradient(circle at 40% 35%,#faf1cf 0 10%,#1b1b1f 10.5% 13%,#faf1cf 13.5% 31%,#1b1b1f 31.5% 34%,#f3d28a 34.5%);transform:rotate(19deg);opacity:.9}@media(max-width:560px){#mainMenu{padding:20px 14px;border-radius:0}.menu-top{align-items:flex-start}.menu-user{font-size:10px}.menu-stage{min-height:calc(100vh - 115px)}.menu-action{font-size:19px}.menu-title{font-size:52px}}
+  /* Transfer Window Deck: tactile parchment game cards for playable effects. */
+  #cardsPanel{border:1px solid rgba(247,241,226,.22);background:linear-gradient(#101c16,#182a20);box-shadow:none}.cards-head h2,.cards-head .eyebrow{color:#f7f1e2}.cards-count{border-color:#c69a3d;color:#e4c15c}.game-card-row{gap:18px}.deck-card{--deck-accent:#c69a3d;appearance:none;position:relative;width:208px;min-height:322px;padding:9px;border:1px solid rgba(33,28,21,.5);border-radius:6px;background:#f1e8d3;color:#211c15;box-shadow:0 18px 32px -16px rgba(0,0,0,.8);cursor:pointer;text-align:left;transition:transform .18s ease,box-shadow .18s ease}.deck-card.match{--deck-accent:#a13a42}.deck-card.danger{--deck-accent:#a13a42}.deck-card:hover{transform:translateY(-8px) rotate(-1deg);box-shadow:0 28px 40px -17px rgba(0,0,0,.88)}.deck-card-inner{position:relative;min-height:302px;padding:14px 12px 13px;border:1px solid #211c15}.deck-card-inner:before{content:'';position:absolute;inset:5px;border:1px solid rgba(33,28,21,.55);pointer-events:none}.deck-corner{position:absolute;width:11px;height:11px;border-color:#211c15;z-index:2}.deck-corner:after{content:'';position:absolute;width:4px;height:4px;border-radius:50%;background:#211c15}.deck-corner.tl{top:2px;left:2px;border-top:1px solid;border-left:1px solid}.deck-corner.tr{top:2px;right:2px;border-top:1px solid;border-right:1px solid}.deck-corner.bl{bottom:2px;left:2px;border-bottom:1px solid;border-left:1px solid}.deck-corner.br{bottom:2px;right:2px;border-bottom:1px solid;border-right:1px solid}.deck-corner.tl:after{top:-2px;left:-2px}.deck-corner.tr:after{top:-2px;right:-2px}.deck-corner.bl:after{bottom:-2px;left:-2px}.deck-corner.br:after{bottom:-2px;right:-2px}.deck-number{display:grid;place-items:center;width:28px;height:28px;margin:0 auto 9px;border:1px solid #211c15;border-radius:50%;background:#f7f1e2;font-size:14px;font-weight:900}.deck-art{display:grid;place-items:center;height:116px;overflow:hidden;border:1px solid #211c15;background:linear-gradient(135deg,color-mix(in srgb,var(--deck-accent) 32%,#f3ead4),#f7f1e2);font-size:59px;filter:saturate(.9)}.deck-art::before{content:'';position:absolute;width:100px;height:100px;border:1px solid rgba(33,28,21,.22);border-radius:50%}.deck-art span{z-index:1;filter:drop-shadow(0 4px 1px rgba(0,0,0,.2))}.deck-title{margin:12px 0 8px;padding:7px 4px;border-top:1px solid #211c15;border-bottom:1px solid #211c15;box-shadow:inset 0 2px 0 var(--deck-accent);text-align:center;text-transform:uppercase;font-family:'Fraunces',serif;font-size:15px;font-weight:800;letter-spacing:.05em}.deck-rule{min-height:57px;padding:0 3px;color:rgba(33,28,21,.88);font-family:'Fraunces',serif;font-size:12px;line-height:1.4;text-align:center}.deck-foot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(33,28,21,.35);color:rgba(33,28,21,.6);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.deck-foot i{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--deck-accent)}
+  .teams-row{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;perspective:1200px}.manager-card{--manager:#16342b;--manager-light:#245640;position:relative;overflow:hidden;border:2px solid #17202a;border-radius:18px;background:#f4efe3;color:#1b1b1f;box-shadow:0 14px 0 -6px rgba(0,0,0,.38),0 24px 34px -13px rgba(0,0,0,.58);transition:.22s transform,.22s box-shadow}.manager-card:hover{transform:translateY(-6px) rotateX(2deg) rotateY(-2deg);box-shadow:0 22px 0 -6px rgba(0,0,0,.35),0 38px 48px -16px rgba(0,0,0,.65)}.manager-portrait{position:relative;height:168px;display:grid;place-items:end center;overflow:hidden;background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 22px,transparent 22px 44px),linear-gradient(180deg,var(--manager-light),var(--manager))}.manager-portrait:after{content:'';position:absolute;inset:-45%;background:linear-gradient(115deg,transparent 43%,rgba(255,255,255,.14) 50%,transparent 57%);pointer-events:none}.manager-avatar{position:relative;z-index:1;width:142px;height:166px}.manager-index,.manager-host{position:absolute;z-index:2;top:11px;border:2px solid #1b1b1f;font-size:10px;font-weight:900;letter-spacing:.06em}.manager-index{left:11px;display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#1b1b1f;color:#f4efe3}.manager-host{right:11px;border-radius:999px;padding:5px 8px;background:#d9a441;color:#1b1b1f}.manager-nameplate{padding:13px 15px 10px;border-bottom:2px solid #1b1b1f}.manager-title-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.manager-title-row h3{margin:0;color:#1b1b1f;font-size:20px;line-height:1.05}.manager-title-row span{font-size:10px;font-weight:800;color:#3a4750;white-space:nowrap}.manager-archetype{display:inline-block;margin-top:7px;padding:3px 8px;border:1.5px solid #1b1b1f;border-radius:999px;background:var(--manager);color:#f4efe3;font-size:10px;font-weight:800;letter-spacing:.04em}.manager-stats{padding:2px 0}.manager-stat{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:1px solid rgba(27,27,31,.14)}.manager-stat:last-child{border:0}.manager-stat i{display:grid;place-items:center;width:24px;height:24px;border:2px solid #1b1b1f;border-radius:7px;font-style:normal;font-size:12px}.manager-stat i.spent{background:#c1443c}.manager-stat i.cash{background:#2e7d6b}.manager-stat i.legacy{background:#d9a441}.manager-stat label{flex:1;color:#3a4750;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.manager-stat b{font-size:14px}.manager-footer{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 0;color:#3a4750;font-size:11px;font-weight:700}.manager-online-dot{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#2e7d6b}.manager-online-dot.offline{background:#a7aaa6}.manager-dots{display:flex;gap:3px}.manager-dots i{width:6px;height:6px;border-radius:2px;background:#d1cbc0}.manager-dots i.filled{background:#2e7d6b}.manager-card .team-customize{margin:11px 14px 15px;width:calc(100% - 28px);border:2px solid #1b1b1f;background:#1b1b1f;color:#f4efe3;box-shadow:0 3px 0 #3a4750}.manager-character-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:7px}.manager-character-choice{position:relative;min-height:67px;padding:0;border:2px solid var(--border);border-radius:9px;background:#132640;overflow:hidden}.manager-character-choice svg{width:54px;height:63px}.manager-character-choice.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(198,169,79,.25)}.manager-character-choice span{position:absolute;right:3px;bottom:3px;padding:2px 3px;border-radius:3px;background:rgba(2,10,20,.76);color:#fff;font-size:7px;font-weight:800}.team-identity-form .character-label{margin-top:17px}
   @media(max-width:520px){
     .teams-row, .squads-grid{grid-template-columns:1fr;}
     .room-actions{grid-template-columns:1fr;}
     .game-card-row{justify-content:center;}
     .game-card{width:min(100%,240px);}
   }
+  /* Shared illustrated tabletop canvas, matching the main menu. */
+  body{
+    min-height:100vh;
+    background:radial-gradient(circle at 50% 43%,#fff8d5 0 19%,#ead59b 43%,#4a281e 78%,#160d12 100%);
+    background-attachment:fixed;
+    background-repeat:no-repeat;
+    background-size:cover;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.5;
+    background:radial-gradient(#4a2a16 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(110deg,transparent 28%,rgba(73,38,13,.15) 28.2% 29%,transparent 29.2% 55%,rgba(73,38,13,.13) 55.2% 56%,transparent 56.2%);
+  }
+  body::after{content:'';position:fixed;z-index:0;right:-100px;bottom:-130px;width:280px;height:280px;pointer-events:none;border:22px solid #c99a38;border-radius:50%;box-shadow:0 0 0 10px #38241d,0 0 0 15px #dfbc5f;transform:rotate(-15deg);}
+  .wrap{position:relative;z-index:1;}
+  /* Use the stadium night as the single canvas for the room as well. */
+  #room{background:transparent;box-shadow:none;}
+  #room::before{display:none;}
+  /* Room titles share the menu's expressive display type. */
+  #room h1,#room h2,#room h3,#room h4,#room .room-tag b,#room #offerName{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:900;
+    letter-spacing:-.035em;
+    text-shadow:2px 2px 0 rgba(229,187,87,.55);
+  }
 </style>
-<link rel="stylesheet" href="/tactics.css?v=blue-theme-2">
+<link rel="stylesheet" href="/tactics.css?v=real-kit-art-1">
 <link rel="stylesheet" href="/evaluator.css?v=blue-theme-2">
 <link rel="stylesheet" href="/tournament.css?v=live-broadcast-3">
 <link rel="stylesheet" href="/results.css?v=knockout-cinematic-1">
@@ -249,38 +297,37 @@
       <input id="authPassword" type="password" placeholder="At least 8 characters" autocomplete="current-password">
       <div class="action-row"><button class="btn-ghost" id="loginBtn">Sign in</button><button class="btn-primary" id="registerBtn">Create account</button></div>
       <div class="account-status" id="accountStatus">Use a 3-20 character manager name and an 8+ character password.</div>
-      <div class="room-divider">PLAY WITH FRIENDS</div>
-      <button class="btn-primary" id="createRoomBtn">Create a private room</button>
-      <label for="roomInput">ROOM NAME</label>
-      <input id="roomInput" placeholder="Enter invite code, e.g. match-AB12CD" autocomplete="off">
-      <div class="room-actions"><button class="btn-primary" id="enterBtn">Join with code</button><button class="btn-ghost" id="copyInviteBtn" type="button">Copy invite link</button></div>
-      <div class="hint-row">
-        <span>Rooms support 2–8 managers</span>
-      </div>
+      <input id="roomInput" type="hidden">
     </div>
   </div>
+
+  <!-- MAIN MENU: shown once a manager has signed in, before joining a room. -->
+  <main id="mainMenu" aria-label="Main menu">
+    <div class="menu-top"><div class="menu-brand">Transfer Auction</div><button class="menu-user" id="menuProfileBtn" type="button">MANAGER</button></div>
+    <div class="menu-ball" aria-hidden="true"></div>
+    <div class="menu-vortex" aria-hidden="true"></div>
+    <div class="menu-stage"><div class="menu-stack"><div class="menu-kicker">MATCHDAY DESK</div><h2 class="menu-title">Choose your<br>next move</h2><nav class="menu-nav" aria-label="Game actions"><button class="menu-action" id="menuPlayBtn" type="button"><span>Play with friends</span></button><button class="menu-action secondary" id="menuHostBtn" type="button"><span>Host a game</span></button><button class="menu-action secondary" id="menuJoinBtn" type="button"><span>Join a game</span></button><button class="menu-action settings" id="menuSettingsBtn" type="button"><span>Settings</span></button><button class="menu-action quit" id="menuQuitBtn" type="button"><span>Quit game</span></button></nav><div class="menu-join" id="menuJoinPanel"><label for="menuRoomInput">Enter room code</label><input id="menuRoomInput" placeholder="MATCH-AB12CD" autocomplete="off"><button class="btn-primary" id="menuJoinConfirm" type="button">Join room</button></div><p class="menu-note">Create a private auction room, invite friends, then build your ultimate team.</p></div></div>
+  </main>
 
   <!-- ROOM -->
   <div id="room">
     <div class="topbar">
-      <div class="room-tag">ROOM &nbsp;<b id="roomLabel"></b></div>
+      <div class="room-tag"><span>TRANSFER AUCTION</span><b id="roomLabel"></b></div>
       <div class="topbar-right">
-        <span class="profile-chip" id="profileChip"></span>
-        <button class="btn-ghost" id="inviteBtn" type="button">Invite friends</button>
-        <button class="btn-ghost" id="soundBtn" type="button">Sound: On</button>
-        <button class="btn-ghost" id="hypeBtn" type="button">Hype</button>
-        <button class="btn-ghost" id="resetBtn">Reset room</button>
-        <button class="btn-ghost" id="leaveBtn">Leave</button>
+        <button class="profile-chip" id="profileChip" type="button"></button>
+        <div class="header-menu"><button class="btn-ghost" id="roomMenuBtn" type="button">Room ☰</button><div class="header-menu-pop" id="roomMenuPop"><button id="inviteBtn" type="button">Copy invite link</button><button id="soundBtn" type="button">Sound: On</button><button id="settingsBtn" type="button">Settings</button><button id="resetBtn" type="button">Reset room</button><button id="leaveBtn" type="button">Leave room</button></div></div>
       </div>
     </div>
 
     <div class="teams-row" id="teamsRow"></div>
+    <aside class="music-deck" id="musicDeck" aria-label="Music player"><div class="music-deck-art"><div class="music-disc" id="musicDisc" aria-label="Animated vinyl record"><img class="music-cover" id="musicCover" alt="Current song cover"></div><span class="music-arm"></span></div><div class="music-now"><span class="music-kicker">TRANSFER FM · NOW PLAYING</span><strong class="music-title" id="musicTitle">Press play to start</strong><span class="music-artist" id="musicArtist">Game soundtrack</span></div><div class="music-timeline"><span id="musicElapsed">0:00</span><input id="musicSeek" type="range" min="0" max="1000" value="0" disabled aria-label="Song progress"><span id="musicDuration">0:00</span></div><div class="music-controls"><button id="musicNext" type="button" title="Next track">⏭</button><button class="music-play" id="musicPlay" type="button" title="Play music">▶</button><span class="music-wave" id="musicWave"><i></i><i></i><i></i><i></i></span><button id="musicSettings" type="button" title="Music settings">⚙</button></div></aside>
 
     <section id="cardsPanel"></section>
 
     <div class="auction-panel" id="auctionPanel">
       <div class="eyebrow" id="offerEyebrow">ON THE BLOCK</div>
       <div id="offerName" class="empty">Click "Next Player" to open the next lot</div>
+      <div id="offerPlayerCard" class="player-showcase" aria-live="polite"></div>
 
       <div class="offer-controls" id="offerControls" style="display:none;">
         <div class="winner-row" id="winnerRow"></div>
@@ -324,12 +371,27 @@
 </div>
 <div class="invite-toast" id="inviteToast"></div>
 <div class="game-modal" id="gameModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle"><span class="modal-kicker">MATCH CONTROL</span><h2 id="gameModalTitle"></h2><p id="gameModalText"></p><select id="gameModalSelect" style="display:none"></select><div class="game-modal-actions"><button class="btn-ghost" id="gameModalCancel">Cancel</button><button class="btn-primary" id="gameModalConfirm">Confirm</button></div></div></div>
-<div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
+<div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label class="character-label">MANAGER CHARACTER<div class="manager-character-grid" id="managerCharacterGrid"></div></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
+<div class="game-modal" id="settingsModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true"><span class="modal-kicker">GAME SETTINGS</span><h2>Matchday control</h2><div class="settings-grid"><label>VISUAL THEME<select id="themeSelect"><option value="stadium">Stadium Night</option><option value="midnight">Midnight Violet</option><option value="sunset">Sunset Derby</option><option value="pitch">Classic Pitch</option><option value="ocean">Ocean Arena</option><option value="berry">Berry Clash</option><option value="neon">Neon Training</option><option value="ember">Ember Derby</option><option value="custom">My Custom Theme</option></select></label><div id="customThemePanel" style="display:none"><label>BACKGROUND<input id="customThemeBg" type="color" value="#0d1512"></label><label>GLOW<input id="customThemeGlow" type="color" value="#225e48"></label><label>ACCENT<input id="customThemeAccent" type="color" value="#d9a441"></label></div><label>MUSIC PLAYER SIZE <span class="settings-value" id="musicSizeValue">100%</span><input id="musicSize" type="range" min="80" max="145" value="100"></label><label>MUSIC VOLUME <span class="settings-value" id="musicVolumeValue">36%</span><input id="musicVolume" type="range" min="0" max="100" value="36"></label><label>SFX VOLUME <span class="settings-value" id="sfxVolumeValue">80%</span><input id="sfxVolume" type="range" min="0" max="100" value="80"></label><label><input id="musicEnabled" type="checkbox" checked style="width:auto;margin-right:8px">PHASE MUSIC</label><p class="settings-note">Each record shows its own artwork. Drag the progress line to jump to any moment in the song.</p></div><div class="game-modal-actions"><button class="btn-primary" id="settingsClose">Done</button></div></div></div>
+<div class="game-modal" id="profileModal" aria-hidden="true"><div class="game-modal-card profile-modal" role="dialog" aria-modal="true"><span class="modal-kicker">MANAGER PROFILE</span><h2 id="profileName"></h2><p id="profileStats"></p><div class="friends-head"><b>Friends</b><button class="btn-ghost" id="profileClose" type="button">Close</button></div><div class="friend-add"><input id="friendName" placeholder="Manager name"><button class="btn-primary" id="friendAdd" type="button">Add</button></div><div id="friendsList" class="friends-list"></div></div></div>
 
 <script>
 (() => {
   const TEAM_COLORS = ['var(--t-yassine)','var(--t-walid)','var(--t-younes)','var(--t-brahim)'];
-  const SLOTS = ['GK','LB','CB1','CB2','RB','CM1','CM2','CM3','LW','ST','RW'];
+  const MANAGERS = {
+    tactician:{name:'The Tactician', role:'Manager', theme:'#16342b', light:'#2b6049', skin:'#f0c49a', hair:'#d8d3c8', jacket:'#22303b', extra:'headset'},
+    analyst:{name:'The Analyst', role:'Head Scout', theme:'#22506b', light:'#3981a4', skin:'#d89c6c', hair:'#241b22', jacket:'#1e2a33', extra:'glasses'},
+    enforcer:{name:'The Enforcer', role:'Asst. Coach', theme:'#8a4a1e', light:'#b5652a', skin:'#c98559', hair:'#2a2118', jacket:'#2b2118', extra:'whistle'},
+    maverick:{name:'The Maverick', role:'Director', theme:'#7e1f22', light:'#a32e2f', skin:'#efb585', hair:'#1b1310', jacket:'#1c1c1c', extra:'shades'},
+    legend:{name:'The Legend', role:'President', theme:'#4b2140', light:'#63305a', skin:'#f0d2ae', hair:'#d9d3c9', jacket:'#1e232b', extra:'mustache'},
+    maestro:{name:'The Maestro', role:'Coach', theme:'#304b75', light:'#547bb0', skin:'#9d613f', hair:'#16191e', jacket:'#172a3a', extra:'beard'},
+    academy:{name:'The Academy', role:'Youth Coach', theme:'#49622b', light:'#73913c', skin:'#d49a72', hair:'#563721', jacket:'#26351f', extra:'cap'},
+  };
+  function managerAvatar(id='tactician') {
+    const m = MANAGERS[id] || MANAGERS.tactician;
+    const detail = {headset:`<path d="M52 95C52 56 148 56 148 95" fill="none" stroke="#1b1b1f" stroke-width="5"/><circle cx="52" cy="97" r="8" fill="#1b1b1f"/><path d="M52 105q4 13 18 13" fill="none" stroke="#1b1b1f" stroke-width="4"/>`,glasses:`<circle cx="82" cy="99" r="11" fill="none" stroke="#1b1b1f" stroke-width="4"/><circle cx="118" cy="99" r="11" fill="none" stroke="#1b1b1f" stroke-width="4"/><path d="M93 99h14" stroke="#1b1b1f" stroke-width="4"/>`,whistle:`<path d="M70 151q30 21 60 0" fill="none" stroke="#1b1b1f" stroke-width="4"/><ellipse cx="100" cy="170" rx="10" ry="7" fill="#d9a441" stroke="#1b1b1f" stroke-width="2"/>`,shades:`<rect x="68" y="90" width="27" height="16" rx="4" fill="#1b1b1f"/><rect x="105" y="90" width="27" height="16" rx="4" fill="#1b1b1f"/><path d="M95 98h10" stroke="#1b1b1f" stroke-width="4"/>`,mustache:`<path d="M76 121q24 20 48 0q-4 18-24 18t-24-18" fill="#e6e2d8"/>`,beard:`<path d="M76 112q3 32 24 32t24-32q-24 9-48 0" fill="#38241e"/><path d="M80 93h13m14 0h13" stroke="#1b1b1f" stroke-width="4"/>`,cap:`<path d="M54 86q8-42 46-42t46 42q-26-14-46-14t-46 14" fill="#26351f"/><path d="M63 80q37-14 79 1l-26 10H58z" fill="#1b1b1f"/>`}[m.extra] || '';
+    return `<svg viewBox="0 0 200 230" aria-hidden="true"><path d="M18 230q2-66 82-79q80 13 82 79" fill="${m.jacket}"/><path d="M83 151l17 22l17-22" fill="#f4efe3"/><rect x="86" y="126" width="28" height="31" fill="${m.skin}"/><circle cx="100" cy="93" r="46" fill="${m.skin}"/><path d="M53 88q2-45 47-45t47 45q-17-22-47-22T53 88" fill="${m.hair}"/><circle cx="82" cy="98" r="3" fill="#1b1b1f"/><circle cx="118" cy="98" r="3" fill="#1b1b1f"/><path d="M100 99l-4 15h8z" fill="${m.skin}"/><path d="M86 123q14 9 28 0" fill="none" stroke="#75422d" stroke-width="3" stroke-linecap="round"/>${detail}</svg>`;
+  }
   const SQUAD_SIZE = 11;
   let room = null, me = null, state = null, ws = null, reconnectTimer = null, pingTimer = null, soundSnapshot = null, authToken = sessionStorage.getItem('transferAuctionToken') || null, account = null;
   const $ = id => document.getElementById(id);
@@ -357,13 +419,19 @@
   function teamIdentityDialog(team) {
     return new Promise(resolve => {
       const modal = $('teamIdentityModal'), name = $('teamIdentityName'), file = $('teamIdentityLogo'), preview = $('teamIdentityPreview');
-      let logo = team.logo || null;
+      let logo = team.logo || null, character = team.character || 'tactician';
       name.value = team.displayName || me; file.value = ''; preview.src = logo || ''; preview.style.display = logo ? 'block' : 'none';
+      const characterGrid = $('managerCharacterGrid');
+      const drawCharacters = () => {
+        characterGrid.innerHTML = Object.entries(MANAGERS).map(([id, manager]) => `<button type="button" class="manager-character-choice ${id === character ? 'selected' : ''}" data-character="${id}" title="${manager.name}" style="--manager:${manager.theme};--manager-light:${manager.light}">${managerAvatar(id)}<span>${manager.name.replace('The ','')}</span></button>`).join('');
+        characterGrid.querySelectorAll('[data-character]').forEach(button => button.onclick = () => { character = button.dataset.character; drawCharacters(); });
+      };
+      drawCharacters();
       modal.classList.add('show');
       const close = value => { modal.classList.remove('show'); resolve(value); };
       file.onchange = () => { const image = file.files?.[0]; if (!image) return; if (image.size > 250000) return showError('Choose a logo smaller than 250 KB.'); const reader = new FileReader(); reader.onload = () => { logo = reader.result; preview.src = logo; preview.style.display = 'block'; }; reader.readAsDataURL(image); };
       $('teamIdentityCancel').onclick = () => close(null);
-      $('teamIdentitySave').onclick = () => close({display_name:name.value.trim(), logo});
+      $('teamIdentitySave').onclick = () => close({display_name:name.value.trim(), logo, character});
     });
   }
 
@@ -382,12 +450,15 @@
     const previous = soundSnapshot;
     state = nextState;
     soundSnapshot = nextSnapshot;
+    window.gameSounds?.syncRoomMusic?.(nextState?.music);
     if (silent || !previous) return;
     if (nextSnapshot.phase !== previous.phase) {
       if (nextSnapshot.phase === 'results') window.gameSounds?.winner();
       else window.gameSounds?.phase();
     }
-    if (nextSnapshot.bid > previous.bid) {
+    if (!previous.hasOffer && nextSnapshot.hasOffer) {
+      window.gameSounds?.nextPlayer?.();
+    } else if (nextSnapshot.bid > previous.bid) {
       window.gameSounds?.bid();
       document.body.classList.add('flash-bid');
       setTimeout(() => document.body.classList.remove('flash-bid'), 700);
@@ -414,6 +485,19 @@
     $('accountStatus').textContent = message || (account ? `Signed in as ${account.username} · ${account.titles} titles · ${account.wins} wins` : 'Create an account or sign in to start.');
   }
 
+  function showMainMenu() {
+    if (!account) return;
+    $('landing').style.display = 'none';
+    $('room').style.display = 'none';
+    const menu = $('mainMenu');
+    menu.classList.remove('menu-enter');
+    menu.style.display = 'block';
+    void menu.offsetWidth;
+    menu.classList.add('menu-enter');
+    $('menuProfileBtn').textContent = `${account.username} · ${account.titles || 0} titles`;
+    $('menuJoinPanel').classList.remove('show');
+  }
+
   async function authenticate(path) {
     const username = $('authUsername').value.trim();
     const password = $('authPassword').value;
@@ -426,6 +510,7 @@
       $('authPassword').value = '';
       updateAccountStatus();
       window.gameSounds?.phase();
+      showMainMenu();
     } catch (error) {
       updateAccountStatus(error.message);
     }
@@ -440,6 +525,7 @@
       account = data.user;
       $('authUsername').value = account.username;
       updateAccountStatus();
+      showMainMenu();
     } catch (_) {
       authToken = null;
       sessionStorage.removeItem('transferAuctionToken');
@@ -453,6 +539,76 @@
     clearTimeout(showInviteToast.timer);
     showInviteToast.timer = setTimeout(() => toast.classList.remove('show'), 2600);
   }
+
+  function openSettings() {
+    $('settingsModal').classList.add('show');
+    $('settingsModal').setAttribute('aria-hidden', 'false');
+  }
+  function closeSettings() {
+    $('settingsModal').classList.remove('show');
+    $('settingsModal').setAttribute('aria-hidden', 'true');
+  }
+  async function openProfile() {
+    $('profileName').textContent = account?.username || 'Manager';
+    $('profileStats').textContent = `${account?.titles || 0} titles · ${account?.wins || 0} wins · ${account?.gamesPlayed || 0} games played`;
+    $('profileModal').classList.add('show');
+    try {
+      const data = await fetch(`/api/friends?token=${encodeURIComponent(authToken)}`).then(response => response.json());
+      $('friendsList').innerHTML = (data.friends || []).map(friend => `<div class="friend-row"><span><b>${esc(friend.username)}</b><small>${friend.titles} titles · ${friend.wins} wins</small></span>${friend.incoming && friend.status === 'pending' ? `<button class="btn-primary friend-accept" data-friend="${esc(friend.username)}">Accept</button>` : `<em>${friend.status === 'accepted' ? 'Friends' : 'Pending'}</em>`}</div>`).join('') || '<small>No friends yet. Add a manager by their exact name.</small>';
+      document.querySelectorAll('.friend-accept').forEach(button => button.onclick = async () => { await api('/api/friends/respond', {token:authToken, username:button.dataset.friend, accept:true}); openProfile(); });
+    } catch (_) { $('friendsList').textContent = 'Unable to load friends.'; }
+  }
+  function closeProfile() { $('profileModal').classList.remove('show'); }
+  function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    $('themeSelect').value = theme;
+    $('customThemePanel').style.display = theme === 'custom' ? 'grid' : 'none';
+    localStorage.setItem('transfer-theme', theme);
+  }
+  function applyCustomTheme() {
+    const root = document.body.style;
+    const colors = {bg:$('customThemeBg').value, glow:$('customThemeGlow').value, accent:$('customThemeAccent').value};
+    root.setProperty('--custom-bg', colors.bg);
+    root.setProperty('--custom-glow', colors.glow);
+    root.setProperty('--custom-accent', colors.accent);
+    localStorage.setItem('transfer-custom-theme', JSON.stringify(colors));
+    applyTheme('custom');
+  }
+  function renderMusic(track) {
+    if (!track) return;
+    $('musicTitle').textContent = track.title;
+    $('musicArtist').textContent = track.artist;
+    $('musicPlay').textContent = track.playing ? '❚❚' : '▶';
+    $('musicDisc').classList.toggle('playing', track.playing);
+    $('musicWave').classList.toggle('playing', track.playing);
+    const elapsed = Number(track.currentTime) || 0;
+    const duration = Number(track.duration) || 0;
+    const formatTime = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+    $('musicElapsed').textContent = formatTime(elapsed);
+    $('musicDuration').textContent = formatTime(duration);
+    const isHost = state?.host === me;
+    $('musicPlay').disabled = !isHost;
+    $('musicNext').disabled = !isHost;
+    $('musicSeek').disabled = !duration || !isHost;
+    $('musicSeek').value = duration ? Math.round(elapsed / duration * 1000) : 0;
+    const cover = $('musicCover');
+    if (track.cover && cover.src !== track.cover) cover.src = track.cover;
+    cover.alt = track.cover ? `${track.title} cover art` : 'Song cover loading';
+  }
+  function applyMusicSize(value) {
+    const percent = Math.max(80, Math.min(145, Number(value) || 100));
+    const scale = percent / 100;
+    const root = document.body.style;
+    root.setProperty('--music-deck-width', `${Math.round(238 * scale)}px`);
+    root.setProperty('--music-art-height', `${Math.round(154 * scale)}px`);
+    root.setProperty('--music-disc-size', `${Math.round(194 * scale)}px`);
+    root.setProperty('--music-disc-top', `${Math.round(-30 * scale)}px`);
+    root.setProperty('--music-deck-scale', scale);
+    $('musicSize').value = percent;
+    $('musicSizeValue').textContent = `${percent}%`;
+    localStorage.setItem('transfer-fm-size', String(percent));
+  }
+  window.addEventListener('gameMusicChange', event => renderMusic(event.detail));
 
   function inviteLink(roomCode = room || $('roomInput').value.trim()) {
     return roomCode ? `${location.origin}${location.pathname}?room=${encodeURIComponent(roomCode)}` : '';
@@ -471,7 +627,18 @@
 
   function openRoom(data, roomCode) {
     room = roomCode; me = data.you; account = data.user; setGameState(data.state, true);
-    $('landing').style.display = 'none'; $('room').style.display = 'block';
+    window.resetTacticsDrafts?.();
+    $('landing').style.display = 'none';
+    const menu = $('mainMenu'), roomScreen = $('room');
+    const revealRoom = () => {
+      menu.style.display = 'none'; menu.classList.remove('menu-portal-out');
+      roomScreen.classList.remove('room-arrive'); roomScreen.style.display = 'block';
+      void roomScreen.offsetWidth; roomScreen.classList.add('room-arrive');
+    };
+    if (getComputedStyle(menu).display !== 'none') {
+      menu.classList.remove('menu-enter'); menu.classList.add('menu-portal-out');
+      setTimeout(revealRoom, 620);
+    } else revealRoom();
     $('roomLabel').textContent = `${room} · Host: ${data.host}`;
     $('profileChip').textContent = `${account.username} · ${account.titles} titles`;
     showError(''); connectLive(); draw();
@@ -544,20 +711,117 @@
       const profile = state.profiles?.[name];
       const online = (state.online || []).includes(name);
       const pct = Math.min(100, team.squad.length / SQUAD_SIZE * 100);
-      return `<div class="team-card" style="--c:${teamColor(name)}">
-        <h3>${team.logo ? `<img class="team-mini-logo" src="${esc(team.logo)}" alt="">` : ''}${esc(team.displayName || name)}${name === me ? ' (you)' : ''}${name === state.host ? '<span class="host-badge">HOST</span>' : ''}</h3>
-        <div class="team-stat"><span>Spent</span><b>$${money(team.spent)}M</b></div>
-        <div class="team-stat"><span>Remaining</span><b>$${money(team.budget)}M</b></div>
-        ${profile ? `<div class="team-stat"><span>Legacy</span><b>${profile.titles} titles · ${profile.wins} wins</b></div>` : ''}
-        <div class="squad-count"><span>${team.squad.length}/11 ${online ? '● online' : ''}</span><div class="bar"><i style="width:${pct}%"></i></div></div>
-        ${name === me ? `<button class="team-customize btn-ghost" type="button">Customize team</button>` : ''}
-      </div>`;
+      const manager = MANAGERS[team.character] || MANAGERS.tactician;
+      const dots = Array.from({length:SQUAD_SIZE}, (_, index) => `<i class="${index < team.squad.length ? 'filled' : ''}"></i>`).join('');
+      return `<article class="manager-card" style="--manager:${manager.theme};--manager-light:${manager.light}">
+        <div class="manager-portrait"><span class="manager-index">${team.squad.length}</span>${name === state.host ? '<span class="manager-host">HOST</span>' : ''}<div class="manager-avatar">${managerAvatar(team.character)}</div></div>
+        <div class="manager-nameplate"><div class="manager-title-row"><h3>${esc(team.displayName || name)}${team.logo ? ` <img class="team-mini-logo" src="${esc(team.logo)}" alt="">` : ''}</h3><span>${name === me ? 'YOU' : manager.role}</span></div><span class="manager-archetype">${manager.name}</span></div>
+        <div class="manager-stats"><div class="manager-stat"><i class="spent">↗</i><label>Spent</label><b>$${money(team.spent)}M</b></div><div class="manager-stat"><i class="cash">$</i><label>Remaining</label><b>$${money(team.budget)}M</b></div><div class="manager-stat"><i class="legacy">★</i><label>Legacy</label><b>${profile ? `${profile.titles} · ${profile.wins}W` : '0 · 0W'}</b></div></div>
+        <div class="manager-footer"><span><i class="manager-online-dot ${online ? '' : 'offline'}"></i>${online ? 'Online' : 'Offline'} · ${team.squad.length}/11</span><span class="manager-dots">${dots}</span></div>
+        ${name === me ? `<button class="team-customize" type="button">Customize manager</button>` : ''}
+      </article>`;
     }).join('');
     document.querySelectorAll('.team-customize').forEach(button => button.onclick = async () => {
       const identity = await teamIdentityDialog(state.teams[me]);
-      if (identity) act('set_team_identity', identity).catch(()=>{});
+      if (identity) {
+        Object.assign(state.teams[me], {displayName: identity.display_name, logo: identity.logo, character: identity.character});
+        drawTeams();
+        act('set_team_identity', identity).catch(()=>{});
+      }
     });
   }
+
+  async function loadPlayerPortrait(player, image) {
+    try {
+      const response = await fetch(`/api/player-image/${encodeURIComponent(player.id || player.name)}?name=${encodeURIComponent(player.name)}`);
+      const data = await response.json();
+      if (data.url && state?.currentOffer?.id === player.id && state?.currentOffer?.name === player.name) {
+        image.onload = () => image.classList.add('loaded');
+        image.src = data.url;
+      }
+    } catch (_) {}
+  }
+
+  let referencePlayerCardTemplate = null;
+  // The auction pool does not contain club/nation data, so keep a compact ID-to-country lookup
+  // here. A native flag stays crisp and works even when an external image host is unavailable.
+  const PLAYER_NATIONS = Object.fromEntries([
+    ['FR','kylian_mbapp ousmane_demb_l michael_olise william_saliba jules_kound rayan_cherki marcus_thuram bradley_barcola d_sir_dou aurelien_tchouameni ibrahima_konate theo_hernandez dayot_upamecano mike_maignan jean_clair_todibo warren_zaire_emery khephren_thuram'],
+    ['NO','erling_haaland martin_degaard martin_odegaard'], ['ES','rodri lamine_yamal pedri unai_simon pau_cubars nico_williams pablo_barrios javi_guerra dani_ceballos fabi_n_ruiz marc_cucurella david_raya marc_andre_ter_stegen alex_grimaldo gavi jarrad_huijsen'],
+    ['PT','vitinha nuno_mendes jo_o_neves r_ben_dias diogo_costa joao_cancelo goncalo_inacio rafael_leao'], ['GB','harry_kane jude_bellingham declan_rice bukayo_saka cole_palmer phil_foden john_stones trent_alexander_arnold ollie_watkins jack_grealish jarrad_brantwaite scott_mctominay'],
+    ['BE','thibaut_courtois kevin_de_bruyne jeremy_doku youri_tielemans'], ['EC','willian_pacho piero_hincapie mois_s_caicedo moises_caicedo'], ['AR','lionel_messi juli_n_alvarez julian_alvarez alexis_mac_allister emiliano_mart_nez lautaro_mart_nez lautaro_martinez enzo_fern_ndez lisandro_martinez cristian_romero'],
+    ['NL','virgil_van_dijk frenkie_de_jong ryan_gravenberch tijjani_reijnders teun_koopmeiners mats_wieffer'], ['BR','raphinha alisson marquinhos ederson gabriel_magalhaes bremer danilo'], ['MA','achraf_hakimi nayef_aguerd'],
+    ['DE','joshua_kimmich jamal_musiala florian_wirtz leroy_sane leon_goretzka angelo_stiller'], ['EG','mohamed_salah'], ['UY','federico_valverde ronald_araujo darwin_nunez'], ['CO','luis_d_az luis_diaz'],
+    ['SE','alexander_isak viktor_gy_keres'], ['HR','jo_ko_gvardiol luka_modri'], ['IT','gianluigi_donnarumma alessandro_bastoni sandro_tonali nicolo_barella matteo_gabbia georgio_scalvini'],
+    ['CM','andre_onana'], ['DZ','karim_benzema ismael_bennacer'], ['CA','alphonso_davies'], ['KR','son_heung_min'], ['JP','takefusa_kubo'], ['PL','robert_lewandowski'], ['NG','victor_osimhen'],
+    ['GN','serhou_guirassy'], ['BF','edmond_tapsoba'], ['TR','orhan_kokcu'], ['RS','sergej_milinkovic_savic'], ['DK','morten_hjulmand'], ['SK','milan_skriniar'], ['AT','david_alaba'], ['GH','antoine_semenyo'],
+    ['CH','manuel_akanji'], ['SN','kalidou_koulibaly'], ['CI','franck_kessie'], ['US','christian_pulisic'], ['HU','dominik_szoboszlai'], ['UA','illia_zabarnyi'], ['GE','kvaratskhelia'], ['MX','santiago_gimenez']
+  ].flatMap(([country, ids]) => ids.split(' ').map(id => [id, country])));
+  const countryFlag = code => code ? String.fromCodePoint(...code.toUpperCase().split('').map(letter => 127397 + letter.charCodeAt(0))) : '⚽';
+  const countryName = code => ({FR:'France',NO:'Norway',ES:'Spain',PT:'Portugal',GB:'England',BE:'Belgium',EC:'Ecuador',AR:'Argentina',NL:'Netherlands',BR:'Brazil',MA:'Morocco',DE:'Germany',EG:'Egypt',UY:'Uruguay',CO:'Colombia',SE:'Sweden',HR:'Croatia',IT:'Italy',CM:'Cameroon',DZ:'Algeria',CA:'Canada',KR:'South Korea',JP:'Japan',PL:'Poland',NG:'Nigeria',GN:'Guinea',BF:'Burkina Faso',TR:'Turkey',RS:'Serbia',DK:'Denmark',SK:'Slovakia',AT:'Austria',GH:'Ghana',CH:'Switzerland',SN:'Senegal',CI:'Ivory Coast',US:'United States',HU:'Hungary',UA:'Ukraine',GE:'Georgia',MX:'Mexico'})[code] || 'International';
+  const CLUBS = {barca:['Barcelona',8634],real:['Real Madrid',8633],city:['Manchester City',8456],psg:['Paris Saint-Germain',9847],bayern:['Bayern Munich',9823],liverpool:['Liverpool',8650],arsenal:['Arsenal',9825],chelsea:['Chelsea',8455],united:['Manchester United',10260],inter:['Inter Milan',8636],milan:['AC Milan',8564],spurs:['Tottenham',8586],newcastle:['Newcastle United',10261],leverkusen:['Bayer Leverkusen',8178],napoli:['Napoli',9875],sporting:['Sporting CP',9772],galatasaray:['Galatasaray',8638],miami:['Inter Miami',8678],atletico:['Atletico Madrid',9906],villa:['Aston Villa',10252],bilbao:['Athletic Club',8315],dortmund:['Borussia Dortmund',9789],juventus:['Juventus',9885]};
+  const PLAYER_CLUBS = Object.fromEntries([
+    ['barca','lamine_yamal pedri raphinha frenkie_de_jong jules_kound pau_cubars marc_andre_ter_stegen gavi robert_lewandowski'], ['real','kylian_mbapp jude_bellingham thibaut_courtois federico_valverde rodrygo vinicius_junior aurelien_tchouameni dani_carvajal antonio_rudiger dani_ceballos'], ['city','erling_haaland rodri phil_foden jo_ko_gvardiol ederson john_stones jeremy_doku savinho rayan_cherki tijjani_reijnders'], ['psg','ousmane_demb_l vitinha nuno_mendes willian_pacho achraf_hakimi marquinhos jo_o_neves bradley_barcola kvaratskhelia fabi_n_ruiz d_sir_dou'], ['bayern','harry_kane michael_olise joshua_kimmich jamal_musiala kim_min_jae alphonso_davies dayot_upamecano leroy_sane leon_goretzka'], ['liverpool','virgil_van_dijk mohamed_salah alisson luis_d_az luis_diaz alexis_mac_allister ryan_gravenberch ibrahima_konate andrew_robertson'], ['arsenal','declan_rice william_saliba bukayo_saka martin_degaard martin_odegaard david_raya gabriel_magalhaes viktor_gy_keres'], ['chelsea','cole_palmer mois_s_caicedo moises_caicedo marc_cucurella enzo_fern_ndez'], ['united','bruno_fernandes matthijs_de_ligt lisandro_martinez bryan_mbeumo'], ['inter','lautaro_mart_nez lautaro_martinez alessandro_bastoni nicolo_barella marcus_thuram'], ['milan','mike_maignan rafael_leao matteo_gabbia theo_hernandez'], ['spurs','cristian_romero micky_van_de_ven son_heung_min'], ['newcastle','bruno_guimar_es bruno_guimaraes sandro_tonali alexander_isak'], ['leverkusen','florian_wirtz jeremie_frimpong alex_grimaldo'], ['napoli','scott_mctominay'], ['sporting','morten_hjulmand'], ['galatasaray','victor_osimhen'], ['miami','lionel_messi'], ['atletico','juli_n_alvarez julian_alvarez jan_oblak'], ['villa','emiliano_mart_nez'], ['bilbao','unai_simon nico_williams'], ['dortmund','serhou_guirassy'], ['juventus','bremer teun_koopmeiners']
+  ].flatMap(([club, ids]) => ids.split(' ').map(id => [id, club])));
+  const flagImage = code => code ? `https://flagcdn.com/w80/${code.toLowerCase()}.png` : '';
+  const clubLogo = club => club?.[1] ? `https://images.fotmob.com/image_resources/logo/teamlogo/${club[1]}.png` : '';
+  function playerTier(rating) {
+    const value = Number(rating) || 0;
+    if (value >= 90) return ['Platinum', 'top-tier overall rating'];
+    if (value >= 80) return ['Gold', 'elite overall rating'];
+    if (value >= 70) return ['Silver', 'strong overall rating'];
+    return ['Bronze', 'rising overall rating'];
+  }
+
+  function renderReferencePlayerCard(offer) {
+    if (!referencePlayerCardTemplate) return null;
+    const source = new DOMParser().parseFromString(referencePlayerCardTemplate, 'text/html');
+    const card = source.querySelector('.pcard');
+    if (!card) return null;
+    const [tier, tierText] = playerTier(offer.rating);
+    card.setAttribute('aria-label', `${offer.name} player card`);
+    card.querySelector('.power-badge').textContent = offer.rating ?? '—';
+    card.querySelector('.position-line').innerHTML = `${esc(offer.position || 'Player')}<br>Transfer Window`;
+    card.querySelector('.used-badge span').textContent = 'NEW';
+    const photo = card.querySelector('.photo');
+    photo.innerHTML = `<img class="pcard-photo" alt="${esc(offer.name)}">`;
+    card.querySelector('.name-row h2').textContent = offer.name;
+    const nation = PLAYER_NATIONS[offer.id];
+    const club = CLUBS[PLAYER_CLUBS[offer.id]];
+    const nationBadge = card.querySelector('.nation-swatch');
+    nationBadge.innerHTML = flagImage(nation) ? `<img class="nation-flag" src="${flagImage(nation)}" alt="${esc(countryName(nation))} flag">` : '<span class="nation-fallback">Flag</span>';
+    card.querySelector('.tier-label').innerHTML = `${tier}<small>${esc(countryName(nation))} · ${tierText}</small>`;
+    const crest = card.querySelector('.club-crest');
+    crest.innerHTML = clubLogo(club) ? `<img class="club-logo" src="${clubLogo(club)}" alt="${esc(club[0])} crest">` : `<span>${esc((club?.[0] || 'FC').slice(0, 2).toUpperCase())}</span>`;
+    card.querySelector('.club-name').textContent = club?.[0] || 'Club unavailable';
+    card.querySelector('.foot-left .cat b').textContent = offer.position || 'Player';
+    card.querySelector('.card-num').textContent = String(offer.rating ?? '01').padStart(2, '0');
+    return card.outerHTML;
+  }
+
+  fetch('/assets/player-card-reference.html').then(response => response.text()).then(source => {
+    const documentSource = new DOMParser().parseFromString(source, 'text/html');
+    const css = documentSource.querySelector('style')?.textContent || '';
+    const cardStart = css.indexOf('/* ===== PLAYER CARD ===== */');
+    const notesStart = css.indexOf('/* ===== side notes ===== */');
+    const rootRules = css.match(/:root\s*\{[\s\S]*?\}/)?.[0].replace(/:root\s*\{/, '#offerPlayerCard{') || '';
+    const playerRules = css.slice(cardStart, notesStart).replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|})\s*([^@}][^{]*)\{/g, (_, close, selectors) => `${close}${selectors.split(',').map(selector => `#offerPlayerCard ${selector.trim()}`).join(',')}{`);
+    const playerStyle = document.createElement('style');
+    playerStyle.id = 'referencePlayerCardStyle';
+    playerStyle.textContent = `${rootRules}${playerRules}
+      #offerPlayerCard .pcard{width:min(310px,100%);margin:0 auto;animation:cardReveal .38s ease-out;}
+      #offerPlayerCard .photo .pcard-photo{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center top;opacity:0;transform:scale(1.08);transition:opacity .25s ease,transform .4s ease;}
+      #offerPlayerCard .photo .pcard-photo.loaded{opacity:1;transform:scale(1);}
+      #offerPlayerCard .photo:has(.pcard-photo){background:linear-gradient(145deg,#d8c698,#f4ebd3);}
+      #offerPlayerCard .name-row h2{overflow-wrap:anywhere;}
+      #offerPlayerCard .nation-swatch .nation-flag{display:block;width:100%;height:100%;object-fit:cover;}
+      #offerPlayerCard .nation-swatch .nation-fallback{display:grid;place-items:center;height:100%;font:700 8px/1 system-ui,sans-serif;color:#f7f1e2;}
+      #offerPlayerCard .club-crest .club-logo{display:block;width:82%;height:82%;object-fit:contain;}
+      @keyframes cardReveal{from{opacity:0;transform:translateY(12px) rotate(-1.5deg)}to{opacity:1;transform:none}}`;
+    document.head.appendChild(playerStyle);
+    referencePlayerCardTemplate = documentSource.querySelector('.pcard')?.outerHTML || null;
+    if (state?.currentOffer) drawOffer();
+  }).catch(() => {});
 
   function drawOffer() {
     const host = state.host === me;
@@ -569,6 +833,9 @@
     $('offerEyebrow').textContent = resultsPhase ? 'PHASE 5 · FINAL RESULTS' : tournamentPhase ? 'PHASE 4 · TOURNAMENT' : evaluationPhase ? 'PHASE 3 · EVALUATION' : tacticsPhase ? 'PHASE 2 · TACTICS' : 'PHASE 1 · AUCTION';
     $('resetBtn').style.display = host ? 'inline-block' : 'none';
     $('fillTestTeamsBtn').style.display = host && state.phase === 'auction' ? 'inline-block' : 'none';
+    const showcase = $('offerPlayerCard');
+    showcase.classList.remove('show');
+    showcase.innerHTML = '';
 
     if (tacticsPhase) {
       $('offerName').textContent = 'Auction locked — configure your team below';
@@ -622,6 +889,11 @@
 
     $('offerName').textContent = `${offer.name} · ${offer.position}${offer.rating ? ` · OVR ${offer.rating}` : ''}`;
     $('offerName').classList.remove('empty'); $('offerControls').style.display = 'flex'; $('nextRow').style.display = 'none';
+    const stat = (key, label) => offer[key] == null ? '' : `<span><b>${offer[key]}</b>${label}</span>`;
+    const isGoalkeeper = offer.position === 'GK';
+    showcase.innerHTML = renderReferencePlayerCard(offer) || `<article class="player-card ${isGoalkeeper ? 'player-card-gk' : ''}" aria-label="${esc(offer.name)} player card"><div class="player-card-head"><div><div class="player-ovr">${esc(offer.rating ?? '—')}</div><div class="player-position">${esc(offer.position || '?')}</div></div><div class="player-stamp">DEADLINE<br>DAY</div></div><div class="player-avatar" aria-hidden="true">${isGoalkeeper ? '🧤' : '⚽'}<img class="player-portrait" alt=""></div><div class="player-card-name">${esc(offer.name)}</div><div class="player-card-stats">${stat('pace','PAC')}${stat('shooting','SHO')}${stat('passing','PAS')}${stat('dribbling','DRI')}${stat('defending','DEF')}${stat('physical','PHY')}</div></article>`;
+    showcase.classList.add('show');
+    loadPlayerPortrait(offer, showcase.querySelector('.pcard-photo, .player-portrait'));
     $('manualToggle').style.display = 'none'; $('manualBox').style.display = 'none';
     const dropped = offer.dropped || [], passed = offer.passed || [];
     const statuses = teamNames().map(name => {
@@ -639,22 +911,35 @@
   function drawSquads() {
     $('squadsGrid').innerHTML = teamNames().map(name => {
       const team = state.teams[name];
-      const rows = team.squad.length ? team.squad.map((p, i) => `<div class="player-row">
+      const rows = team.squad.length ? team.squad.map(p => `<div class="player-row">
         <span class="pname" title="${esc(p.name)}">${esc(p.name)}</span>
-        ${name === me && state.phase === 'auction' ? `<select class="slotSelect" data-i="${i}"><option value="">slot</option>${SLOTS.map(slot => `<option value="${slot}" ${p.slot === slot ? 'selected' : ''}>${slot.replace(/[0-9]/,'')}</option>`).join('')}</select>` : `<span>${esc(p.slot || p.position || '')}</span>`}
+        <span>${esc(p.position || '')}</span>
         <span class="pprice">$${money(p.price)}M</span>
       </div>`).join('') : '<div class="empty-slot">No signings yet</div>';
       return `<div class="squad-col" style="--c:${teamColor(name)}"><h4>${esc(name)}</h4>${rows}</div>`;
     }).join('');
-    document.querySelectorAll('.slotSelect').forEach(select => {
-      select.onchange = () => act('set_slot', {player_index: Number(select.dataset.i), slot: select.value || null}).catch(()=>{});
-    });
   }
 
   const CARD_NAMES = {freeze:'Freeze', scout_report:'Scout Report', bid_shield:'Bid Shield', hijack:'Hijack', out_of_position:'Out of Position', captains_gambit:"Captain's Gambit", counter_attack:'Counter Attack', park_the_bus:'Park the Bus', team_talk:'Team Talk'};
   const CARD_HELP = {freeze:'Block one rival from bidding on this lot.', scout_report:'Reveal and queue the next three auction players.', bid_shield:'Blocks one Freeze or Hijack against you.', hijack:'Take the highest bid for +$2M.', out_of_position:'Force a rival outfield player into a role such as CB.', captains_gambit:'Your chosen captain scores double goals.', counter_attack:'Attack and pace boost for one match.', park_the_bus:'Defence boost, with less attack, for one match.', team_talk:'Small all-round boost for one match.'};
   const CARD_ART = {freeze:'&#10052;', scout_report:'&#9673;', bid_shield:'&#11041;', hijack:'&#9889;', out_of_position:'&#8660;', captains_gambit:'&#9733;', counter_attack:'&#10148;', park_the_bus:'&#9648;', team_talk:'&#10022;'};
   Object.assign(CARD_HELP, {freeze:'Freeze one rival out of this auction.', scout_report:'Preview the next 3 players.', bid_shield:'Cancel one Freeze or Hijack.', hijack:'Steal the lead for +$2M.', out_of_position:'Force a rival outfield player into a new role.', captains_gambit:'Your captain scores double goals.', counter_attack:'Boost pace and attack for one match.', park_the_bus:'Boost defence, reduce attack, for one match.', team_talk:'Give your team an all-round boost.'});
+  let referenceDeckCards = null;
+  fetch('/assets/transfer-window-deck.html').then(response => response.text()).then(source => {
+    const documentSource = new DOMParser().parseFromString(source, 'text/html');
+    const css = documentSource.querySelector('style')?.textContent || '';
+    const rootStart = css.indexOf(':root');
+    const headerStart = css.indexOf('/* ---------- Header ---------- */');
+    const cardStart = css.indexOf('/* ---------- Card ---------- */');
+    const milestoneStart = css.indexOf('/* ---------- Earning milestones ---------- */');
+    const deckStyle = document.createElement('style');
+    deckStyle.id = 'referenceDeckStyle';
+    deckStyle.textContent = `${css.slice(rootStart, headerStart).replace(':root{', '#cardsPanel{')}${css.slice(cardStart, milestoneStart)}#cardsPanel .card.play-card{width:172px;height:306px;cursor:pointer}#cardsPanel .card-inner{height:286px;min-height:0;display:flex;flex-direction:column}#cardsPanel .art{flex:none;height:88px;aspect-ratio:auto}#cardsPanel .card-title{margin:8px 0 8px;padding:5px 2px;white-space:nowrap}#cardsPanel .card-title h3{font-size:12px}#cardsPanel .card-body{min-height:54px;padding:0 6px;font-size:10.7px;line-height:1.34}#cardsPanel .card-foot{margin-top:auto;padding-top:9px}#cardsPanel .card.play-card:focus{outline:3px solid #fff;outline-offset:4px}`;
+    document.head.appendChild(deckStyle);
+    const names = {freeze:'Freeze', scout_report:'Scout Report', bid_shield:'Bid Shield', hijack:'Hijack', out_of_position:'Out of Position', captains_gambit:"Captain’s Gambit", counter_attack:'Counter Attack', park_the_bus:'Park the Bus', team_talk:'Team Talk'};
+    referenceDeckCards = Object.fromEntries(Object.entries(names).map(([key, name]) => [key, [...documentSource.querySelectorAll('.card')].find(card => card.querySelector('h3')?.textContent.trim() === name)?.outerHTML]).filter(([, html]) => html));
+    if (state) drawCards();
+  }).catch(() => {});
 
   async function readyMatchFor(team) {
     const choices = (state?.tournament?.matches || []).filter(match => match.status === 'ready' && (!team || match.home === team || match.away === team));
@@ -703,12 +988,12 @@
     const cards = hand.map((card, index) => {
       const matchCard = ['out_of_position','captains_gambit','counter_attack','park_the_bus','team_talk'].includes(card);
       const danger = ['freeze','hijack','out_of_position'].includes(card);
-      return `<button class="game-card play-card ${matchCard ? 'match' : 'auction'} ${danger ? 'danger' : ''}" data-card="${esc(card)}" data-index="${index}" title="Play ${esc(CARD_NAMES[card] || card)}"><span class="card-top"><span class="card-kind">${matchCard ? 'MATCH CARD' : 'AUCTION CARD'}</span><span class="card-rarity">TACTICAL</span></span><span class="card-art">${CARD_ART[card] || '&#9670;'}</span><span class="card-body"><strong class="card-name">${esc(CARD_NAMES[card] || card)}</strong><span class="card-rule">${esc(CARD_HELP[card] || '')}</span><span class="card-play">CLICK TO PLAY &rarr;</span></span></button>`;
+      if (referenceDeckCards?.[card]) return referenceDeckCards[card].replace(/class="([^"]*)"/, `class="$1 play-card" role="button" tabindex="0" data-card="${esc(card)}" data-index="${index}"`);
+      return `<button class="deck-card play-card ${matchCard ? 'match' : 'auction'} ${danger ? 'danger' : ''}" data-card="${esc(card)}" data-index="${index}" title="Play ${esc(CARD_NAMES[card] || card)}"><span class="deck-card-inner"><i class="deck-corner tl"></i><i class="deck-corner tr"></i><i class="deck-corner bl"></i><i class="deck-corner br"></i><span class="deck-number">${String(index + 1).padStart(2,'0')}</span><span class="deck-art"><span>${CARD_ART[card] || '&#9670;'}</span></span><strong class="deck-title">${esc(CARD_NAMES[card] || card)}</strong><span class="deck-rule">${esc(CARD_HELP[card] || '')}</span><span class="deck-foot"><span><i></i>${matchCard ? 'Match' : 'Auction'}</span><span>${String(index + 1).padStart(2,'0')} / 09</span></span></span></button>`;
     }).join('') || '<span class="empty-hand">No cards left — earn more by signing players.</span>';
     const scoutReport = scout?.owner === me ? `<p class="scout-report">SCOUT REPORT &middot; ${(scout.players || []).map(player => `${esc(player.name)} (${esc(player.position)})`).join(' &middot; ')}</p>` : '';
     panel.innerHTML = `<div class="cards-head"><div><div class="eyebrow">PRIVATE COLLECTION</div><h2>Your Game Cards</h2></div><span class="cards-count">${hand.length} IN HAND</span></div><div class="game-card-row">${cards}</div>${state?.cards?.notice ? `<p class="card-note">${esc(state.cards.notice)}</p>` : ''}${scoutReport}`;
-    const displayCards = cards.replace(/<span class="card-play">[\s\S]*?<\/span>/g, '');
-    panel.innerHTML = `<div class="cards-head"><div><div class="eyebrow">PRIVATE COLLECTION</div><h2>Your Game Cards</h2></div><span class="cards-count">${hand.length} IN HAND</span></div><div class="game-card-row">${displayCards}</div>${state?.cards?.notice ? `<p class="card-note">${esc(state.cards.notice)}</p>` : ''}${scoutReport}`;
+    panel.innerHTML = `<div class="cards-head"><div><div class="eyebrow">PRIVATE COLLECTION</div><h2>Your Game Cards</h2></div><span class="cards-count">${hand.length} IN HAND</span></div><div class="game-card-row">${cards}</div>${state?.cards?.notice ? `<p class="card-note">${esc(state.cards.notice)}</p>` : ''}${scoutReport}`;
     panel.querySelectorAll('.play-card').forEach(button => button.onclick = () => playCard(button.dataset.card).catch(() => {}));
   }
 
@@ -723,14 +1008,90 @@
     window.renderTactics?.(); window.renderEvaluator?.(); window.renderTournament?.(); window.renderResults?.();
   }
 
-  $('enterBtn').onclick = enterRoom;
-  $('createRoomBtn').onclick = createRoom;
-  $('copyInviteBtn').onclick = copyInviteLink;
-  $('inviteBtn').onclick = copyInviteLink;
+  $('menuPlayBtn').onclick = () => $('menuJoinPanel').classList.toggle('show');
+  $('menuHostBtn').onclick = createRoom;
+  $('menuJoinBtn').onclick = () => { $('menuJoinPanel').classList.add('show'); $('menuRoomInput').focus(); };
+  $('menuJoinConfirm').onclick = () => { $('roomInput').value = $('menuRoomInput').value; enterRoom(); };
+  $('menuRoomInput').onkeydown = event => { if (event.key === 'Enter') $('menuJoinConfirm').click(); };
+  $('menuSettingsBtn').onclick = openSettings;
+  $('menuProfileBtn').onclick = openProfile;
+  $('menuQuitBtn').onclick = () => {
+    authToken = null; account = null; sessionStorage.removeItem('transferAuctionToken');
+    $('mainMenu').style.display = 'none'; $('landing').style.display = 'flex';
+    $('authPassword').value = ''; updateAccountStatus('Signed out. Sign in to play again.');
+  };
+  $('inviteBtn').onclick = () => { copyInviteLink(); $('roomMenuBtn').parentElement.classList.remove('open'); };
+  $('profileChip').onclick = openProfile;
+  $('roomMenuBtn').onclick = () => $('roomMenuBtn').parentElement.classList.toggle('open');
   $('loginBtn').onclick = () => authenticate('/api/auth/login');
   $('registerBtn').onclick = () => authenticate('/api/auth/register');
-  $('soundBtn').onclick = () => window.gameSounds?.toggle();
-  $('hypeBtn').onclick = () => window.gameSounds?.hype();
+  $('soundBtn').onclick = () => { window.gameSounds?.toggle(); window.gameSounds?.syncRoomMusic?.(state?.music); };
+  $('settingsBtn').onclick = openSettings;
+  $('profileClose').onclick = closeProfile;
+  $('profileModal').onclick = event => { if (event.target === $('profileModal')) closeProfile(); };
+  $('friendAdd').onclick = async () => { const username = $('friendName').value.trim(); if (!username) return; try { await api('/api/friends/request', {token:authToken, username}); $('friendName').value = ''; openProfile(); } catch (error) { showError(error.message); } };
+  $('musicSettings').onclick = openSettings;
+  // The record player belongs to each manager's screen: drag it by the artwork and its position is remembered locally.
+  (() => {
+    const deck = $('musicDeck'), handle = deck?.querySelector('.music-deck-art');
+    if (!deck || !handle) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem('transfer-fm-position') || 'null');
+      if (Number.isFinite(saved?.left) && Number.isFinite(saved?.top)) { deck.style.left = `${saved.left}px`; deck.style.top = `${saved.top}px`; deck.style.right = 'auto'; deck.style.bottom = 'auto'; }
+    } catch (_) {}
+    let drag = null, frame = null, pending = null;
+    const moveDeck = event => {
+      if (!drag) return;
+      const bounds = deck.getBoundingClientRect();
+      pending = {
+        left:Math.max(8, Math.min(window.innerWidth - bounds.width - 8, event.clientX - drag.x)),
+        top:Math.max(8, Math.min(window.innerHeight - bounds.height - 8, event.clientY - drag.y))
+      };
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null; if (!pending) return;
+        deck.style.left = `${pending.left}px`; deck.style.top = `${pending.top}px`; deck.style.right = 'auto'; deck.style.bottom = 'auto'; pending = null;
+      });
+    };
+    deck.addEventListener('pointerdown', event => {
+      if (event.button != null && event.button !== 0) return;
+      if (event.target.closest?.('button,input')) return;
+      const bounds = deck.getBoundingClientRect();
+      drag = {x:event.clientX - bounds.left, y:event.clientY - bounds.top};
+      deck.classList.add('is-dragging'); event.preventDefault();
+      window.addEventListener('pointermove', moveDeck, {passive:false});
+      window.addEventListener('pointerup', stopDrag, {once:true});
+      window.addEventListener('pointercancel', stopDrag, {once:true});
+    });
+    const stopDrag = () => {
+      if (!drag) return;
+      drag = null; pending = null; if (frame) cancelAnimationFrame(frame); frame = null; window.removeEventListener('pointermove', moveDeck); deck.classList.remove('is-dragging');
+      const bounds = deck.getBoundingClientRect();
+      localStorage.setItem('transfer-fm-position', JSON.stringify({left:Math.round(bounds.left), top:Math.round(bounds.top)}));
+    };
+  })();
+  const hostMusicControl = (name, amount) => {
+    if (state?.host !== me) return showError('Only the host controls the room soundtrack.');
+    act('music_control', {name, amount}).catch(() => {});
+  };
+  $('musicPlay').onclick = () => {
+    const track = window.gameSounds?.getTrack?.();
+    hostMusicControl(track?.playing ? 'pause' : 'play', track?.duration ? track.currentTime / track.duration : 0);
+  };
+  $('musicNext').onclick = () => hostMusicControl('next');
+  $('musicSeek').onchange = event => hostMusicControl('seek', Number(event.target.value) / 1000);
+  $('settingsClose').onclick = closeSettings;
+  $('settingsModal').onclick = event => { if (event.target === $('settingsModal')) closeSettings(); };
+  $('themeSelect').onchange = event => applyTheme(event.target.value);
+  ['customThemeBg','customThemeGlow','customThemeAccent'].forEach(id => $(id).oninput = applyCustomTheme);
+  $('musicSize').oninput = event => applyMusicSize(event.target.value);
+  $('musicVolume').oninput = event => { const value = Number(event.target.value); $('musicVolumeValue').textContent = `${value}%`; window.gameSounds?.setMusicVolume?.(value / 100); };
+  $('sfxVolume').oninput = event => { const value = Number(event.target.value); $('sfxVolumeValue').textContent = `${value}%`; window.gameSounds?.setSfxVolume?.(value / 100); };
+  $('musicEnabled').onchange = event => { window.gameSounds?.setMusicEnabled?.(event.target.checked); window.gameSounds?.syncRoomMusic?.(state?.music); };
+  applyMusicSize(localStorage.getItem('transfer-fm-size') || 100);
+  const savedCustomTheme = JSON.parse(localStorage.getItem('transfer-custom-theme') || 'null');
+  if (savedCustomTheme) { $('customThemeBg').value = savedCustomTheme.bg || '#0d1512'; $('customThemeGlow').value = savedCustomTheme.glow || '#225e48'; $('customThemeAccent').value = savedCustomTheme.accent || '#d9a441'; applyCustomTheme(); }
+  else applyTheme(localStorage.getItem('transfer-theme') || 'stadium');
   $('roomInput').onkeydown = e => { if (e.key === 'Enter') enterRoom(); };
   $('nextPlayerBtn').onclick = () => act('next_player').catch(()=>{});
   $('manualToggle').onclick = () => $('manualBox').style.display = $('manualBox').style.display === 'none' ? 'flex' : 'none';
@@ -758,7 +1119,7 @@
   $('leaveBtn').onclick = () => {
     room = null; me = null; state = null; soundSnapshot = null; clearTimeout(reconnectTimer); clearInterval(pingTimer);
     if (ws) { ws.onclose = null; try { ws.close(); } catch (_) {} }
-    $('room').style.display = 'none'; $('landing').style.display = 'flex';
+    $('room').style.display = 'none'; showMainMenu();
   };
 
   window.__game = {
@@ -773,7 +1134,12 @@
       if (!tactics) return;
       await act('set_tactics', {tactics});
     },
+    saveTactics: async tactics => {
+      if (!state || !me || !tactics) return;
+      await act('set_tactics', {tactics});
+    },
     render: draw,
+    managerAvatar,
     playerScore: p => p.rating ?? p.ovr ?? ''
   };
   const sharedRoom = new URLSearchParams(location.search).get('room');
@@ -784,7 +1150,7 @@
   restoreAccount();
 })();
 </script>
-<script src="/tactics.js?v=selection-fix-2"></script>
+<script src="/tactics.js?v=swap-board-formations-1"></script>
 <script src="/sound.js?v=champions-anthem-3"></script>
 <script src="/evaluator.js?v=knockout-cinematic-1"></script>
 <script src="/tournament.js?v=live-broadcast-4"></script>

@@ -37,6 +37,7 @@ class GameDatabase:
             "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, password_salt TEXT NOT NULL, wins INTEGER NOT NULL DEFAULT 0, titles INTEGER NOT NULL DEFAULT 0, games_played INTEGER NOT NULL DEFAULT 0, created_at BIGINT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS rooms (code TEXT PRIMARY KEY, owner_id TEXT NOT NULL, state_json TEXT NOT NULL, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS room_members (room_code TEXT NOT NULL, user_id TEXT NOT NULL, team_name TEXT NOT NULL, joined_at BIGINT NOT NULL, PRIMARY KEY (room_code, user_id), UNIQUE (room_code, team_name))",
+            "CREATE TABLE IF NOT EXISTS friendships (user_id TEXT NOT NULL, friend_id TEXT NOT NULL, status TEXT NOT NULL, created_at BIGINT NOT NULL, PRIMARY KEY (user_id, friend_id))",
         ]
         with self._connect() as connection:
             cursor = connection.cursor()
@@ -105,3 +106,16 @@ class GameDatabase:
 
     def members(self, room_code):
         return self._query("SELECT room_members.*, users.username, users.wins, users.titles, users.games_played FROM room_members JOIN users ON users.id = room_members.user_id WHERE room_code = ? ORDER BY room_members.joined_at", (room_code,))
+
+    def send_friend_request(self, user_id, friend_id, timestamp):
+        self._query("INSERT INTO friendships (user_id, friend_id, status, created_at) VALUES (?, ?, 'pending', ?) ON CONFLICT(user_id, friend_id) DO UPDATE SET status = 'pending', created_at = excluded.created_at", (user_id, friend_id, timestamp))
+
+    def respond_friend_request(self, user_id, requester_id, accept):
+        if accept:
+            self._query("UPDATE friendships SET status = 'accepted' WHERE user_id = ? AND friend_id = ?", (requester_id, user_id))
+            self._query("INSERT INTO friendships (user_id, friend_id, status, created_at) VALUES (?, ?, 'accepted', ?) ON CONFLICT(user_id, friend_id) DO UPDATE SET status = 'accepted'", (user_id, requester_id, __import__('time').time_ns() // 1_000_000))
+        else:
+            self._query("DELETE FROM friendships WHERE user_id = ? AND friend_id = ?", (requester_id, user_id))
+
+    def friends_for(self, user_id):
+        return self._query("SELECT friendships.user_id, friendships.friend_id, friendships.status, users.username, users.wins, users.titles, users.games_played FROM friendships JOIN users ON users.id = CASE WHEN friendships.user_id = ? THEN friendships.friend_id ELSE friendships.user_id END WHERE friendships.user_id = ? OR friendships.friend_id = ? ORDER BY friendships.created_at DESC", (user_id, user_id, user_id))

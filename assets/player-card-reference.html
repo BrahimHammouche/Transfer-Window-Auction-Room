@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Big+Shoulders+Display:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101c16;
+    --ink-2:#182a20;
+    --parchment:#f1e8d3;
+    --charcoal:#211c15;
+    --gold:#c69a3d;
+    --gold-soft:#e4c15c;
+    --teal:#2f5d4e;
+    --teal-deep:#1c3b30;
+    --cream:#f7f1e2;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--ink); font-family:'Fraunces', serif; color:var(--cream); }
+  body{
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 14px),
+      radial-gradient(ellipse at 50% -10%, rgba(198,154,61,0.10), transparent 55%),
+      linear-gradient(var(--ink), var(--ink-2));
+    background-attachment:fixed;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:64px 20px 100px;
+  }
+  .stage{ width:100%; max-width:920px; }
+
+  .stage-head{ text-align:center; margin-bottom:44px; }
+  .stage-head .kicker{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:600; letter-spacing:0.14em; font-size:13px; color:var(--gold-soft);
+  }
+  .stage-head h1{
+    font-size:clamp(30px,4.5vw,46px); font-weight:600; font-style:italic; margin:10px 0 0; color:var(--cream);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:56px;
+    align-items:start;
+  }
+
+  /* ===== PLAYER CARD ===== */
+  .pcard{
+    position:relative;
+    background:var(--parchment);
+    border-radius:8px;
+    padding:10px;
+    box-shadow:0 30px 60px -22px rgba(0,0,0,0.6);
+    border:1px solid rgba(33,28,21,0.5);
+  }
+  .pcard-inner{
+    position:relative;
+    border:1px solid var(--charcoal);
+    border-radius:3px;
+    padding:14px 13px 14px;
+  }
+  .pcard-inner::before{
+    content:""; position:absolute; inset:5px;
+    border:1px solid rgba(33,28,21,0.5); border-radius:1px; pointer-events:none;
+  }
+  .corner{ position:absolute; width:12px; height:12px; pointer-events:none; }
+  .corner::before{ content:""; position:absolute; width:4px; height:4px; border-radius:50%; background:var(--charcoal); }
+  .corner.tl{ top:2px; left:2px; border-top:1px solid var(--charcoal); border-left:1px solid var(--charcoal); }
+  .corner.tl::before{ top:-2px; left:-2px; }
+  .corner.tr{ top:2px; right:2px; border-top:1px solid var(--charcoal); border-right:1px solid var(--charcoal); }
+  .corner.tr::before{ top:-2px; right:-2px; }
+  .corner.bl{ bottom:2px; left:2px; border-bottom:1px solid var(--charcoal); border-left:1px solid var(--charcoal); }
+  .corner.bl::before{ bottom:-2px; left:-2px; }
+  .corner.br{ bottom:2px; right:2px; border-bottom:1px solid var(--charcoal); border-right:1px solid var(--charcoal); }
+  .corner.br::before{ bottom:-2px; right:-2px; }
+
+  /* top row: power / position / used-in-game */
+  .pcard-top{
+    display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px;
+  }
+  .power-badge{
+    width:46px; height:46px; border:1.5px solid var(--charcoal); border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:22px; color:var(--charcoal);
+    background:var(--cream); flex:none;
+  }
+  .position-line{
+    flex:1; text-align:center; padding-top:6px;
+    font-family:'Big Shoulders Display', sans-serif; font-size:10.5px; letter-spacing:0.09em;
+    color:rgba(33,28,21,0.55); text-transform:uppercase;
+  }
+  .used-badge{
+    flex:none; display:flex; flex-direction:column; align-items:center; gap:3px; width:40px;
+  }
+  .used-badge svg{ width:17px; height:17px; }
+  .used-badge span{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:12px; color:rgba(33,28,21,0.6);
+  }
+
+  /* photo panel */
+  .photo{
+    position:relative; border:1px solid var(--charcoal); border-radius:3px; overflow:hidden;
+    aspect-ratio:3/4; background:linear-gradient(180deg,#e9dfc4,#dccfa9);
+  }
+  .photo svg{ width:100%; height:100%; display:block; }
+
+  /* ribbon: nation colours + tier */
+  .ribbon-row{
+    display:flex; align-items:center; gap:10px; margin:12px 0 10px;
+  }
+  .nation-swatch{
+    width:34px; height:34px; border-radius:50%; flex:none; border:1px solid var(--charcoal); overflow:hidden;
+  }
+  .nation-swatch svg{ width:100%; height:100%; display:block; }
+  .tier-label{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; letter-spacing:0.08em;
+    font-size:13px; color:var(--teal-deep); text-transform:uppercase;
+  }
+  .tier-label small{
+    display:block; font-family:'Fraunces',serif; font-weight:400; letter-spacing:0; font-size:10.5px;
+    color:rgba(33,28,21,0.5); text-transform:none; margin-top:1px;
+  }
+
+  /* name + club */
+  .name-row{
+    display:flex; align-items:center; gap:14px;
+    padding:10px 0 12px; border-top:1px solid rgba(33,28,21,0.35);
+  }
+  .name-row h2{
+    margin:0; font-size:24px; line-height:1.06; font-weight:600; color:var(--charcoal);
+  }
+  .divider{ width:1px; align-self:stretch; background:rgba(33,28,21,0.3); flex:none; }
+  .club{
+    display:flex; align-items:center; gap:8px; flex:none;
+  }
+  .club-crest{
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--charcoal);
+    display:flex; align-items:center; justify-content:center; background:var(--teal); flex:none;
+  }
+  .club-crest span{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:11px; color:var(--cream);
+  }
+  .club-name{ font-size:12.5px; line-height:1.25; color:rgba(33,28,21,0.7); }
+
+  /* footer */
+  .pcard-foot{
+    display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid var(--charcoal); padding-top:10px;
+  }
+  .foot-left{ display:flex; align-items:center; gap:8px; }
+  .foot-left svg{ width:18px; height:18px; }
+  .foot-left .cat{ font-family:'Big Shoulders Display', sans-serif; font-size:12px; letter-spacing:0.06em; color:rgba(33,28,21,0.55); text-transform:uppercase; }
+  .foot-left .cat b{ color:var(--charcoal); font-weight:700; }
+  .card-num{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--charcoal);
+    display:flex; align-items:center; justify-content:center; background:var(--cream); flex:none;
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:13px; color:var(--charcoal);
+  }
+
+  /* ===== side notes ===== */
+  .notes{ padding-top:6px; }
+  .notes h3{
+    font-size:19px; font-weight:500; font-style:italic; margin:0 0 18px; color:var(--cream);
+  }
+  .note-list{ display:flex; flex-direction:column; gap:16px; }
+  .note{
+    display:flex; gap:14px; align-items:flex-start;
+    border-bottom:1px solid rgba(247,241,226,0.12); padding-bottom:16px;
+  }
+  .note .tag{
+    flex:none; width:26px; height:26px; border-radius:50%; border:1px solid rgba(198,154,61,0.6);
+    display:flex; align-items:center; justify-content:center; font-family:'Big Shoulders Display',sans-serif;
+    font-size:12px; font-weight:700; color:var(--gold-soft);
+  }
+  .note p{ margin:0; font-size:13.5px; line-height:1.55; color:rgba(247,241,226,0.68); }
+  .note p b{ color:var(--cream); font-weight:500; }
+
+  /* ===== tier swatches ===== */
+  .tiers{ margin-top:44px; }
+  .tiers h3{ font-size:19px; font-weight:500; font-style:italic; margin:0 0 18px; color:var(--cream); }
+  .tier-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .tier-chip{
+    border:1px solid rgba(247,241,226,0.18); border-radius:6px; padding:16px 12px; text-align:center;
+    background:rgba(247,241,226,0.03);
+  }
+  .tier-chip .swatch{ width:26px; height:26px; border-radius:50%; margin:0 auto 10px; border:1px solid rgba(0,0,0,0.3); }
+  .tier-chip .label{ font-family:'Big Shoulders Display', sans-serif; font-size:12px; letter-spacing:0.08em; color:var(--cream); text-transform:uppercase; }
+  .tier-chip .range{ font-size:11.5px; color:rgba(247,241,226,0.5); margin-top:4px; }
+  .t-bronze .swatch{ background:#a56a3c; }
+  .t-silver .swatch{ background:#b9c1c4; }
+  .t-gold .swatch{ background:#c69a3d; }
+  .t-platinum .swatch{ background:#7fa9b0; }
+
+  @media (max-width:760px){
+    .layout{ grid-template-columns:1fr; }
+    .pcard{ max-width:340px; margin:0 auto; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="stage-head">
+    <div class="kicker">Squad Card</div>
+    <h1>Player Card Template</h1>
+  </div>
+
+  <div class="layout">
+
+    <!-- ============ CARD ============ -->
+    <div class="pcard">
+      <div class="pcard-inner">
+        <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+
+        <div class="pcard-top">
+          <div class="power-badge">91</div>
+          <div class="position-line">Striker<br>Career Pro 2016&ndash;</div>
+          <div class="used-badge">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 13.5-5.7M20 12a8 8 0 0 1-13.5 5.7" stroke="#211c15" stroke-width="1.6" stroke-linecap="round"/><path d="M17 4v3h-3M7 20v-3h3" stroke="#211c15" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>14</span>
+          </div>
+        </div>
+
+        <div class="photo">
+          <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#e9dfc4"/>
+            <rect width="300" height="400" fill="url(#pitchgrad)"/>
+            <defs>
+              <linearGradient id="pitchgrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#dccfa9"/>
+                <stop offset="1" stop-color="#c9bb92"/>
+              </linearGradient>
+            </defs>
+
+            <!-- ghost celebration figure, faded, behind -->
+            <g opacity="0.14" transform="translate(150,150)">
+              <circle cx="0" cy="-40" r="26" fill="#211c15"/>
+              <path d="M-30 60c0-40 14-64 30-64s30 24 30 64Z" fill="#211c15"/>
+              <path d="M-30 10 -70 -40" stroke="#211c15" stroke-width="16" stroke-linecap="round"/>
+              <path d="M30 10 70 -40" stroke="#211c15" stroke-width="16" stroke-linecap="round"/>
+              <path d="M-14 60 -30 150" stroke="#211c15" stroke-width="18" stroke-linecap="round"/>
+              <path d="M14 60 30 150" stroke="#211c15" stroke-width="18" stroke-linecap="round"/>
+            </g>
+
+            <!-- foreground action figure -->
+            <g transform="translate(150,250)">
+              <ellipse cx="0" cy="148" rx="70" ry="10" fill="#00000014"/>
+              <!-- back leg -->
+              <path d="M-8 40 -46 108" stroke="#211c15" stroke-width="20" stroke-linecap="round"/>
+              <path d="M-46 108 -60 128" stroke="#2b2620" stroke-width="16" stroke-linecap="round"/>
+              <!-- front leg -->
+              <path d="M10 42 40 100" stroke="#211c15" stroke-width="20" stroke-linecap="round"/>
+              <path d="M40 100 66 118" stroke="#2b2620" stroke-width="16" stroke-linecap="round"/>
+              <!-- torso -->
+              <path d="M-24 -6c0-26 10-40 24-40s24 14 24 40l-6 50h-36Z" fill="#211c15"/>
+              <!-- kit trim -->
+              <path d="M-24 -6c0-10 2-18 6-24M24 -6c0-10-2-18-6-24" stroke="#c69a3d" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M-18 44h36" stroke="#c69a3d" stroke-width="4"/>
+              <!-- arms -->
+              <path d="M-20 -30 -54 -6" stroke="#211c15" stroke-width="15" stroke-linecap="round"/>
+              <path d="M20 -30 50 -50" stroke="#211c15" stroke-width="15" stroke-linecap="round"/>
+              <!-- head -->
+              <circle cx="0" cy="-62" r="17" fill="#211c15"/>
+              <!-- ball -->
+              <circle cx="70" cy="132" r="13" fill="#f7f1e2" stroke="#211c15" stroke-width="1.6"/>
+              <path d="M70 122 76 128 73 136 66 136 63 128Z" fill="#211c15"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="ribbon-row">
+          <div class="nation-swatch">
+            <svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#2f5d4e"/><path d="M0 0 40 40M0 40 40 0" stroke="#e4c15c" stroke-width="4"/></svg>
+          </div>
+          <div class="tier-label">Platinum<small>Card tier &middot; top 3% overall rating</small></div>
+        </div>
+
+        <div class="name-row">
+          <h2>Mateo<br>Rolland</h2>
+          <div class="divider"></div>
+          <div class="club">
+            <div class="club-crest"><span>IB</span></div>
+            <div class="club-name">Ironbridge<br>United</div>
+          </div>
+        </div>
+
+        <div class="pcard-foot">
+          <div class="foot-left">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#211c15" stroke-width="1.4"/><path d="M12 6v3l3 2-1 3h-4l-1-3 3-2Z" stroke="#211c15" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            <div class="cat">Category: <b>Striker</b></div>
+          </div>
+          <div class="card-num">07</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ NOTES ============ -->
+    <div class="notes">
+      <h3>What each mark means</h3>
+      <div class="note-list">
+        <div class="note"><div class="tag">01</div><p><b>Power</b> &mdash; the player's overall rating, shown top left.</p></div>
+        <div class="note"><div class="tag">02</div><p><b>Position &amp; career</b> &mdash; role plus the years they've been active, centred above the photo.</p></div>
+        <div class="note"><div class="tag">03</div><p><b>Used in game</b> &mdash; how many matches this card has appeared in this season.</p></div>
+        <div class="note"><div class="tag">04</div><p><b>Nation swatch &amp; tier</b> &mdash; club or nation colours, plus the card's rarity tier.</p></div>
+        <div class="note"><div class="tag">05</div><p><b>Name &amp; club</b> &mdash; player name with current club and crest.</p></div>
+        <div class="note"><div class="tag">06</div><p><b>Category &amp; card number</b> &mdash; playing category and this card's number in the set, bottom right.</p></div>
+      </div>
+
+      <div class="tiers">
+        <h3>Tier system</h3>
+        <div class="tier-grid">
+          <div class="tier-chip t-bronze"><div class="swatch"></div><div class="label">Bronze</div><div class="range">60&ndash;69</div></div>
+          <div class="tier-chip t-silver"><div class="swatch"></div><div class="label">Silver</div><div class="range">70&ndash;79</div></div>
+          <div class="tier-chip t-gold"><div class="swatch"></div><div class="label">Gold</div><div class="range">80&ndash;89</div></div>
+          <div class="tier-chip t-platinum"><div class="swatch"></div><div class="label">Platinum</div><div class="range">90+</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

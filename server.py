@@ -10,6 +10,8 @@ import secrets
 import time
 from pathlib import Path
 from typing import Dict, Set, Tuple
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
@@ -50,11 +52,15 @@ _connections: Dict[str, Set[WebSocket]] = {}
 _presence: Dict[str, Set[str]] = {}
 _socket_players: Dict[WebSocket, Tuple[str, str]] = {}
 _live_match_tasks: Dict[Tuple[str, str], asyncio.Task] = {}
+_player_image_cache: Dict[str, str | None] = {}
 game_store = GameDatabase(ROOT)
 
 
+MANAGER_CHARACTERS = {"tactician", "analyst", "enforcer", "maverick", "legend", "maestro", "academy"}
+
+
 def new_team(user_id=None):
-    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id, "displayName": None, "logo": None}
+    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id, "displayName": None, "logo": None, "character": "tactician"}
 
 
 def team_names(state):
@@ -203,6 +209,7 @@ def default_state(host=None, host_user_id=None):
         "results": None,
         "tournament": None,
         "cards": {"hands": {host: deal_cards(AUCTION_CARDS, 2)} if host else {}, "rewards": {}},
+        "music": {"track": 0, "playing": False, "progress": 0},
         "host": host,
         "hostUserId": host_user_id,
         "phase": "auction",
@@ -221,6 +228,7 @@ def normalize_state(state, host=None):
         t.setdefault("userId", None)
         t.setdefault("displayName", None)
         t.setdefault("logo", None)
+        t.setdefault("character", "tactician")
     state.setdefault("usedPlayers", [])
     state.setdefault("positionCounts", {})
     state.setdefault("currentOffer", None)
@@ -231,6 +239,10 @@ def normalize_state(state, host=None):
     state.setdefault("cards", {"hands": {}})
     state["cards"].setdefault("hands", {})
     state["cards"].setdefault("rewards", {})
+    state.setdefault("music", {"track": 0, "playing": False, "progress": 0})
+    state["music"]["track"] = max(0, min(8, int(state["music"].get("track", 0) or 0)))
+    state["music"]["playing"] = bool(state["music"].get("playing", False))
+    state["music"]["progress"] = max(0, min(1, float(state["music"].get("progress", 0) or 0)))
     for name in state["teams"]:
         ensure_card_hand(state, name)
         grant_signing_rewards(state, name)
@@ -362,8 +374,6 @@ class ActionBody(BaseModel):
     amount: float | None = None
     name: str | None = None
     position: str | None = None
-    slot: str | None = None
-    player_index: int | None = None
     result: dict | None = None
     tactics: dict | None = None
     card: str | None = None
@@ -372,6 +382,7 @@ class ActionBody(BaseModel):
     player_id: str | None = None
     display_name: str | None = None
     logo: str | None = None
+    character: str | None = None
 
 
 class AuthBody(BaseModel):
@@ -381,6 +392,12 @@ class AuthBody(BaseModel):
 
 class TokenBody(BaseModel):
     token: str
+
+
+class FriendBody(BaseModel):
+    token: str
+    username: str | None = None
+    accept: bool = True
 
 
 def password_hash(password, salt=None):
@@ -575,7 +592,6 @@ def complete_sale(state):
         "name": offer["name"],
         "position": offer.get("position") or "?",
         "price": price,
-        "slot": None,
     }
     for key in ("rating", "pace", "shooting", "passing", "dribbling", "defending", "physical"):
         if offer.get(key) is not None:
@@ -612,6 +628,34 @@ def tactics_css():
 @app.get("/tactics.js")
 def tactics_js():
     return FileResponse(ROOT / "tactics.js", media_type="application/javascript")
+
+
+@app.get("/api/player-image/{player_id}")
+def player_image(player_id: str, name: str = ""):
+    """Find a deploy-safe player portrait from Wikimedia and cache the result."""
+    key = f"{player_id}:{name.strip().lower()}"
+    if key in _player_image_cache:
+        return {"url": _player_image_cache[key]}
+    if not name.strip():
+        _player_image_cache[key] = None
+        return {"url": None}
+    try:
+        query = urlencode({
+            "action": "query", "generator": "search", "gsrsearch": name,
+            "gsrnamespace": 0, "gsrlimit": 1, "prop": "pageimages",
+            "piprop": "thumbnail", "pithumbsize": 500, "format": "json",
+        })
+        request = Request(
+            f"https://en.wikipedia.org/w/api.php?{query}",
+            headers={"User-Agent": "TransferAuction/1.0 (player portrait lookup)"},
+        )
+        with urlopen(request, timeout=4) as response:
+            pages = json.loads(response.read().decode("utf-8")).get("query", {}).get("pages", {})
+        portrait = next((page.get("thumbnail", {}).get("source") for page in pages.values() if page.get("thumbnail", {}).get("source")), None)
+    except Exception:
+        portrait = None
+    _player_image_cache[key] = portrait
+    return {"url": portrait}
 
 
 @app.get("/sound.js")
@@ -710,6 +754,35 @@ def current_account(token: str):
     return {"user": public_user(get_user_from_token(token))}
 
 
+@app.get("/api/friends")
+def friends(token: str):
+    user = get_user_from_token(token)
+    records = game_store.friends_for(user["id"])
+    return {"friends": [{"username": item["username"], "wins": item["wins"], "titles": item["titles"], "gamesPlayed": item["games_played"], "status": item["status"], "incoming": item["friend_id"] == user["id"]} for item in records]}
+
+
+@app.post("/api/friends/request")
+def request_friend(body: FriendBody):
+    user = get_user_from_token(body.token)
+    friend = game_store.get_user_by_username((body.username or "").strip())
+    if not friend:
+        raise HTTPException(404, "Manager not found")
+    if friend["id"] == user["id"]:
+        raise HTTPException(400, "You cannot add yourself")
+    game_store.send_friend_request(user["id"], friend["id"], int(time.time() * 1000))
+    return {"ok": True}
+
+
+@app.post("/api/friends/respond")
+def respond_friend(body: FriendBody):
+    user = get_user_from_token(body.token)
+    requester = game_store.get_user_by_username((body.username or "").strip())
+    if not requester:
+        raise HTTPException(404, "Manager not found")
+    game_store.respond_friend_request(user["id"], requester["id"], body.accept)
+    return {"ok": True}
+
+
 @app.post("/api/join")
 async def join(body: JoinBody):
     room = clean_room(body.room)
@@ -765,6 +838,25 @@ async def action(body: ActionBody):
                 if room_member["team_name"] != actor:
                     state["teams"][room_member["team_name"]] = new_team(room_member["user_id"])
                     ensure_card_hand(state, room_member["team_name"])
+
+        elif act == "music_control":
+            require_host(state, actor)
+            control = (body.name or "").strip().lower()
+            music = state.setdefault("music", {"track": 0, "playing": False, "progress": 0})
+            if control == "toggle":
+                music["playing"] = not bool(music.get("playing", True))
+                music["progress"] = max(0, min(1, float(body.amount or 0)))
+            elif control in {"play", "pause"}:
+                music["playing"] = control == "play"
+                music["progress"] = max(0, min(1, float(body.amount or 0)))
+            elif control == "next":
+                music["track"] = (int(music.get("track", 0)) + 1) % 9
+                music["playing"] = True
+                music["progress"] = 0
+            elif control == "seek":
+                music["progress"] = max(0, min(1, float(body.amount or 0)))
+            else:
+                raise HTTPException(400, "Unknown music control")
 
         elif act == "next_player":
             require_host(state, actor)
@@ -944,14 +1036,6 @@ async def action(body: ActionBody):
             else:
                 raise HTTPException(400, "Unknown card")
 
-        elif act == "set_slot":
-            if state.get("phase") != "auction":
-                raise HTTPException(400, "Squad slots can only change during the auction")
-            idx = body.player_index
-            if idx is None or idx < 0 or idx >= len(state["teams"][actor]["squad"]):
-                raise HTTPException(400, "Invalid squad player")
-            state["teams"][actor]["squad"][idx]["slot"] = body.slot or None
-
         elif act == "set_team_identity":
             team = state["teams"][actor]
             display_name = (body.display_name or "").strip()
@@ -960,8 +1044,12 @@ async def action(body: ActionBody):
             logo = body.logo
             if logo and (not logo.startswith("data:image/") or len(logo) > 350000):
                 raise HTTPException(400, "Use an image smaller than 250 KB for the team logo")
+            character = (body.character or "tactician").strip().lower()
+            if character not in MANAGER_CHARACTERS:
+                raise HTTPException(400, "Choose a valid manager character")
             team["displayName"] = display_name
             team["logo"] = logo or None
+            team["character"] = character
 
         elif act == "set_tactics":
             if state.get("phase") != "tactics":
@@ -1170,11 +1258,15 @@ async def action(body: ActionBody):
                         "rating": p.get("rating"), "pace": p.get("pace"), "shooting": p.get("shooting"),
                         "passing": p.get("passing"), "dribbling": p.get("dribbling"),
                         "defending": p.get("defending"), "physical": p.get("physical"),
-                        "price": 0, "slot": None,
+                        "price": 0,
                     })
+                existing_team = state["teams"].get(name, {})
                 state["teams"][name] = {
                     "budget": BUDGET, "spent": 0, "squad": squad,
-                    "userId": state["teams"].get(name, {}).get("userId"),
+                    "userId": existing_team.get("userId"),
+                    "displayName": existing_team.get("displayName"),
+                    "logo": existing_team.get("logo"),
+                    "character": existing_team.get("character", "tactician"),
                     "tactics": {
                         "formation": "4-3-3", "attackStyle": "Balanced", "defenceStyle": "Balanced",
                         "pressing": 50, "tempo": 50, "width": 50, "positions": {}, "roles": {}
