@@ -276,6 +276,21 @@
     letter-spacing:-.035em;
     text-shadow:2px 2px 0 rgba(229,187,87,.55);
   }
+  /* Selected managers are rendered as larger WebGL characters; SVG remains a no-WebGL fallback. */
+  #room .manager-portrait{height:190px;}
+  #room .manager-avatar{width:180px;height:194px;}
+  .manager-3d-preview{display:none;position:absolute;inset:0;width:100%;height:100%;}
+  .manager-3d-preview canvas{display:block;width:100%!important;height:100%!important;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.18));}
+  .manager-3d-ready .manager-3d-preview{display:block;}
+  .manager-3d-ready .manager-svg-fallback{display:none;}
+  .manager-character-choice .manager-3d-preview{inset:0;height:63px;}
+  .manager-character-choice .manager-svg-fallback{display:block;height:63px;}
+  /* Customizer: only the new 3D character gallery is shown. */
+  .manager-character-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .manager-character-choice{min-height:148px;background:linear-gradient(145deg,var(--manager-light),var(--manager));}
+  .manager-character-choice .manager-3d-preview{display:block;inset:0 0 20px;height:auto;}
+  .manager-character-choice span{z-index:3;font-size:9px;letter-spacing:.08em;background:rgba(7,12,12,.72);}
+  .manager-character-placeholder{display:grid;place-items:center;height:100%;padding-bottom:18px;color:rgba(255,255,255,.72);font-family:'Fraunces',serif;font-size:38px;font-style:italic;text-shadow:2px 3px 0 rgba(0,0,0,.25);}
 </style>
 <link rel="stylesheet" href="/tactics.css?v=real-kit-art-1">
 <link rel="stylesheet" href="/evaluator.css?v=blue-theme-2">
@@ -371,7 +386,7 @@
 </div>
 <div class="invite-toast" id="inviteToast"></div>
 <div class="game-modal" id="gameModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle"><span class="modal-kicker">MATCH CONTROL</span><h2 id="gameModalTitle"></h2><p id="gameModalText"></p><select id="gameModalSelect" style="display:none"></select><div class="game-modal-actions"><button class="btn-ghost" id="gameModalCancel">Cancel</button><button class="btn-primary" id="gameModalConfirm">Confirm</button></div></div></div>
-<div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label class="character-label">MANAGER CHARACTER<div class="manager-character-grid" id="managerCharacterGrid"></div></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
+<div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label class="character-label">CHOOSE YOUR 3D MANAGER<div class="manager-character-grid" id="managerCharacterGrid"></div></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
 <div class="game-modal" id="settingsModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true"><span class="modal-kicker">GAME SETTINGS</span><h2>Matchday control</h2><div class="settings-grid"><label>VISUAL THEME<select id="themeSelect"><option value="stadium">Stadium Night</option><option value="midnight">Midnight Violet</option><option value="sunset">Sunset Derby</option><option value="pitch">Classic Pitch</option><option value="ocean">Ocean Arena</option><option value="berry">Berry Clash</option><option value="neon">Neon Training</option><option value="ember">Ember Derby</option><option value="custom">My Custom Theme</option></select></label><div id="customThemePanel" style="display:none"><label>BACKGROUND<input id="customThemeBg" type="color" value="#0d1512"></label><label>GLOW<input id="customThemeGlow" type="color" value="#225e48"></label><label>ACCENT<input id="customThemeAccent" type="color" value="#d9a441"></label></div><label>MUSIC PLAYER SIZE <span class="settings-value" id="musicSizeValue">100%</span><input id="musicSize" type="range" min="80" max="145" value="100"></label><label>MUSIC VOLUME <span class="settings-value" id="musicVolumeValue">36%</span><input id="musicVolume" type="range" min="0" max="100" value="36"></label><label>SFX VOLUME <span class="settings-value" id="sfxVolumeValue">80%</span><input id="sfxVolume" type="range" min="0" max="100" value="80"></label><label><input id="musicEnabled" type="checkbox" checked style="width:auto;margin-right:8px">PHASE MUSIC</label><p class="settings-note">Each record shows its own artwork. Drag the progress line to jump to any moment in the song.</p></div><div class="game-modal-actions"><button class="btn-primary" id="settingsClose">Done</button></div></div></div>
 <div class="game-modal" id="profileModal" aria-hidden="true"><div class="game-modal-card profile-modal" role="dialog" aria-modal="true"><span class="modal-kicker">MANAGER PROFILE</span><h2 id="profileName"></h2><p id="profileStats"></p><div class="friends-head"><b>Friends</b><button class="btn-ghost" id="profileClose" type="button">Close</button></div><div class="friend-add"><input id="friendName" placeholder="Manager name"><button class="btn-primary" id="friendAdd" type="button">Add</button></div><div id="friendsList" class="friends-list"></div></div></div>
 
@@ -422,13 +437,16 @@
       let logo = team.logo || null, character = team.character || 'tactician';
       name.value = team.displayName || me; file.value = ''; preview.src = logo || ''; preview.style.display = logo ? 'block' : 'none';
       const characterGrid = $('managerCharacterGrid');
+      const character3dNames = {tactician:'Suit',analyst:'Hoodie',enforcer:'SWAT',maverick:'Punk',legend:'King',maestro:'Adventurer',academy:'Farmer'};
       const drawCharacters = () => {
-        characterGrid.innerHTML = Object.entries(MANAGERS).map(([id, manager]) => `<button type="button" class="manager-character-choice ${id === character ? 'selected' : ''}" data-character="${id}" title="${manager.name}" style="--manager:${manager.theme};--manager-light:${manager.light}">${managerAvatar(id)}<span>${manager.name.replace('The ','')}</span></button>`).join('');
-        characterGrid.querySelectorAll('[data-character]').forEach(button => button.onclick = () => { character = button.dataset.character; drawCharacters(); });
+        window.rivalry3D?.dispose?.(characterGrid);
+        characterGrid.innerHTML = Object.entries(MANAGERS).map(([id, manager]) => `<button type="button" class="manager-character-choice ${id === character ? 'selected' : ''}" data-character="${id}" title="Choose 3D ${character3dNames[id]}" style="--manager:${manager.theme};--manager-light:${manager.light}">${id === character ? `<div class="manager-3d-preview" data-character="${id}" data-outcome="idle"></div>` : '<div class="manager-character-placeholder">3D</div>'}<span>${character3dNames[id]}</span></button>`).join('');
+        characterGrid.querySelectorAll('button[data-character]').forEach(button => button.onclick = () => { character = button.dataset.character; drawCharacters(); });
+        requestAnimationFrame(() => window.rivalry3D?.scan?.());
       };
       drawCharacters();
-      modal.classList.add('show');
-      const close = value => { modal.classList.remove('show'); resolve(value); };
+      modal.classList.add('show'); modal.setAttribute('aria-hidden', 'false');
+      const close = value => { document.activeElement?.blur?.(); window.rivalry3D?.dispose?.(characterGrid); modal.classList.remove('show'); modal.setAttribute('aria-hidden', 'true'); resolve(value); };
       file.onchange = () => { const image = file.files?.[0]; if (!image) return; if (image.size > 250000) return showError('Choose a logo smaller than 250 KB.'); const reader = new FileReader(); reader.onload = () => { logo = reader.result; preview.src = logo; preview.style.display = 'block'; }; reader.readAsDataURL(image); };
       $('teamIdentityCancel').onclick = () => close(null);
       $('teamIdentitySave').onclick = () => close({display_name:name.value.trim(), logo, character});
@@ -706,6 +724,7 @@
   }
 
   function drawTeams() {
+    window.rivalry3D?.dispose?.($('teamsRow'));
     $('teamsRow').innerHTML = teamNames().map(name => {
       const team = state.teams[name];
       const profile = state.profiles?.[name];
@@ -714,13 +733,14 @@
       const manager = MANAGERS[team.character] || MANAGERS.tactician;
       const dots = Array.from({length:SQUAD_SIZE}, (_, index) => `<i class="${index < team.squad.length ? 'filled' : ''}"></i>`).join('');
       return `<article class="manager-card" style="--manager:${manager.theme};--manager-light:${manager.light}">
-        <div class="manager-portrait"><span class="manager-index">${team.squad.length}</span>${name === state.host ? '<span class="manager-host">HOST</span>' : ''}<div class="manager-avatar">${managerAvatar(team.character)}</div></div>
+        <div class="manager-portrait"><span class="manager-index">${team.squad.length}</span>${name === state.host ? '<span class="manager-host">HOST</span>' : ''}<div class="manager-avatar">${name === me ? `<div class="manager-3d-preview" data-character="${esc(team.character || 'tactician')}" data-outcome="idle"></div>` : '<div class="manager-character-placeholder">3D</div>'}</div></div>
         <div class="manager-nameplate"><div class="manager-title-row"><h3>${esc(team.displayName || name)}${team.logo ? ` <img class="team-mini-logo" src="${esc(team.logo)}" alt="">` : ''}</h3><span>${name === me ? 'YOU' : manager.role}</span></div><span class="manager-archetype">${manager.name}</span></div>
         <div class="manager-stats"><div class="manager-stat"><i class="spent">↗</i><label>Spent</label><b>$${money(team.spent)}M</b></div><div class="manager-stat"><i class="cash">$</i><label>Remaining</label><b>$${money(team.budget)}M</b></div><div class="manager-stat"><i class="legacy">★</i><label>Legacy</label><b>${profile ? `${profile.titles} · ${profile.wins}W` : '0 · 0W'}</b></div></div>
         <div class="manager-footer"><span><i class="manager-online-dot ${online ? '' : 'offline'}"></i>${online ? 'Online' : 'Offline'} · ${team.squad.length}/11</span><span class="manager-dots">${dots}</span></div>
         ${name === me ? `<button class="team-customize" type="button">Customize manager</button>` : ''}
       </article>`;
     }).join('');
+    requestAnimationFrame(() => window.rivalry3D?.scan?.());
     document.querySelectorAll('.team-customize').forEach(button => button.onclick = async () => {
       const identity = await teamIdentityDialog(state.teams[me]);
       if (identity) {
@@ -1155,6 +1175,8 @@
 <script src="/evaluator.js?v=knockout-cinematic-1"></script>
 <script src="/tournament.js?v=live-broadcast-4"></script>
 <script src="/results.js?v=knockout-cinematic-1"></script>
+<script type="importmap">{"imports":{"three":"/assets/vendor/three.module.js","three/addons/loaders/GLTFLoader.js":"/assets/vendor/GLTFLoader.js?v=2"}}</script>
+<script type="module" src="/rivalry-3d.js?v=7"></script>
 
 </body>
 </html>

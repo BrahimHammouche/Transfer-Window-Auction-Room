@@ -54,3 +54,17 @@
 @keyframes rivalSmirk{0%,100%{transform:perspective(280px) rotateY(-11deg) rotateZ(1deg) translateY(0)}40%{transform:perspective(280px) rotateY(-2deg) rotateZ(-2deg) translateY(-7px)}62%{transform:perspective(280px) rotateY(-16deg) rotateZ(3deg) translateY(0)}}
 @keyframes gesturePop{0%,100%{transform:scale(1) rotate(-8deg)}50%{transform:scale(1.18) rotate(10deg)}}
 @media(prefers-reduced-motion:reduce){#evaluationView .eval-rival-figure,#evaluationView .eval-rival-gesture{animation:none}}
+
+/* WebGL characters replace the SVG fallback as soon as their glTF model is ready. */
+#evaluationView .rivalry-3d{position:absolute;z-index:3;inset:0 0 0 0;display:none;width:100%;height:100%}
+#evaluationView .rivalry-3d canvas{display:block;width:100%!important;height:100%!important;filter:drop-shadow(11px 12px 0 rgba(0,0,0,.22))}
+#evaluationView .rivalry-svg-fallback{display:contents}
+#evaluationView .rivalry-3d-ready .rivalry-3d{display:block}
+#evaluationView .rivalry-3d-ready .rivalry-svg-fallback{display:none}
+
+/* Outcome cues pair with the glTF animation clips: celebration for #1, tears for lower ranks. */
+#evaluationView .eval-card.rank-1 .eval-rival-figure::after{content:'✦ ✦';position:absolute;z-index:5;right:-20px;top:18px;color:#e6ad31;font-size:18px;letter-spacing:8px;animation:celebrateSpark 1.3s ease-in-out infinite}
+#evaluationView .eval-card:not(.rank-1) .eval-rival-figure::after{content:'💧';position:absolute;z-index:5;right:15px;top:51px;font-size:19px;animation:tearFall 1.7s ease-in infinite}
+#evaluationView .rivalry-manager-right::after{content:'💧';position:absolute;z-index:6;top:108px;left:41%;font-size:19px;animation:tearFall 1.7s ease-in infinite .4s}
+#evaluationView .rivalry-manager-left::after{content:'✦';position:absolute;z-index:6;top:104px;right:28%;color:#f5cc56;font-size:25px;animation:celebrateSpark 1.3s ease-in-out infinite}
+@keyframes celebrateSpark{50%{transform:translateY(-8px) scale(1.25) rotate(20deg);opacity:.45}}@keyframes tearFall{0%{opacity:0;transform:translateY(-4px)}25%{opacity:1}100%{opacity:0;transform:translateY(24px)}}

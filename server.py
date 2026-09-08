@@ -673,6 +673,11 @@ def evaluator_js():
     return FileResponse(ROOT / "evaluator.js", media_type="application/javascript")
 
 
+@app.get("/rivalry-3d.js")
+def rivalry_3d_js():
+    return FileResponse(ROOT / "rivalry-3d.js", media_type="application/javascript")
+
+
 @app.get("/results.css")
 def results_css():
     return FileResponse(ROOT / "results.css", media_type="text/css")
