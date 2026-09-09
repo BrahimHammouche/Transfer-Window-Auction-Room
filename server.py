@@ -57,10 +57,11 @@ game_store = GameDatabase(ROOT)
 
 
 MANAGER_CHARACTERS = {"tactician", "analyst", "enforcer", "maverick", "legend", "maestro", "academy"}
+MANAGER_GESTURES = {"neutral", "fist_pump", "celebrate", "taunt", "slump", "wave", "punch", "kick", "hit_react", "walk"}
 
 
 def new_team(user_id=None):
-    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id, "displayName": None, "logo": None, "character": "tactician"}
+    return {"budget": BUDGET, "spent": 0, "squad": [], "userId": user_id, "displayName": None, "logo": None, "character": "tactician", "gesture": "neutral"}
 
 
 def team_names(state):
@@ -229,6 +230,7 @@ def normalize_state(state, host=None):
         t.setdefault("displayName", None)
         t.setdefault("logo", None)
         t.setdefault("character", "tactician")
+        t.setdefault("gesture", "neutral")
     state.setdefault("usedPlayers", [])
     state.setdefault("positionCounts", {})
     state.setdefault("currentOffer", None)
@@ -383,6 +385,7 @@ class ActionBody(BaseModel):
     display_name: str | None = None
     logo: str | None = None
     character: str | None = None
+    gesture: str | None = None
 
 
 class AuthBody(BaseModel):
@@ -858,6 +861,10 @@ async def action(body: ActionBody):
                 music["track"] = (int(music.get("track", 0)) + 1) % 9
                 music["playing"] = True
                 music["progress"] = 0
+            elif control == "previous":
+                music["track"] = (int(music.get("track", 0)) - 1) % 9
+                music["playing"] = True
+                music["progress"] = 0
             elif control == "seek":
                 music["progress"] = max(0, min(1, float(body.amount or 0)))
             else:
@@ -1055,6 +1062,12 @@ async def action(body: ActionBody):
             team["displayName"] = display_name
             team["logo"] = logo or None
             team["character"] = character
+
+        elif act == "set_manager_gesture":
+            gesture = (body.gesture or "neutral").strip().lower()
+            if gesture not in MANAGER_GESTURES:
+                raise HTTPException(400, "Choose a valid manager gesture")
+            state["teams"][actor]["gesture"] = gesture
 
         elif act == "set_tactics":
             if state.get("phase") != "tactics":

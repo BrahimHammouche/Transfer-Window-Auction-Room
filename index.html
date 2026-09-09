@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deadline Day — Transfer Auction</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 <style>
   :root{
     --bg: #06101F;
@@ -99,11 +100,14 @@
   #room{display:none;}
   .topbar{
     display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:22px; flex-wrap:wrap; gap:10px;
+    position:relative; z-index:70; margin-bottom:22px; flex-wrap:wrap; gap:10px;
   }
   .room-tag{font-size:12px; color:var(--muted);}
   .room-tag b{color:var(--gold); letter-spacing:.06em;}
   .topbar-right{display:flex; gap:8px; align-items:center;}
+  .emote-modal-card{width:min(480px,calc(100vw - 28px));text-align:center}.emote-modal-card h2{margin:4px 0 7px}.emote-modal-card p{margin:0 0 18px}.emote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.emote-choice{display:grid;place-items:center;gap:6px;min-height:104px;padding:10px;border:2px solid #1b1b1f;border-radius:9px;background:#e8e1d2;color:#1b1b1f;font:800 11px 'Space Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 3px 0 rgba(27,27,31,.35)}.emote-choice i{font-style:normal;font-size:32px;line-height:1}.emote-choice:hover,.emote-choice.selected{background:#d9a441;transform:translateY(2px);box-shadow:0 1px 0 rgba(27,27,31,.35)}@media(max-width:440px){.emote-grid{grid-template-columns:repeat(2,1fr)}}
+  /* Header pixel-vinyl player, adapted from the supplied reference. */
+  #room .music-header-player{position:relative!important;z-index:auto!important;right:auto!important;bottom:auto!important;width:334px;min-width:250px;height:48px;padding:5px 7px 5px 9px;display:flex;align-items:center;gap:8px;overflow:visible;border:2px solid #3a2d52;border-radius:0;background:linear-gradient(120deg,#f4e9f5,#eaf1fb);color:#2f2540;box-shadow:0 7px 15px -9px rgba(58,45,82,.7);clip-path:polygon(0 7px,7px 7px,7px 0,calc(100% - 7px) 0,calc(100% - 7px) 7px,100% 7px,100% calc(100% - 7px),calc(100% - 7px) calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,7px calc(100% - 7px),0 calc(100% - 7px));cursor:default}#room .music-header-player .music-disc{position:relative;left:auto;top:auto;flex:none;width:34px;height:34px;border:0;border-radius:50%;background:repeating-radial-gradient(circle,#4a3f66 0 2px,#2b2340 2px 4px);box-shadow:0 0 0 1px #3a2d52;animation:spinDisc 3.6s linear infinite paused}#room .music-header-player .music-disc.playing{animation-play-state:running}#room .music-header-player .music-disc::before{z-index:auto;inset:12px;width:auto;height:auto;border:0;background:repeating-conic-gradient(#f2a7c9 0deg 90deg,#a7c8f2 90deg 180deg);box-shadow:0 0 0 1px #3a2d52}#room .music-header-player .music-disc::after{display:none}#room .music-header-player .music-cover{display:none}#room .music-header-player .music-now{flex:1;min-width:0;padding:0;display:grid;gap:2px}#room .music-header-player .music-kicker{width:max-content;max-width:100%;padding:2px 4px;border:1px solid #3a2d52;background:#f2a7c9;color:#3a2d52;font:5px 'Press Start 2P',monospace;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#room .music-header-player .music-title{margin:0;color:#2f2540;font:7px 'Press Start 2P',monospace;white-space:nowrap}#room .music-header-player .music-artist{display:none}#room .music-header-player .music-timeline{grid-template-columns:25px 1fr 25px;gap:3px;padding:0;color:#7a6d96;font:4.5px 'Press Start 2P',monospace}#room .music-header-player .music-timeline input{height:5px;accent-color:#f2a7c9}#room .music-header-player .music-controls{gap:4px;padding:0}#room .music-header-player .music-controls button{width:23px;height:23px;border:1.5px solid #20243a;border-radius:0;background:#fbf7ec;color:#20243a;font-size:11px;clip-path:polygon(0 4px,4px 4px,4px 0,calc(100% - 4px) 0,calc(100% - 4px) 4px,100% 4px,100% calc(100% - 4px),calc(100% - 4px) calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,4px calc(100% - 4px),0 calc(100% - 4px))}#room .music-header-player .music-controls .music-play{width:27px;height:27px;background:#e7b545}#room .music-header-player .music-wave{display:none}@media(max-width:900px){#room .music-header-player{order:3;width:min(334px,100%)}.topbar-right{width:100%;flex-wrap:wrap}}
 
   .teams-row{
     display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;
@@ -237,7 +241,7 @@
   /* Preserve the established room layout; the portal animates the screen, not its individual panels. */
   #room{position:static;min-height:0;padding:0;overflow:visible;border-radius:0;background:transparent;box-shadow:none}#room::before{display:none}#room>*{position:static;z-index:auto}#room .music-deck{position:fixed;z-index:30}@media(max-width:560px){#room{min-height:0;padding:0}}
   /* Room screen — same illustrated board language as the main menu, while retaining the room's grid flow. */
-  #room{position:relative;isolation:isolate;min-height:calc(100vh - 48px);padding:22px;overflow:visible;background:radial-gradient(ellipse at 50% 8%,#fff1bd 0,rgba(255,241,189,.82) 18%,transparent 46%),radial-gradient(circle at 6% 90%,#c33c5d 0,transparent 28%),radial-gradient(circle at 94% 86%,#233b52 0,transparent 30%),#1c151b;box-shadow:inset 0 0 0 3px #17120f}#room::before{display:block;content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.3;background:radial-gradient(#f6d878 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(120deg,transparent 30%,rgba(229,184,74,.16) 30.2% 31%,transparent 31.2% 62%,rgba(255,255,255,.1) 62.2% 63%,transparent 63.2%)}#room>*:not(.music-deck){position:relative;z-index:1}#room .music-deck{position:fixed!important;z-index:30;cursor:grab;will-change:left,top}#room .music-deck.is-dragging{cursor:grabbing;transform:none!important;transition:none;user-select:none}.music-deck button,#room .music-deck input{cursor:pointer}.music-deck-art{touch-action:none}@media(max-width:560px){#room{min-height:100vh;padding:13px}.wrap{width:100%}}
+  #room{position:relative;isolation:isolate;min-height:calc(100vh - 48px);padding:22px;overflow:visible;background:radial-gradient(ellipse at 50% 8%,#fff1bd 0,rgba(255,241,189,.82) 18%,transparent 46%),radial-gradient(circle at 6% 90%,#c33c5d 0,transparent 28%),radial-gradient(circle at 94% 86%,#233b52 0,transparent 30%),#1c151b;box-shadow:inset 0 0 0 3px #17120f}#room::before{display:block;content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.3;background:radial-gradient(#f6d878 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(120deg,transparent 30%,rgba(229,184,74,.16) 30.2% 31%,transparent 31.2% 62%,rgba(255,255,255,.1) 62.2% 63%,transparent 63.2%)}#room>*:not(.music-deck){position:relative;z-index:1}#room>.topbar{z-index:80}#room>.topbar .header-menu{z-index:81}#room>.topbar .header-menu-pop{z-index:82}#room .music-deck{position:fixed!important;z-index:30;cursor:grab;will-change:left,top}#room .music-deck.is-dragging{cursor:grabbing;transform:none!important;transition:none;user-select:none}.music-deck button,#room .music-deck input{cursor:pointer}.music-deck-art{touch-action:none}@media(max-width:560px){#room{min-height:100vh;padding:13px}.wrap{width:100%}}
   #mainMenu::before,#mainMenu::after{content:'';position:absolute;z-index:-1;pointer-events:none}#mainMenu::before{inset:0;opacity:.5;background:radial-gradient(#4a2a16 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(110deg,transparent 28%,rgba(73,38,13,.15) 28.2% 29%,transparent 29.2% 55%,rgba(73,38,13,.13) 55.2% 56%,transparent 56.2%)}#mainMenu::after{width:450px;height:450px;right:-160px;bottom:-210px;border:34px solid #c99a38;border-radius:50%;box-shadow:0 0 0 16px #38241d,0 0 0 24px #dfbc5f;transform:rotate(-15deg)}
   .menu-action.quit{font-size:13px;background:#e8d5c6;color:#652a2c}
   .menu-top{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;z-index:2}.menu-brand{font-family:'Fraunces',serif;font-size:clamp(24px,4vw,42px);font-weight:900;font-style:italic;letter-spacing:-.04em;text-shadow:2px 2px 0 #e5bb57}.menu-user{padding:8px 12px;border:2px solid #1b1b1f;border-radius:999px;background:#f7edcc;font-size:12px;font-weight:800;box-shadow:3px 3px 0 #1b1b1f}.menu-stage{display:grid;min-height:calc(100vh - 150px);place-items:center;text-align:center}.menu-stack{width:min(440px,100%);position:relative}.menu-kicker{display:inline-block;margin-bottom:18px;padding:6px 13px;background:#172329;color:#f7edcc;font-size:10px;font-weight:900;letter-spacing:.17em;transform:rotate(-2deg);box-shadow:4px 4px 0 #d53d56}.menu-title{margin:0 0 25px;font-family:'Fraunces',serif;font-size:clamp(42px,7vw,70px);font-style:italic;line-height:.88;letter-spacing:-.06em;text-shadow:3px 4px 0 #f6d362}.menu-nav{display:grid;gap:10px}.menu-action{position:relative;width:100%;padding:15px 20px;border:3px solid #1b1b1f;background:#f8f0d4;color:#1b1b1f;font:900 22px/1 'Space Grotesk',sans-serif;letter-spacing:.04em;text-transform:uppercase;text-align:left;transform:skewY(-2deg);box-shadow:7px 7px 0 #1b1b1f}.menu-action span{display:inline-block;transform:skewY(2deg)}.menu-action::before{content:'▶';display:inline-block;margin-right:12px;color:#d53d56;font-size:16px}.menu-action:hover,.menu-action:focus{background:#d9f122;transform:translate(3px,3px) skewY(-2deg);box-shadow:4px 4px 0 #1b1b1f;outline:0}.menu-action.secondary{font-size:17px;background:#f4b3d1}.menu-action.settings{font-size:15px;background:#b9e7ef}.menu-join{display:none;margin-top:16px;padding:15px;border:3px solid #1b1b1f;background:#172329;color:#f7edcc;text-align:left;box-shadow:6px 6px 0 #d53d56}.menu-join.show{display:block}.menu-join label{display:block;margin-bottom:7px;font-size:10px;font-weight:900;letter-spacing:.13em}.menu-join input{width:100%;padding:12px;border:2px solid #f7edcc;background:#fcf2d5;color:#1b1b1f;font:800 16px 'Space Grotesk',sans-serif;text-transform:uppercase}.menu-join button{width:100%;margin-top:9px}.menu-note{margin:22px 0 0;color:#493629;font-size:12px;font-weight:700}.menu-ball{position:absolute;left:-110px;bottom:-110px;width:280px;height:280px;border:13px solid #1b1b1f;border-radius:50%;background:radial-gradient(circle at 40% 35%,#faf1cf 0 10%,#1b1b1f 10.5% 13%,#faf1cf 13.5% 31%,#1b1b1f 31.5% 34%,#f3d28a 34.5%);transform:rotate(19deg);opacity:.9}@media(max-width:560px){#mainMenu{padding:20px 14px;border-radius:0}.menu-top{align-items:flex-start}.menu-user{font-size:10px}.menu-stage{min-height:calc(100vh - 115px)}.menu-action{font-size:19px}.menu-title{font-size:52px}}
@@ -251,23 +255,29 @@
     .game-card{width:min(100%,240px);}
   }
   /* Shared illustrated tabletop canvas, matching the main menu. */
-  body{
-    min-height:100vh;
-    background:radial-gradient(circle at 50% 43%,#fff8d5 0 19%,#ead59b 43%,#4a281e 78%,#160d12 100%);
-    background-attachment:fixed;
-    background-repeat:no-repeat;
-    background-size:cover;
-  }
-  body::before{
-    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-    opacity:.5;
-    background:radial-gradient(#4a2a16 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(110deg,transparent 28%,rgba(73,38,13,.15) 28.2% 29%,transparent 29.2% 55%,rgba(73,38,13,.13) 55.2% 56%,transparent 56.2%);
-  }
-  body::after{content:'';position:fixed;z-index:0;right:-100px;bottom:-130px;width:280px;height:280px;pointer-events:none;border:22px solid #c99a38;border-radius:50%;box-shadow:0 0 0 10px #38241d,0 0 0 15px #dfbc5f;transform:rotate(-15deg);}
+  /* Theme variables are also used by the header player and the stadium canvas. */
+  body{--ucl-night:#071329;--ucl-sky:#123b72;--ucl-light:#7ec9ff;--player-from:#214b3d;--player-to:#142c25;--player-accent:#d9a441;--player-paper:#f7eedb;min-height:100vh;background:radial-gradient(ellipse at 50% -14%,var(--ucl-light) 0,transparent 31%),radial-gradient(ellipse at 50% 32%,var(--ucl-sky) 0,transparent 46%),linear-gradient(180deg,var(--ucl-night),#020817 72%,#01040b);background-attachment:fixed;background-repeat:no-repeat;background-size:cover;}
+  body[data-theme="stadium"]{--ucl-night:#061326;--ucl-sky:#16528a;--ucl-light:#92d8ff;--player-from:#174f6d;--player-to:#09253f;--player-accent:#55c7ff;--player-paper:#edf7ff;}
+  body[data-theme="midnight"]{--ucl-night:#110a25;--ucl-sky:#4b2d83;--ucl-light:#c59bff;--player-from:#44276c;--player-to:#1b1033;--player-accent:#c59bff;--player-paper:#f4eeff;}
+  body[data-theme="sunset"]{--ucl-night:#24080b;--ucl-sky:#8a302b;--ucl-light:#ffb357;--player-from:#783329;--player-to:#2d0e12;--player-accent:#ffb357;--player-paper:#fff0e0;}
+  body[data-theme="pitch"]{--ucl-night:#06190f;--ucl-sky:#23643d;--ucl-light:#cbed70;--player-from:#285c35;--player-to:#0d2818;--player-accent:#cbed70;--player-paper:#f2fae7;}
+  body[data-theme="ocean"]{--ucl-night:#041a34;--ucl-sky:#176ba5;--ucl-light:#66d8f5;--player-from:#176b86;--player-to:#08304e;--player-accent:#66d8f5;--player-paper:#effcff;}
+  body[data-theme="berry"]{--ucl-night:#27071d;--ucl-sky:#8c235f;--ucl-light:#ff80b4;--player-from:#7a245d;--player-to:#310c29;--player-accent:#ff80b4;--player-paper:#fff0f7;}
+  body[data-theme="neon"]{--ucl-night:#041b18;--ucl-sky:#087f68;--ucl-light:#d9ff36;--player-from:#207d60;--player-to:#082d27;--player-accent:#d9ff36;--player-paper:#f7ffe0;}
+  body[data-theme="ember"]{--ucl-night:#250907;--ucl-sky:#a43427;--ucl-light:#ffb13b;--player-from:#9b3825;--player-to:#38110c;--player-accent:#ffb13b;--player-paper:#fff3df;}
+  body[data-theme="custom"]{--ucl-night:var(--custom-bg,#0d1512);--ucl-sky:var(--custom-glow,#225e48);--ucl-light:var(--custom-accent,#d9a441);--player-from:var(--custom-glow,#225e48);--player-to:var(--custom-bg,#0d1512);--player-accent:var(--custom-accent,#d9a441);--player-paper:#f7eedb;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.76;background:radial-gradient(ellipse at 5% 18%,rgba(255,255,255,.23),transparent 20%),radial-gradient(ellipse at 95% 18%,rgba(255,255,255,.23),transparent 20%),radial-gradient(circle at 14% 40%,rgba(255,255,255,.6) 0 1px,transparent 1.7px),radial-gradient(circle at 77% 24%,rgba(255,255,255,.5) 0 1px,transparent 1.7px),radial-gradient(circle at 66% 68%,rgba(255,255,255,.4) 0 1px,transparent 1.7px),linear-gradient(180deg,rgba(255,255,255,.07),transparent 24%,rgba(0,0,0,.28) 100%);background-size:auto,auto,130px 117px,173px 149px,207px 179px,auto;}
+  body::after{content:'';position:fixed;z-index:0;right:-130px;bottom:-155px;width:430px;height:430px;pointer-events:none;border:2px solid rgba(234,245,255,.22);border-radius:50%;background:radial-gradient(circle at center,transparent 0 25%,rgba(190,222,255,.08) 25.5% 26%,transparent 26.5% 42%,rgba(190,222,255,.08) 42.5% 43%,transparent 43.5%),conic-gradient(from 18deg,transparent 0 9%,rgba(213,235,255,.16) 9.4% 10%,transparent 10.4% 19%,rgba(213,235,255,.16) 19.4% 20%,transparent 20.4% 29%,rgba(213,235,255,.16) 29.4% 30%,transparent 30.4% 39%,rgba(213,235,255,.16) 39.4% 40%,transparent 40.4% 49%,rgba(213,235,255,.16) 49.4% 50%,transparent 50.4%);box-shadow:0 0 80px rgba(126,201,255,.16),inset 0 0 70px rgba(126,201,255,.1);transform:rotate(-15deg);}
   .wrap{position:relative;z-index:1;}
   /* Use the stadium night as the single canvas for the room as well. */
   #room{background:transparent;box-shadow:none;}
   #room::before{display:none;}
+  /* Theme the background, card collection and squad columns together. */
+  body[data-theme="stadium"]{--theme-panel:#0b2a4a;--theme-panel-2:#071a31;--theme-ink:#eaf5ff;--theme-line:#55c7ff;}body[data-theme="midnight"]{--theme-panel:#2a1747;--theme-panel-2:#120b28;--theme-ink:#f4eeff;--theme-line:#c59bff;}body[data-theme="sunset"]{--theme-panel:#4a1b22;--theme-panel-2:#240d13;--theme-ink:#fff0e0;--theme-line:#ffb357;}body[data-theme="pitch"]{--theme-panel:#123b24;--theme-panel-2:#071d11;--theme-ink:#f2fae7;--theme-line:#cbed70;}body[data-theme="ocean"]{--theme-panel:#0b4670;--theme-panel-2:#061e3c;--theme-ink:#effcff;--theme-line:#66d8f5;}body[data-theme="berry"]{--theme-panel:#5d173f;--theme-panel-2:#2a0a20;--theme-ink:#fff0f7;--theme-line:#ff80b4;}body[data-theme="neon"]{--theme-panel:#075b4d;--theme-panel-2:#06241f;--theme-ink:#f7ffe0;--theme-line:#d9ff36;}body[data-theme="ember"]{--theme-panel:#743020;--theme-panel-2:#2d0d09;--theme-ink:#fff3df;--theme-line:#ffb13b;}body[data-theme="custom"]{--theme-panel:var(--custom-glow,#225e48);--theme-panel-2:var(--custom-bg,#0d1512);--theme-ink:#f7eedb;--theme-line:var(--custom-accent,#d9a441);}
+  body[data-theme] #cardsPanel{border-color:var(--theme-line);background:linear-gradient(145deg,var(--theme-panel),var(--theme-panel-2));}body[data-theme] #cardsPanel::before{background:radial-gradient(circle at 10% 0,color-mix(in srgb,var(--theme-line) 38%,transparent),transparent 32%),repeating-linear-gradient(135deg,transparent 0 13px,rgba(255,255,255,.045) 13px 14px);}body[data-theme] .cards-head h2,body[data-theme] .cards-head .eyebrow,body[data-theme] .card-note,body[data-theme] .scout-report{color:var(--theme-ink);}body[data-theme] .cards-count{border-color:var(--theme-line);color:var(--theme-line);}
+  body[data-theme] .squad-col{background:linear-gradient(145deg,var(--theme-panel),var(--theme-panel-2));border-color:var(--theme-line);color:var(--theme-ink);}body[data-theme] .squad-col h4{color:var(--theme-line);}body[data-theme] .squad-col .player-row{border-color:color-mix(in srgb,var(--theme-ink) 24%,transparent);}body[data-theme] .squad-col .player-row,body[data-theme] .squad-col .player-row span{color:var(--theme-ink);}
+  /* Keep room metadata and squad labels clean and readable, not display-italic. */
+  #room .room-tag,#room .room-tag span,#room .topbar .room-tag b,#room .squads-section h2,#room .squad-col h4{font-family:'Space Grotesk',sans-serif;font-style:normal;text-shadow:none;letter-spacing:.08em;}#room .topbar .room-tag b{font-size:13px;font-weight:800;color:#1b1b1f;}#room .room-tag span{font-size:8px;font-weight:800;}#room .squads-section h2{font-size:13px;font-weight:900;text-transform:uppercase;}#room .squad-col h4{font-size:12px;font-weight:900;text-transform:uppercase;}
   /* Room titles share the menu's expressive display type. */
   #room h1,#room h2,#room h3,#room h4,#room .room-tag b,#room #offerName{
     font-family:'Fraunces',serif;
@@ -283,17 +293,68 @@
   .manager-3d-preview canvas{display:block;width:100%!important;height:100%!important;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.18));}
   .manager-3d-ready .manager-3d-preview{display:block;}
   .manager-3d-ready .manager-svg-fallback{display:none;}
+  /* Manager cards use the same proven rivalry-3d mount and ready state as Phase 3. */
+  #room .manager-avatar .rivalry-3d{position:absolute;inset:0;width:100%;height:100%;display:none;}
+  #room .manager-avatar .rivalry-3d canvas{display:block;width:100%!important;height:100%!important;filter:drop-shadow(8px 10px 0 rgba(0,0,0,.18));}
+  #room .manager-avatar.rivalry-3d-ready .rivalry-3d{display:block;}
   .manager-character-choice .manager-3d-preview{inset:0;height:63px;}
   .manager-character-choice .manager-svg-fallback{display:block;height:63px;}
   /* Customizer: only the new 3D character gallery is shown. */
-  .manager-character-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-  .manager-character-choice{min-height:148px;background:linear-gradient(145deg,var(--manager-light),var(--manager));}
-  .manager-character-choice .manager-3d-preview{display:block;inset:0 0 20px;height:auto;}
-  .manager-character-choice span{z-index:3;font-size:9px;letter-spacing:.08em;background:rgba(7,12,12,.72);}
+  .manager-character-grid{display:block;margin-top:7px;}
+  .manager-character-carousel{position:relative;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:250px;overflow:hidden;border:2px solid #1b1b1f;border-radius:12px;background:#172329;}
+  .manager-carousel-stage{position:relative;height:246px;overflow:hidden;background:linear-gradient(145deg,var(--manager-light),var(--manager));}.manager-carousel-stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 66%);}
+  .manager-carousel-character{position:absolute;inset:0;display:grid;place-items:center;animation:managerSlideNext .34s ease both;}.manager-carousel-character.previous{animation-name:managerSlidePrevious;}.manager-carousel-character .manager-3d-preview{display:block;inset:0 0 29px;height:auto;}.manager-carousel-character span{position:absolute;z-index:3;bottom:7px;left:50%;transform:translateX(-50%);padding:4px 8px;background:rgba(7,12,12,.76);color:#fff;font-size:10px;font-weight:900;letter-spacing:.1em;white-space:nowrap;}.manager-carousel-nav{position:relative;z-index:4;width:44px;height:100%;border:0;background:#1b1b1f;color:#f7eedb;font:900 29px/1 'Space Grotesk',sans-serif;cursor:pointer;}.manager-carousel-nav:hover{background:#d9a441;color:#1b1b1f;}@keyframes managerSlideNext{from{opacity:0;transform:translateX(55px)}to{opacity:1;transform:none}}@keyframes managerSlidePrevious{from{opacity:0;transform:translateX(-55px)}to{opacity:1;transform:none}}
   .manager-character-placeholder{display:grid;place-items:center;height:100%;padding-bottom:18px;color:rgba(255,255,255,.72);font-family:'Fraunces',serif;font-size:38px;font-style:italic;text-shadow:2px 3px 0 rgba(0,0,0,.25);}
+  /* Keep the header player from being overridden by the legacy floating-deck rules. */
+  /* Integrated header player: album cover replaces the pixel vinyl treatment. */
+  #room .music-deck.music-header-player{position:relative!important;z-index:81!important;right:auto!important;bottom:auto!important;width:402px!important;height:66px;padding:6px 9px;border:2px solid #1b1b1f;border-radius:12px;clip-path:none;cursor:default!important;background:linear-gradient(135deg,var(--player-from),var(--player-to))!important;color:var(--player-paper);box-shadow:4px 5px 0 #1b1b1f,0 10px 20px rgba(0,0,0,.22)}#room .music-header-player .music-disc{position:relative;left:auto;top:auto;width:52px;height:52px;flex:none;border:2px solid #1b1b1f;border-radius:8px;background:#172329;box-shadow:2px 2px 0 rgba(0,0,0,.38);animation:none!important;overflow:hidden}#room .music-header-player .music-disc::before,#room .music-header-player .music-disc::after{display:none}#room .music-header-player .music-cover{display:block;position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;object-fit:cover;background:#172329;box-shadow:none}#room .music-header-player .music-now{gap:3px}#room .music-header-player .music-kicker{padding:0;border:0;background:transparent;color:var(--player-accent);font:800 8px 'Space Grotesk',sans-serif;letter-spacing:.13em}#room .music-header-player .music-title{margin:0;color:var(--player-paper);font:700 14px/1 'Fraunces',serif;letter-spacing:.01em}#room .music-header-player .music-timeline{grid-template-columns:28px 1fr 28px;gap:5px;padding:0;color:var(--player-paper);font:700 8px 'Space Grotesk',sans-serif}#room .music-header-player .music-timeline input{height:5px;accent-color:var(--player-accent)}#room .music-header-player .music-controls{gap:5px}#room .music-header-player .music-controls button{width:25px;height:25px;border:1.5px solid #1b1b1f;border-radius:7px;clip-path:none;background:var(--player-paper);color:#1b1b1f;box-shadow:0 2px 0 rgba(0,0,0,.35)}#room .music-header-player .music-controls .music-play{width:30px;height:30px;background:var(--player-accent)}@media(max-width:900px){#room .music-deck.music-header-player{width:min(402px,100%)!important}}
+</style>
+<style>
+  /* Restored pre-UCL game canvas and room shell. */
+  body{min-height:100vh;background:radial-gradient(circle at 50% 43%,#fff8d5 0 19%,#ead59b 43%,#4a281e 78%,#160d12 100%);background-attachment:fixed;background-repeat:no-repeat;background-size:cover;}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background:radial-gradient(#4a2a16 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(110deg,transparent 28%,rgba(73,38,13,.15) 28.2% 29%,transparent 29.2% 55%,rgba(73,38,13,.13) 55.2% 56%,transparent 56.2%);}
+  body::after{content:'';display:block;position:fixed;z-index:0;right:-100px;bottom:-130px;width:280px;height:280px;pointer-events:none;border:22px solid #c99a38;border-radius:50%;background:transparent;box-shadow:0 0 0 10px #38241d,0 0 0 15px #dfbc5f;transform:rotate(-15deg);}
+  #room{background:transparent;box-shadow:none;}
+  #room::before{display:none;}
+</style>
+<style>
+  /* Phase 3 → 4 comic-book 1v1 cinematic. */
+  .versus-cinematic{display:none;position:fixed;inset:0;z-index:180;overflow:hidden;background:#0a0d18;color:#fff;isolation:isolate;}
+  .versus-cinematic.show{display:grid;grid-template-columns:1fr 140px 1fr;align-items:end;animation:versusOut 10s ease forwards;}
+  .versus-cinematic::before{content:'';position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(112deg,transparent 0 24px,rgba(255,255,255,.09) 25px 28px,transparent 29px 53px),radial-gradient(circle at 20% 46%,#e63e43 0 5%,#9b142a 31%,transparent 56%),radial-gradient(circle at 80% 46%,#1674ba 0 5%,#0b315f 31%,transparent 56%),#090d17;animation:versusZoom 10s ease both;}
+  .versus-cinematic::after{content:'';position:absolute;inset:12px;z-index:-1;border:4px solid #f8e6af;box-shadow:inset 0 0 0 4px #161923;pointer-events:none;}
+  .versus-side{position:relative;height:min(76vh,650px);display:grid;place-items:end center;overflow:hidden;}
+  .versus-side::before{content:'';position:absolute;inset:14% -15% 0;background:repeating-radial-gradient(ellipse at 50% 100%,rgba(255,241,193,.4) 0 2px,transparent 3px 18px);transform:rotate(var(--slash));opacity:.52;}
+  .versus-side.left{--slash:-20deg;}.versus-side.right{--slash:20deg;}
+  .versus-model{position:relative;z-index:2;width:min(43vw,440px);height:min(72vh,610px);filter:drop-shadow(14px 15px 0 rgba(0,0,0,.42));animation:versusEnterLeft 1.4s .35s both;}
+  .versus-side.right .versus-model{animation-name:versusEnterRight;}
+  .versus-model canvas{width:100%!important;height:100%!important;display:block;}
+  .versus-name{position:absolute;z-index:4;bottom:44px;max-width:90%;padding:10px 17px;border:3px solid #161923;background:#f8e6af;color:#171923;font:900 clamp(20px,3vw,42px)/.9 'Fraunces',serif;font-style:italic;text-align:center;text-transform:uppercase;box-shadow:7px 7px 0 #161923;animation:versusName .7s 1.35s both;}
+  .versus-side.left .versus-name{transform:rotate(-3deg);}.versus-side.right .versus-name{transform:rotate(3deg);}
+  .versus-center{position:relative;z-index:6;align-self:center;display:grid;place-items:center;padding-bottom:70px;}
+  .versus-center b{display:grid;place-items:center;width:112px;height:112px;border:5px solid #171923;border-radius:50%;background:#f5c847;color:#171923;font:900 italic 55px 'Fraunces',serif;box-shadow:8px 8px 0 #f8e6af;transform:scale(0) rotate(-22deg);animation:versusStamp .6s 1.1s cubic-bezier(.15,1.25,.3,1) both;}
+  .versus-kicker{position:absolute;top:19%;left:50%;width:max-content;max-width:86vw;transform:translateX(-50%) rotate(-2deg);padding:7px 15px;border:3px solid #161923;background:#f8e6af;color:#171923;font:900 12px 'Space Grotesk',sans-serif;letter-spacing:.16em;text-align:center;box-shadow:5px 5px 0 #161923;animation:versusKicker .55s .2s both;}
+  .versus-count{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font:800 11px 'Space Grotesk',sans-serif;letter-spacing:.18em;color:#f8e6af;}
+  @keyframes versusEnterLeft{from{opacity:0;transform:translateX(-55%) scale(.74) rotate(-8deg)}to{opacity:1;transform:none}}@keyframes versusEnterRight{from{opacity:0;transform:translateX(55%) scale(.74) rotate(8deg)}to{opacity:1;transform:none}}@keyframes versusStamp{to{transform:scale(1) rotate(-7deg)}}@keyframes versusName{from{opacity:0;transform:translateY(40px) rotate(-3deg)}to{opacity:1;transform:translateY(0) rotate(-3deg)}}@keyframes versusKicker{from{opacity:0;transform:translate(-50%,-25px) rotate(-2deg)}to{opacity:1;transform:translate(-50%,0) rotate(-2deg)}}@keyframes versusZoom{0%,100%{transform:scale(1)}65%{transform:scale(1.08)}}@keyframes versusOut{0%,91%{opacity:1}100%{opacity:0;visibility:hidden}}@media(max-width:640px){.versus-cinematic.show{grid-template-columns:1fr 72px 1fr}.versus-center b{width:62px;height:62px;font-size:31px;border-width:3px;box-shadow:4px 4px 0 #f8e6af}.versus-model{width:54vw;height:54vh}.versus-name{bottom:28px;padding:7px 9px;font-size:17px}.versus-kicker{top:13%;font-size:9px}.versus-count{font-size:8px}}
+  .versus-cinematic.show{grid-template-columns:1fr 170px 1fr;}.versus-cinematic::before{background:repeating-linear-gradient(112deg,transparent 0 20px,rgba(255,255,255,.12) 21px 25px,transparent 26px 45px),repeating-radial-gradient(circle at 50% 52%,transparent 0 13px,rgba(248,230,175,.17) 14px 15px,transparent 16px 32px),radial-gradient(circle at 18% 45%,#ff454c 0 5%,#9b142a 35%,transparent 62%),radial-gradient(circle at 82% 45%,#2698e6 0 5%,#082f68 35%,transparent 62%),#090d17;}.versus-side{height:min(88vh,770px)}.versus-model{width:min(52vw,600px);height:min(84vh,720px);}.versus-center b{width:142px;height:142px;font:900 italic 72px 'Bangers',sans-serif;letter-spacing:.04em;box-shadow:11px 11px 0 #f8e6af;}.versus-kicker{top:7%;padding:10px 24px;font:400 clamp(20px,2.2vw,33px) 'Bangers',sans-serif;letter-spacing:.08em;box-shadow:8px 8px 0 #161923;}.versus-name{bottom:32px;padding:12px 24px;font:400 clamp(32px,4.8vw,68px)/.85 'Bangers',sans-serif;letter-spacing:.03em;box-shadow:9px 9px 0 #161923;}.versus-impact{position:absolute;z-index:8;color:#f8e6af;font:400 clamp(48px,8vw,120px)/.75 'Bangers',sans-serif;letter-spacing:.02em;text-shadow:5px 5px 0 #161923,-2px -2px 0 #161923,2px -2px 0 #161923,-2px 2px 0 #161923;opacity:0;animation:impactPop 2.4s 2s ease-in-out infinite;}.versus-impact.pow{left:31%;top:40%;transform:rotate(-15deg);}.versus-impact.bam{right:30%;top:30%;transform:rotate(13deg);animation-delay:3.2s;color:#ffdb50;}.versus-impact::before{content:'';position:absolute;z-index:-1;inset:-18px;clip-path:polygon(50% 0%,60% 30%,83% 9%,74% 37%,100% 42%,73% 53%,92% 76%,63% 67%,52% 100%,42% 70%,15% 88%,29% 60%,0 52%,28% 42%,7% 17%,39% 31%);background:#e5313d;}.versus-speed{position:absolute;z-index:3;width:40%;height:4px;background:#f8e6af;box-shadow:0 9px 0 rgba(248,230,175,.72),0 -9px 0 rgba(248,230,175,.62);opacity:.72;}.versus-speed.left{left:-5%;top:56%;transform:rotate(-14deg);}.versus-speed.right{right:-5%;top:52%;transform:rotate(14deg);}.versus-count{font-size:14px;padding:7px 13px;border:2px solid #f8e6af;background:#161923;}.versus-side.left .versus-model{animation:versusEnterLeft 1.1s .25s both,versusPunchLeft 2.5s 2.1s ease-in-out 2;}.versus-side.right .versus-model{animation:versusEnterRight 1.1s .25s both,versusPunchRight 2.5s 2.1s ease-in-out 2;}@keyframes impactPop{0%,30%,100%{opacity:0;transform:scale(.45) rotate(-15deg)}40%,76%{opacity:1;transform:scale(1.08) rotate(-15deg)}}@keyframes versusPunchLeft{0%,35%,100%{transform:none}55%{transform:translateX(9%) scale(1.04) rotate(-3deg)}}@keyframes versusPunchRight{0%,35%,100%{transform:none}55%{transform:translateX(-9%) scale(1.04) rotate(3deg)}}@media(max-width:640px){.versus-cinematic.show{grid-template-columns:1fr 74px 1fr}.versus-model{width:60vw;height:63vh}.versus-center b{width:70px;height:70px;font-size:37px;box-shadow:5px 5px 0 #f8e6af}.versus-kicker{font-size:17px}.versus-name{font-size:28px;padding:8px 10px}.versus-impact{font-size:51px}.versus-speed{height:2px}}
+</style>
+<style>
+  /* Directed fight-card details for the Phase 4 cinematic. */
+  .versus-topline{position:absolute;z-index:12;top:19px;left:50%;display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,42px);width:min(92vw,900px);transform:translateX(-50%);padding:9px 18px;border-top:2px solid #f8e6af;border-bottom:2px solid #f8e6af;color:#f8e6af;font:800 clamp(9px,1.1vw,15px) 'Space Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;}.versus-topline b{padding:3px 13px;background:#e5313d;color:#fff;font-family:'Bangers',sans-serif;font-size:clamp(18px,2.6vw,34px);font-weight:400;letter-spacing:.08em;}.versus-voice{position:absolute;z-index:10;top:25%;max-width:200px;padding:10px 13px;border:3px solid #161923;background:#fff7da;color:#161923;font:400 clamp(19px,2.3vw,31px)/.95 'Bangers',sans-serif;letter-spacing:.03em;box-shadow:5px 5px 0 #161923;opacity:0;}.versus-side.left .versus-voice{right:8%;transform:rotate(-5deg);}.versus-side.right .versus-voice{left:8%;transform:rotate(5deg);}.versus-voice.show{animation:voicePop 1.45s ease both;}@keyframes voicePop{0%{opacity:0;transform:scale(.45) rotate(-5deg)}14%,80%{opacity:1;transform:scale(1) rotate(-5deg)}100%{opacity:0;transform:scale(.78) rotate(-5deg)}}.versus-side.right .versus-voice.show{animation-name:voicePopRight;}@keyframes voicePopRight{0%{opacity:0;transform:scale(.45) rotate(5deg)}14%,80%{opacity:1;transform:scale(1) rotate(5deg)}100%{opacity:0;transform:scale(.78) rotate(5deg)}}.versus-cinematic.show .versus-side::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.26) 48%,transparent 64%);animation:slashSweep 2.3s .8s ease-in-out infinite;}@keyframes slashSweep{0%,100%{transform:translateX(-105%)}55%{transform:translateX(110%)}}.versus-cinematic.show{animation:versusOut 10s ease forwards,arenaShake 2.5s 2.2s ease-in-out 2;}@keyframes arenaShake{0%,100%{transform:none}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,-2px)}80%{transform:translate(2px,2px)}}
+  .phase-vortex{display:none;position:fixed;inset:0;z-index:175;place-items:center;overflow:hidden;background:#080b14;color:#f8e6af;isolation:isolate;}.phase-vortex.show{display:grid;animation:phaseVortexOut 2.8s cubic-bezier(.5,0,.7,.1) both;}.phase-vortex::before{content:'';position:absolute;width:18vmin;height:18vmin;border-radius:50%;background:#020308;box-shadow:0 0 0 3vmin #27122e,0 0 0 7vmin #cd3c67,0 0 0 12vmin #101722,0 0 0 17vmin #efcd58,0 0 70px 34px rgba(16,6,26,.8);animation:phaseVortexGrow 2.7s cubic-bezier(.45,0,.7,.22) both;}.phase-vortex::after{content:'';position:absolute;inset:-35%;background:repeating-conic-gradient(from 0deg,rgba(248,230,175,.22) 0 5deg,transparent 6deg 16deg);animation:phaseSpin .8s linear infinite;}.phase-vortex-copy{position:relative;z-index:2;text-align:center;animation:phaseCopy .75s .15s both;}.phase-vortex-copy small{display:block;font:800 12px 'Space Grotesk',sans-serif;letter-spacing:.22em;}.phase-vortex-copy b{display:block;margin-top:8px;font:400 clamp(45px,10vw,126px)/.8 'Bangers',sans-serif;letter-spacing:.06em;text-shadow:7px 7px 0 #161923;}.phase-vortex-copy em{display:block;margin-top:18px;font:800 12px 'Space Grotesk',sans-serif;letter-spacing:.16em;font-style:normal;}@keyframes phaseVortexGrow{0%{transform:scale(.02) rotate(0)}55%{transform:scale(2.5) rotate(210deg)}100%{transform:scale(16) rotate(640deg)}}@keyframes phaseSpin{to{transform:rotate(360deg)}}@keyframes phaseCopy{from{opacity:0;transform:scale(.55) rotate(-8deg)}to{opacity:1;transform:none}}@keyframes phaseVortexOut{0%,72%{opacity:1}100%{opacity:0;visibility:hidden}}
+  .versus-cinematic::before{background:repeating-radial-gradient(ellipse at 50% 54%,rgba(255,239,174,.18) 0 1px,transparent 2px 18px),repeating-conic-gradient(from 0deg at 50% 53%,rgba(255,255,255,.15) 0 2deg,transparent 2.5deg 16deg),radial-gradient(ellipse at 8% 10%,rgba(255,245,184,.55),transparent 21%),radial-gradient(ellipse at 92% 10%,rgba(255,245,184,.55),transparent 21%),radial-gradient(circle at 20% 51%,#e74148 0 11%,#8e1528 39%,transparent 64%),radial-gradient(circle at 80% 51%,#2395e4 0 11%,#0a2c67 39%,transparent 64%),linear-gradient(90deg,#270a19 0 47%,#f8e6af 49% 51%,#071b48 53% 100%);background-size:auto,auto,auto,auto,auto,auto,auto;}.versus-cinematic::after{inset:10px;border:5px solid #f8e6af;box-shadow:inset 0 0 0 4px #161923,inset 0 0 0 9px rgba(248,230,175,.4),0 0 45px rgba(0,0,0,.5)}.versus-side.left .versus-model{animation:versusEnterLeft 1.1s .25s both;}.versus-side.right .versus-model{animation:versusEnterRight 1.1s .25s both;}.versus-side.struck{filter:brightness(1.35) saturate(1.3);}.versus-impact{animation-play-state:paused;}.versus-impact.hit{animation-play-state:running;}
+</style>
+<style>
+  /* Manager cards: a clearer collectible profile layout around the 3D character. */
+  #room .manager-card{border:3px solid #1b1b1f;border-radius:14px;background:#f7eedb;box-shadow:8px 9px 0 #1b1b1f,0 18px 30px rgba(0,0,0,.3)}#room .manager-card::before{content:'';position:absolute;z-index:0;inset:7px;border:1px solid rgba(27,27,31,.24);border-radius:8px;pointer-events:none}#room .manager-card:hover{transform:translateY(-7px) rotateX(2deg) rotateY(-2deg);box-shadow:10px 14px 0 #1b1b1f,0 25px 36px rgba(0,0,0,.34)}#room .manager-portrait{height:214px!important;margin:9px 9px 0;border:2px solid #1b1b1f;border-radius:9px;background:radial-gradient(circle at 50% 10%,rgba(255,245,190,.72),transparent 32%),repeating-linear-gradient(90deg,rgba(255,255,255,.09) 0 19px,transparent 19px 38px),linear-gradient(180deg,var(--manager-light),var(--manager))}#room .manager-portrait::before{content:'MANAGER PROFILE';position:absolute;z-index:3;left:9px;bottom:9px;padding:4px 6px;border:1px solid #1b1b1f;background:#f7eedb;color:#1b1b1f;font-size:8px;font-weight:900;letter-spacing:.13em;transform:rotate(-2deg)}#room .manager-avatar{width:205px!important;height:218px!important;filter:drop-shadow(10px 12px 0 rgba(0,0,0,.2))}.manager-index,.manager-host{top:9px;border-width:1.5px;box-shadow:2px 2px 0 rgba(0,0,0,.28)}.manager-index{left:9px;background:#f7eedb;color:#1b1b1f}.manager-host{right:9px}.manager-nameplate{position:relative;padding:14px 16px 11px;border-bottom:2px solid #1b1b1f;background:linear-gradient(90deg,#f7eedb,#eee1c9)}.manager-title-row h3{font-size:23px;letter-spacing:-.045em}.manager-title-row span{padding:3px 5px;border:1px solid rgba(27,27,31,.3);border-radius:4px;background:#f7eedb;font-size:8px;letter-spacing:.09em}.manager-archetype{margin-top:8px;border:1.5px solid #1b1b1f;box-shadow:2px 2px 0 rgba(0,0,0,.22)}.manager-stats{display:grid;grid-template-columns:repeat(3,1fr);padding:0}.manager-stat{display:grid;grid-template-columns:1fr;gap:4px;padding:11px 8px 10px;text-align:center;border-right:1px solid rgba(27,27,31,.22);border-bottom:0}.manager-stat:last-child{border-right:0}.manager-stat i{justify-self:center;width:22px;height:22px;border-width:1.5px}.manager-stat label{font-size:8px;letter-spacing:.11em}.manager-stat b{font-family:'Fraunces',serif;font-size:15px}.manager-footer{margin:0 10px;padding:10px 4px 12px;border-top:1px solid rgba(27,27,31,.2);font-size:10px}.manager-dots i{width:7px;height:7px;border-radius:50%}
+</style>
+<style>
+  .winner-cinematic{display:none;position:fixed;z-index:185;inset:0;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#315f37 0,transparent 30%),linear-gradient(180deg,#071428,#02060e);color:#fff;isolation:isolate}.winner-cinematic.show{display:grid;animation:winnerExit 6s ease forwards}.winner-cinematic::before{content:'';position:absolute;inset:-20%;background:repeating-conic-gradient(from 0deg,rgba(242,201,76,.2) 0 5deg,transparent 6deg 16deg);animation:phaseSpin 3s linear infinite}.winner-cinematic::after{content:'★  ★  ★  ★  ★  ★';position:absolute;top:8%;width:100%;color:#f2c94c;font-size:34px;letter-spacing:1.2em;text-align:center;text-shadow:0 0 20px #f2c94c}.winner-cinematic-card{position:relative;z-index:2;width:min(90vw,650px);text-align:center}.winner-cinematic-card small{font:800 12px 'Space Grotesk',sans-serif;letter-spacing:.2em;color:#f2c94c}.winner-cinematic-card h2{margin:8px 0;font:400 clamp(50px,10vw,108px)/.8 'Bangers',sans-serif;letter-spacing:.08em;text-shadow:7px 7px 0 #132516}.winner-character{height:min(57vh,480px);margin:-18px auto -25px;width:min(78vw,430px);filter:drop-shadow(16px 16px 0 rgba(0,0,0,.35))}.winner-character canvas{display:block;width:100%!important;height:100%!important}.winner-name{display:inline-block;padding:10px 22px;border:4px solid #17210f;background:#f2c94c;color:#142010;font:400 clamp(31px,5vw,64px)/.8 'Bangers',sans-serif;letter-spacing:.04em;box-shadow:8px 8px 0 #152017}.winner-score{margin-top:15px;color:#d9edda;font:800 13px 'Space Grotesk',sans-serif;letter-spacing:.15em}@keyframes winnerExit{0%,84%{opacity:1}100%{opacity:0;visibility:hidden}}
+  #tournamentView .broadcast-live{border:3px solid #1b1b1f;box-shadow:10px 12px 0 #1b1b1f,0 26px 38px rgba(0,0,0,.3)}#tournamentView .broadcast-topline{background:linear-gradient(90deg,#172a4e,#10241a,#4d2637)}#tournamentView .broadcast-scoreboard{background:linear-gradient(90deg,#11254a,#172d1c 50%,#4a2132)}#tournamentView .broadcast-pitch{background:repeating-linear-gradient(90deg,#479a32 0 8%,#3d8427 8% 16%)}#tournamentView .live-event.goal{animation:liveGoalPop .45s ease both}@keyframes liveGoalPop{from{transform:translateX(-18px);background:#f2c94c;color:#17210f}to{transform:none}}
+  #finalResultsView .results-table-wrap{border:3px solid #1b1b1f;box-shadow:9px 10px 0 #1b1b1f,0 22px 34px rgba(0,0,0,.26)}#finalResultsView .results-row:not(.labels){transition:transform .18s ease,background .18s ease;animation:leaderboardPop .45s both}#finalResultsView .results-row:not(.labels):hover{transform:translateX(7px);background:#f8e6af;color:#1b1b1f}#finalResultsView .results-row:nth-child(3){animation-delay:.07s}#finalResultsView .results-row:nth-child(4){animation-delay:.14s}#finalResultsView .results-row:nth-child(5){animation-delay:.21s}#finalResultsView .results-row.champion-row{background:linear-gradient(90deg,#e7b545,#f7edcc,#e7b545);color:#1b1b1f;font-weight:900}#finalResultsView .results-row.champion-row::before{content:'★';position:absolute;margin-left:-13px;color:#d1444f;font-size:18px;animation:crownFloat 1.8s ease-in-out infinite}@keyframes leaderboardPop{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
 </style>
 <link rel="stylesheet" href="/tactics.css?v=real-kit-art-1">
-<link rel="stylesheet" href="/evaluator.css?v=blue-theme-2">
+<link rel="stylesheet" href="/evaluator.css?v=phase3-3d-10">
 <link rel="stylesheet" href="/tournament.css?v=live-broadcast-3">
 <link rel="stylesheet" href="/results.css?v=knockout-cinematic-1">
 </head>
@@ -329,13 +390,12 @@
     <div class="topbar">
       <div class="room-tag"><span>TRANSFER AUCTION</span><b id="roomLabel"></b></div>
       <div class="topbar-right">
-        <button class="profile-chip" id="profileChip" type="button"></button>
+        <button class="profile-chip" id="profileChip" type="button"></button><aside class="music-deck music-header-player" id="musicDeck" aria-label="Music player"><div class="music-disc" id="musicDisc" aria-label="Animated vinyl record"><img class="music-cover" id="musicCover" alt="Current song cover"></div><div class="music-now"><span class="music-kicker">NOW SPINNING</span><strong class="music-title" id="musicTitle">Press play to start</strong><span class="music-artist" id="musicArtist">Game soundtrack</span><div class="music-timeline"><span id="musicElapsed">0:00</span><input id="musicSeek" type="range" min="0" max="1000" value="0" disabled aria-label="Song progress"><span id="musicDuration">0:00</span></div></div><div class="music-controls"><button id="musicNext" type="button" title="Next track">⏭</button><button class="music-play" id="musicPlay" type="button" title="Play music">▶</button><span class="music-wave" id="musicWave"><i></i><i></i><i></i><i></i></span><button id="musicSettings" type="button" title="Music settings">⚙</button></div></aside><button class="btn-ghost" id="emoteBtn" type="button">☺ Emotes</button>
         <div class="header-menu"><button class="btn-ghost" id="roomMenuBtn" type="button">Room ☰</button><div class="header-menu-pop" id="roomMenuPop"><button id="inviteBtn" type="button">Copy invite link</button><button id="soundBtn" type="button">Sound: On</button><button id="settingsBtn" type="button">Settings</button><button id="resetBtn" type="button">Reset room</button><button id="leaveBtn" type="button">Leave room</button></div></div>
       </div>
     </div>
 
     <div class="teams-row" id="teamsRow"></div>
-    <aside class="music-deck" id="musicDeck" aria-label="Music player"><div class="music-deck-art"><div class="music-disc" id="musicDisc" aria-label="Animated vinyl record"><img class="music-cover" id="musicCover" alt="Current song cover"></div><span class="music-arm"></span></div><div class="music-now"><span class="music-kicker">TRANSFER FM · NOW PLAYING</span><strong class="music-title" id="musicTitle">Press play to start</strong><span class="music-artist" id="musicArtist">Game soundtrack</span></div><div class="music-timeline"><span id="musicElapsed">0:00</span><input id="musicSeek" type="range" min="0" max="1000" value="0" disabled aria-label="Song progress"><span id="musicDuration">0:00</span></div><div class="music-controls"><button id="musicNext" type="button" title="Next track">⏭</button><button class="music-play" id="musicPlay" type="button" title="Play music">▶</button><span class="music-wave" id="musicWave"><i></i><i></i><i></i><i></i></span><button id="musicSettings" type="button" title="Music settings">⚙</button></div></aside>
 
     <section id="cardsPanel"></section>
 
@@ -385,7 +445,11 @@
 
 </div>
 <div class="invite-toast" id="inviteToast"></div>
+<section class="phase-vortex" id="phaseVortex" aria-hidden="true"><div class="phase-vortex-copy"><small id="phaseVortexFrom">PHASE COMPLETE</small><b id="phaseVortexTo">PHASE 4</b><em>ENTERING THE NEXT CHAPTER</em></div></section>
+<section class="winner-cinematic" id="winnerCinematic" aria-hidden="true"><div class="winner-cinematic-card"><small>FULL TIME · MATCH WINNER</small><h2>VICTORY!</h2><div class="winner-character rivalry-3d" id="winnerCharacter" data-view="face-to-face" data-outcome="winner"></div><b class="winner-name" id="winnerName">Winner</b><p class="winner-score" id="winnerScore"></p></div></section>
+<section class="versus-cinematic" id="versusCinematic" aria-hidden="true"><div class="versus-kicker">THE RIVALS COLLIDE · PHASE 4</div><i class="versus-speed left"></i><i class="versus-speed right"></i><em class="versus-impact pow">POW!</em><em class="versus-impact bam">BAM!</em><div class="versus-side left"><div class="versus-model rivalry-3d" id="versusLeftModel" data-view="face-to-face" data-outcome="idle"></div><strong class="versus-name" id="versusLeftName">Challenger</strong></div><div class="versus-center"><b>VS</b></div><div class="versus-side right"><div class="versus-model rivalry-3d" id="versusRightModel" data-view="face-to-face" data-outcome="idle"></div><strong class="versus-name" id="versusRightName">Rival</strong></div><div class="versus-count" id="versusCount">KICKOFF IN 10</div></section>
 <div class="game-modal" id="gameModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle"><span class="modal-kicker">MATCH CONTROL</span><h2 id="gameModalTitle"></h2><p id="gameModalText"></p><select id="gameModalSelect" style="display:none"></select><div class="game-modal-actions"><button class="btn-ghost" id="gameModalCancel">Cancel</button><button class="btn-primary" id="gameModalConfirm">Confirm</button></div></div></div>
+<div class="game-modal" id="emoteModal" aria-hidden="true"><div class="game-modal-card emote-modal-card" role="dialog" aria-modal="true" aria-labelledby="emoteModalTitle"><span class="modal-kicker">MANAGER MOTION</span><h2 id="emoteModalTitle">Choose an emote</h2><p>Your manager uses this movement everywhere in the room.</p><div class="emote-grid" id="emoteGrid"><button class="emote-choice" data-emote="neutral" type="button"><i class="fa-solid fa-user"></i>Neutral</button><button class="emote-choice" data-emote="fist_pump" type="button"><i class="fa-solid fa-hand-back-fist"></i>Fist pump</button><button class="emote-choice" data-emote="celebrate" type="button"><i class="fa-solid fa-trophy"></i>Celebrate</button><button class="emote-choice" data-emote="taunt" type="button"><i class="fa-solid fa-bullhorn"></i>Taunt</button><button class="emote-choice" data-emote="slump" type="button"><i class="fa-solid fa-person-falling"></i>Slump</button><button class="emote-choice" data-emote="wave" type="button"><i class="fa-solid fa-hand"></i>Wave</button><button class="emote-choice" data-emote="punch" type="button"><i class="fa-solid fa-hand-fist"></i>Punch</button><button class="emote-choice" data-emote="kick" type="button"><i class="fa-solid fa-shoe-prints"></i>Kick</button><button class="emote-choice" data-emote="hit_react" type="button"><i class="fa-solid fa-burst"></i>Hit react</button><button class="emote-choice" data-emote="walk" type="button"><i class="fa-solid fa-person-walking"></i>Walk</button></div><div class="game-modal-actions"><button class="btn-ghost" id="emoteClose" type="button">Close</button></div></div></div>
 <div class="game-modal" id="teamIdentityModal" aria-hidden="true"><div class="game-modal-card team-identity-form" role="dialog" aria-modal="true"><span class="modal-kicker">CLUB IDENTITY</span><h2>Customize your team</h2><label>TEAM NAME<input id="teamIdentityName" maxlength="24" placeholder="Your club name"></label><label class="character-label">CHOOSE YOUR 3D MANAGER<div class="manager-character-grid" id="managerCharacterGrid"></div></label><label>TEAM LOGO<input id="teamIdentityLogo" type="file" accept="image/*"></label><img id="teamIdentityPreview" class="team-logo-preview" alt="Logo preview"><small>Use a square image smaller than 250 KB.</small><div class="game-modal-actions"><button class="btn-ghost" id="teamIdentityCancel">Cancel</button><button class="btn-primary" id="teamIdentitySave">Save team</button></div></div></div>
 <div class="game-modal" id="settingsModal" aria-hidden="true"><div class="game-modal-card" role="dialog" aria-modal="true"><span class="modal-kicker">GAME SETTINGS</span><h2>Matchday control</h2><div class="settings-grid"><label>VISUAL THEME<select id="themeSelect"><option value="stadium">Stadium Night</option><option value="midnight">Midnight Violet</option><option value="sunset">Sunset Derby</option><option value="pitch">Classic Pitch</option><option value="ocean">Ocean Arena</option><option value="berry">Berry Clash</option><option value="neon">Neon Training</option><option value="ember">Ember Derby</option><option value="custom">My Custom Theme</option></select></label><div id="customThemePanel" style="display:none"><label>BACKGROUND<input id="customThemeBg" type="color" value="#0d1512"></label><label>GLOW<input id="customThemeGlow" type="color" value="#225e48"></label><label>ACCENT<input id="customThemeAccent" type="color" value="#d9a441"></label></div><label>MUSIC PLAYER SIZE <span class="settings-value" id="musicSizeValue">100%</span><input id="musicSize" type="range" min="80" max="145" value="100"></label><label>MUSIC VOLUME <span class="settings-value" id="musicVolumeValue">36%</span><input id="musicVolume" type="range" min="0" max="100" value="36"></label><label>SFX VOLUME <span class="settings-value" id="sfxVolumeValue">80%</span><input id="sfxVolume" type="range" min="0" max="100" value="80"></label><label><input id="musicEnabled" type="checkbox" checked style="width:auto;margin-right:8px">PHASE MUSIC</label><p class="settings-note">Each record shows its own artwork. Drag the progress line to jump to any moment in the song.</p></div><div class="game-modal-actions"><button class="btn-primary" id="settingsClose">Done</button></div></div></div>
 <div class="game-modal" id="profileModal" aria-hidden="true"><div class="game-modal-card profile-modal" role="dialog" aria-modal="true"><span class="modal-kicker">MANAGER PROFILE</span><h2 id="profileName"></h2><p id="profileStats"></p><div class="friends-head"><b>Friends</b><button class="btn-ghost" id="profileClose" type="button">Close</button></div><div class="friend-add"><input id="friendName" placeholder="Manager name"><button class="btn-primary" id="friendAdd" type="button">Add</button></div><div id="friendsList" class="friends-list"></div></div></div>
@@ -408,7 +472,8 @@
     return `<svg viewBox="0 0 200 230" aria-hidden="true"><path d="M18 230q2-66 82-79q80 13 82 79" fill="${m.jacket}"/><path d="M83 151l17 22l17-22" fill="#f4efe3"/><rect x="86" y="126" width="28" height="31" fill="${m.skin}"/><circle cx="100" cy="93" r="46" fill="${m.skin}"/><path d="M53 88q2-45 47-45t47 45q-17-22-47-22T53 88" fill="${m.hair}"/><circle cx="82" cy="98" r="3" fill="#1b1b1f"/><circle cx="118" cy="98" r="3" fill="#1b1b1f"/><path d="M100 99l-4 15h8z" fill="${m.skin}"/><path d="M86 123q14 9 28 0" fill="none" stroke="#75422d" stroke-width="3" stroke-linecap="round"/>${detail}</svg>`;
   }
   const SQUAD_SIZE = 11;
-  let room = null, me = null, state = null, ws = null, reconnectTimer = null, pingTimer = null, soundSnapshot = null, authToken = sessionStorage.getItem('transferAuctionToken') || null, account = null;
+  let room = null, me = null, state = null, ws = null, reconnectTimer = null, pingTimer = null, emoteResetTimer = null, soundSnapshot = null, authToken = sessionStorage.getItem('transferAuctionToken') || null, account = null;
+  let pendingTeamIdentity = JSON.parse(localStorage.getItem('transfer-team-identity') || 'null');
   const $ = id => document.getElementById(id);
   const money = x => Number(x || 0).toFixed(1).replace(/\.0$/, '');
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -438,10 +503,16 @@
       name.value = team.displayName || me; file.value = ''; preview.src = logo || ''; preview.style.display = logo ? 'block' : 'none';
       const characterGrid = $('managerCharacterGrid');
       const character3dNames = {tactician:'Suit',analyst:'Hoodie',enforcer:'SWAT',maverick:'Punk',legend:'King',maestro:'Adventurer',academy:'Farmer'};
-      const drawCharacters = () => {
+      const characterIds = Object.keys(MANAGERS);
+      const drawCharacters = (direction = 'next') => {
         window.rivalry3D?.dispose?.(characterGrid);
-        characterGrid.innerHTML = Object.entries(MANAGERS).map(([id, manager]) => `<button type="button" class="manager-character-choice ${id === character ? 'selected' : ''}" data-character="${id}" title="Choose 3D ${character3dNames[id]}" style="--manager:${manager.theme};--manager-light:${manager.light}">${id === character ? `<div class="manager-3d-preview" data-character="${id}" data-outcome="idle"></div>` : '<div class="manager-character-placeholder">3D</div>'}<span>${character3dNames[id]}</span></button>`).join('');
-        characterGrid.querySelectorAll('button[data-character]').forEach(button => button.onclick = () => { character = button.dataset.character; drawCharacters(); });
+        const manager = MANAGERS[character] || MANAGERS.tactician;
+        characterGrid.innerHTML = `<div class="manager-character-carousel" style="--manager:${manager.theme};--manager-light:${manager.light}"><button class="manager-carousel-nav" type="button" data-carousel="previous" aria-label="Previous manager">‹</button><div class="manager-carousel-stage"><div class="manager-carousel-character ${direction === 'previous' ? 'previous' : ''}"><div class="manager-3d-preview" data-character="${character}" data-outcome="idle"></div><span>${character3dNames[character]}</span></div></div><button class="manager-carousel-nav" type="button" data-carousel="next" aria-label="Next manager">›</button></div>`;
+        characterGrid.querySelectorAll('[data-carousel]').forEach(button => button.onclick = () => {
+          const step = button.dataset.carousel === 'next' ? 1 : -1;
+          character = characterIds[(characterIds.indexOf(character) + step + characterIds.length) % characterIds.length];
+          drawCharacters(step > 0 ? 'next' : 'previous');
+        });
         requestAnimationFrame(() => window.rivalry3D?.scan?.());
       };
       drawCharacters();
@@ -452,9 +523,115 @@
       $('teamIdentitySave').onclick = () => close({display_name:name.value.trim(), logo, character});
     });
   }
+  async function applyPendingTeamIdentity() {
+    if (!pendingTeamIdentity || !state?.teams?.[me]) return;
+    const identity = pendingTeamIdentity;
+    pendingTeamIdentity = null; localStorage.removeItem('transfer-team-identity');
+    Object.assign(state.teams[me], {displayName:identity.display_name, logo:identity.logo, character:identity.character});
+    await act('set_team_identity', identity).catch(() => {});
+  }
 
   function showError(message='') {
     $('errorBanner').innerHTML = message ? `<div class="error-banner">${esc(message)}</div>` : '';
+  }
+
+  let versusTimer = null, versusCallouts = [], versusFinish = null, phaseVortexTimer = null;
+  const versusAudio = new Audio('/assets/round-1.mp3');
+  const versusRoundTwoAudio = new Audio('/assets/round-2.mp3');
+  const versusFinalAudio = new Audio('/assets/final.mp3');
+  let activeVersusAudio = versusAudio;
+  versusAudio.preload = 'auto';
+  versusRoundTwoAudio.preload = 'auto';
+  versusFinalAudio.preload = 'auto';
+  versusAudio.volume = .62;
+  versusRoundTwoAudio.volume = .62;
+  versusFinalAudio.volume = .68;
+  function showPhaseVortex(fromPhase, toPhase) {
+    const names = {auction:'PHASE 1 · AUCTION', tactics:'PHASE 2 · TACTICS', evaluation:'PHASE 3 · EVALUATION', tournament:'PHASE 4 · TOURNAMENT', results:'PHASE 5 · RESULTS'};
+    const vortex = $('phaseVortex');
+    clearTimeout(phaseVortexTimer);
+    $('phaseVortexFrom').textContent = `${names[fromPhase] || 'PHASE COMPLETE'} COMPLETE`;
+    $('phaseVortexTo').textContent = names[toPhase] || 'NEXT PHASE';
+    vortex.classList.remove('show'); void vortex.offsetWidth; vortex.classList.add('show');
+    vortex.setAttribute('aria-hidden', 'false');
+    phaseVortexTimer = setTimeout(() => { vortex.classList.remove('show'); vortex.setAttribute('aria-hidden', 'true'); }, 2800);
+  }
+  function showMatchWinner(nextState, match) {
+    const winner = match?.winner;
+    if (!winner) return;
+    const layer = $('winnerCinematic'), character = $('winnerCharacter');
+    window.rivalry3D?.dispose?.(layer);
+    $('winnerName').textContent = nextState.teams?.[winner]?.displayName || winner;
+    $('winnerScore').textContent = `${match.score?.home ?? 0} – ${match.score?.away ?? 0} · ${match.round || 'MATCH COMPLETE'}`;
+    character.dataset.character = nextState.teams?.[winner]?.character || 'tactician';
+    character.dataset.gesture = 'celebrate';
+    layer.classList.remove('show'); void layer.offsetWidth; layer.classList.add('show');
+    layer.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => window.rivalry3D?.scan?.());
+    setTimeout(() => { layer.classList.remove('show'); layer.setAttribute('aria-hidden', 'true'); window.rivalry3D?.dispose?.(layer); }, 6000);
+  }
+  function showTournamentVersus(nextState, fixture = null, fixtureIndex = 0) {
+    const ranking = nextState?.evaluation?.ranking || [];
+    const match = fixture || (nextState?.tournament?.matches || []).find(item => item.home && item.away);
+    const left = match?.home || ranking[0];
+    const right = match?.away || ranking.find(name => name !== left);
+    if (!left || !right) return Promise.resolve();
+    const cinematic = $('versusCinematic');
+    const leftModel = $('versusLeftModel'), rightModel = $('versusRightModel');
+    window.clearInterval(versusTimer);
+    versusFinish?.(); versusFinish = null;
+    versusCallouts.forEach(window.clearTimeout); versusCallouts = [];
+    window.rivalry3D?.dispose?.(cinematic);
+    $('versusLeftName').textContent = left;
+    $('versusRightName').textContent = right;
+    leftModel.dataset.character = nextState.teams?.[left]?.character || 'tactician';
+    rightModel.dataset.character = nextState.teams?.[right]?.character || 'analyst';
+    leftModel.dataset.gesture = 'neutral';
+    rightModel.dataset.gesture = 'neutral';
+    leftModel.dataset.side = 'left';
+    rightModel.dataset.side = 'right';
+    if (!cinematic.querySelector('.versus-topline')) cinematic.insertAdjacentHTML('afterbegin', '<div class="versus-topline"><span>Transfer League</span><b>Main Event</b><span>Phase 4</span></div>');
+    const leftSide = leftModel.closest('.versus-side'), rightSide = rightModel.closest('.versus-side');
+    if (!leftSide.querySelector('.versus-voice')) leftSide.insertAdjacentHTML('beforeend', '<span class="versus-voice"></span>');
+    if (!rightSide.querySelector('.versus-voice')) rightSide.insertAdjacentHTML('beforeend', '<span class="versus-voice"></span>');
+    const leftVoice = leftSide.querySelector('.versus-voice'), rightVoice = rightSide.querySelector('.versus-voice');
+    const say = (voice, line) => { voice.textContent = line; voice.classList.remove('show'); void voice.offsetWidth; voice.classList.add('show'); };
+    const strike = (attacker, target, targetSide, impact, voice, line) => {
+      attacker.dataset.gesture = 'punch'; target.dataset.gesture = 'neutral';
+      targetSide.classList.remove('struck'); void targetSide.offsetWidth; targetSide.classList.add('struck');
+      impact.classList.remove('hit'); void impact.offsetWidth; impact.classList.add('hit'); say(voice, line);
+      versusCallouts.push(window.setTimeout(() => { attacker.dataset.gesture = 'neutral'; target.dataset.gesture = 'neutral'; targetSide.classList.remove('struck'); impact.classList.remove('hit'); }, 1500));
+    };
+    cinematic.classList.remove('show');
+    void cinematic.offsetWidth;
+    cinematic.classList.add('show');
+    cinematic.setAttribute('aria-hidden', 'false');
+    activeVersusAudio.pause(); activeVersusAudio.currentTime = 0;
+    activeVersusAudio = match?.id === nextState?.tournament?.finalMatchId ? versusFinalAudio : fixtureIndex === 1 ? versusRoundTwoAudio : versusAudio;
+    activeVersusAudio.currentTime = 0;
+    activeVersusAudio.play().catch(() => {});
+    requestAnimationFrame(() => window.rivalry3D?.scan?.(cinematic));
+    let seconds = 10;
+    $('versusCount').textContent = `KICKOFF IN ${seconds}`;
+    say(leftVoice, 'YOU CALL THAT A SQUAD?');
+    versusCallouts.push(window.setTimeout(() => say(rightVoice, 'BRING IT ON.'), 1500));
+    versusCallouts.push(window.setTimeout(() => strike(leftModel, rightModel, rightSide, cinematic.querySelector('.versus-impact.pow'), leftVoice, 'POW!'), 2500));
+    versusCallouts.push(window.setTimeout(() => strike(rightModel, leftModel, leftSide, cinematic.querySelector('.versus-impact.bam'), rightVoice, 'BAM!'), 4700));
+    versusCallouts.push(window.setTimeout(() => strike(leftModel, rightModel, rightSide, cinematic.querySelector('.versus-impact.pow'), leftVoice, 'THIS ENDS NOW!'), 6800));
+    versusTimer = window.setInterval(() => {
+      seconds -= 1;
+      $('versusCount').textContent = seconds > 0 ? `KICKOFF IN ${seconds}` : 'LET THE TOURNAMENT BEGIN';
+      if (seconds < 0) {
+        window.clearInterval(versusTimer);
+        cinematic.classList.remove('show');
+        cinematic.setAttribute('aria-hidden', 'true');
+        window.rivalry3D?.dispose?.(cinematic);
+        activeVersusAudio.pause(); activeVersusAudio.currentTime = 0;
+        versusFinish?.(); versusFinish = null;
+        versusCallouts.forEach(window.clearTimeout); versusCallouts = [];
+      }
+    }, 1000);
+    return new Promise(resolve => { versusFinish = resolve; });
   }
 
   function snapshotForSounds(nextState) {
@@ -464,6 +641,7 @@
   }
 
   function setGameState(nextState, silent=false) {
+    const previousState = state;
     const nextSnapshot = snapshotForSounds(nextState);
     const previous = soundSnapshot;
     state = nextState;
@@ -471,9 +649,13 @@
     window.gameSounds?.syncRoomMusic?.(nextState?.music);
     if (silent || !previous) return;
     if (nextSnapshot.phase !== previous.phase) {
+      if (previousState?.phase && previousState.phase !== nextSnapshot.phase) showPhaseVortex(previousState.phase, nextSnapshot.phase);
       if (nextSnapshot.phase === 'results') window.gameSounds?.winner();
       else window.gameSounds?.phase();
     }
+    const previouslyLive = previousState?.tournament?.matches?.find(match => match.status === 'live');
+    const completedMatch = previouslyLive && nextState?.tournament?.matches?.find(match => match.id === previouslyLive.id && match.status === 'finished');
+    if (completedMatch) showMatchWinner(nextState, completedMatch);
     if (!previous.hasOffer && nextSnapshot.hasOffer) {
       window.gameSounds?.nextPlayer?.();
     } else if (nextSnapshot.bid > previous.bid) {
@@ -566,6 +748,41 @@
     $('settingsModal').classList.remove('show');
     $('settingsModal').setAttribute('aria-hidden', 'true');
   }
+  function closeEmotes() {
+    $('emoteModal').classList.remove('show');
+    $('emoteModal').setAttribute('aria-hidden', 'true');
+  }
+  function openEmotes() {
+    if (!me || !state?.teams?.[me]) return showError('Join a room before choosing an emote.');
+    const selected = state.teams[me].gesture || 'neutral';
+    $('emoteGrid').querySelectorAll('[data-emote]').forEach(button => button.classList.toggle('selected', button.dataset.emote === selected));
+    $('emoteModal').classList.add('show');
+    $('emoteModal').setAttribute('aria-hidden', 'false');
+  }
+  function chooseEmote(gesture) {
+    if (!gesture || !me || !state?.teams?.[me]) return;
+    clearTimeout(emoteResetTimer);
+    state.teams[me].gesture = gesture;
+    document.querySelectorAll('[data-team]').forEach(character => {
+      if (character.dataset.team === me) character.dataset.gesture = gesture;
+    });
+    closeEmotes();
+    act('set_manager_gesture', {gesture}).catch(() => {});
+    if (gesture !== 'neutral') {
+      const emoteDurations = {hit_react:1500, slump:4000, wave:5000, punch:5000, kick:5000};
+      const chosenGesture = gesture;
+      const duration = emoteDurations[gesture];
+      if (!duration) return;
+      emoteResetTimer = setTimeout(() => {
+        if (!state?.teams?.[me] || state.teams[me].gesture !== chosenGesture) return;
+        state.teams[me].gesture = 'neutral';
+        document.querySelectorAll('[data-team]').forEach(character => {
+          if (character.dataset.team === me) character.dataset.gesture = 'neutral';
+        });
+        act('set_manager_gesture', {gesture:'neutral'}).catch(() => {});
+      }, duration);
+    }
+  }
   async function openProfile() {
     $('profileName').textContent = account?.username || 'Manager';
     $('profileStats').textContent = `${account?.titles || 0} titles · ${account?.wins || 0} wins · ${account?.gamesPlayed || 0} games played`;
@@ -606,6 +823,7 @@
     $('musicDuration').textContent = formatTime(duration);
     const isHost = state?.host === me;
     $('musicPlay').disabled = !isHost;
+    $('musicPrevious').disabled = !isHost;
     $('musicNext').disabled = !isHost;
     $('musicSeek').disabled = !duration || !isHost;
     $('musicSeek').value = duration ? Math.round(elapsed / duration * 1000) : 0;
@@ -659,7 +877,7 @@
     } else revealRoom();
     $('roomLabel').textContent = `${room} · Host: ${data.host}`;
     $('profileChip').textContent = `${account.username} · ${account.titles} titles`;
-    showError(''); connectLive(); draw();
+    showError(''); connectLive(); draw(); applyPendingTeamIdentity();
   }
 
   async function createRoom() {
@@ -714,6 +932,7 @@
     try {
       const data = await api('/api/join', {room: requestedRoom, token: authToken});
       openRoom(data, requestedRoom);
+      applyPendingTeamIdentity();
       return;
       room = requestedRoom; me = data.you; account = data.user; setGameState(data.state, true);
       $('landing').style.display = 'none'; $('room').style.display = 'block';
@@ -724,6 +943,13 @@
   }
 
   function drawTeams() {
+    if (state?.phase !== 'evaluation') {
+      const evaluationView = $('evaluationView');
+      if (evaluationView) {
+        window.rivalry3D?.dispose?.(evaluationView);
+        evaluationView.replaceChildren();
+      }
+    }
     window.rivalry3D?.dispose?.($('teamsRow'));
     $('teamsRow').innerHTML = teamNames().map(name => {
       const team = state.teams[name];
@@ -733,22 +959,13 @@
       const manager = MANAGERS[team.character] || MANAGERS.tactician;
       const dots = Array.from({length:SQUAD_SIZE}, (_, index) => `<i class="${index < team.squad.length ? 'filled' : ''}"></i>`).join('');
       return `<article class="manager-card" style="--manager:${manager.theme};--manager-light:${manager.light}">
-        <div class="manager-portrait"><span class="manager-index">${team.squad.length}</span>${name === state.host ? '<span class="manager-host">HOST</span>' : ''}<div class="manager-avatar">${name === me ? `<div class="manager-3d-preview" data-character="${esc(team.character || 'tactician')}" data-outcome="idle"></div>` : '<div class="manager-character-placeholder">3D</div>'}</div></div>
+        <div class="manager-portrait"><span class="manager-index">${team.squad.length}</span>${name === state.host ? '<span class="manager-host">HOST</span>' : ''}<div class="manager-avatar"><div class="rivalry-3d manager-3d-card" data-team="${esc(name)}" data-view="manager-card" data-character="${esc(team.character || 'tactician')}" data-gesture="${esc(team.gesture || 'neutral')}" data-outcome="idle"></div></div></div>
         <div class="manager-nameplate"><div class="manager-title-row"><h3>${esc(team.displayName || name)}${team.logo ? ` <img class="team-mini-logo" src="${esc(team.logo)}" alt="">` : ''}</h3><span>${name === me ? 'YOU' : manager.role}</span></div><span class="manager-archetype">${manager.name}</span></div>
         <div class="manager-stats"><div class="manager-stat"><i class="spent">↗</i><label>Spent</label><b>$${money(team.spent)}M</b></div><div class="manager-stat"><i class="cash">$</i><label>Remaining</label><b>$${money(team.budget)}M</b></div><div class="manager-stat"><i class="legacy">★</i><label>Legacy</label><b>${profile ? `${profile.titles} · ${profile.wins}W` : '0 · 0W'}</b></div></div>
         <div class="manager-footer"><span><i class="manager-online-dot ${online ? '' : 'offline'}"></i>${online ? 'Online' : 'Offline'} · ${team.squad.length}/11</span><span class="manager-dots">${dots}</span></div>
-        ${name === me ? `<button class="team-customize" type="button">Customize manager</button>` : ''}
       </article>`;
     }).join('');
     requestAnimationFrame(() => window.rivalry3D?.scan?.());
-    document.querySelectorAll('.team-customize').forEach(button => button.onclick = async () => {
-      const identity = await teamIdentityDialog(state.teams[me]);
-      if (identity) {
-        Object.assign(state.teams[me], {displayName: identity.display_name, logo: identity.logo, character: identity.character});
-        drawTeams();
-        act('set_team_identity', identity).catch(()=>{});
-      }
-    });
   }
 
   async function loadPlayerPortrait(player, image) {
@@ -1034,6 +1251,26 @@
   $('menuJoinConfirm').onclick = () => { $('roomInput').value = $('menuRoomInput').value; enterRoom(); };
   $('menuRoomInput').onkeydown = event => { if (event.key === 'Enter') $('menuJoinConfirm').click(); };
   $('menuSettingsBtn').onclick = openSettings;
+  const mainMenuCustomizeButton = document.createElement('button');
+  mainMenuCustomizeButton.id = 'menuCustomizeTeamBtn';
+  mainMenuCustomizeButton.type = 'button';
+  mainMenuCustomizeButton.className = 'menu-action secondary';
+  mainMenuCustomizeButton.innerHTML = '<span>Customize team</span>';
+  $('menuSettingsBtn').before(mainMenuCustomizeButton);
+  mainMenuCustomizeButton.onclick = async () => {
+    const baseTeam = state?.teams?.[me] || {displayName:account?.username || 'My Team', logo:null, character:'tactician'};
+    const identity = await teamIdentityDialog(baseTeam);
+    if (!identity) return;
+    if (state?.teams?.[me]) {
+      Object.assign(state.teams[me], {displayName:identity.display_name, logo:identity.logo, character:identity.character});
+      drawTeams();
+      act('set_team_identity', identity).catch(()=>{});
+    } else {
+      pendingTeamIdentity = identity;
+      localStorage.setItem('transfer-team-identity', JSON.stringify(identity));
+      updateAccountStatus('Team saved. It will be applied when you host or join a game.');
+    }
+  };
   $('menuProfileBtn').onclick = openProfile;
   $('menuQuitBtn').onclick = () => {
     authToken = null; account = null; sessionStorage.removeItem('transferAuctionToken');
@@ -1042,6 +1279,10 @@
   };
   $('inviteBtn').onclick = () => { copyInviteLink(); $('roomMenuBtn').parentElement.classList.remove('open'); };
   $('profileChip').onclick = openProfile;
+  $('emoteBtn').onclick = openEmotes;
+  $('emoteClose').onclick = closeEmotes;
+  $('emoteModal').onclick = event => { if (event.target === $('emoteModal')) closeEmotes(); };
+  $('emoteGrid').querySelectorAll('[data-emote]').forEach(button => button.onclick = () => chooseEmote(button.dataset.emote));
   $('roomMenuBtn').onclick = () => $('roomMenuBtn').parentElement.classList.toggle('open');
   $('loginBtn').onclick = () => authenticate('/api/auth/login');
   $('registerBtn').onclick = () => authenticate('/api/auth/register');
@@ -1094,9 +1335,17 @@
     if (state?.host !== me) return showError('Only the host controls the room soundtrack.');
     act('music_control', {name, amount}).catch(() => {});
   };
+  const musicPrevious = document.createElement('button');
+  musicPrevious.id = 'musicPrevious'; musicPrevious.type = 'button';
+  musicPrevious.title = 'Previous track'; musicPrevious.innerHTML = '&#9198;';
+  $('musicNext').before(musicPrevious);
   $('musicPlay').onclick = () => {
     const track = window.gameSounds?.getTrack?.();
     hostMusicControl(track?.playing ? 'pause' : 'play', track?.duration ? track.currentTime / track.duration : 0);
+  };
+  $('musicPrevious').onclick = () => {
+    window.gameSounds?.previousTrack?.();
+    hostMusicControl('previous');
   };
   $('musicNext').onclick = () => hostMusicControl('next');
   $('musicSeek').onchange = event => hostMusicControl('seek', Number(event.target.value) / 1000);
@@ -1144,7 +1393,14 @@
 
   window.__game = {
     action: act,
+    playTournamentCinematic: matchId => {
+      const fixtures = state?.tournament?.matches || [];
+      const fixtureIndex = fixtures.findIndex(match => match.id === matchId);
+      const fixture = fixtures[fixtureIndex];
+      return showTournamentVersus(state, fixture, fixtureIndex);
+    },
     confirm: gameConfirm,
+    select: gameSelect,
     getState: () => state,
     getMe: () => me,
     canEditTeam: teamName => teamName === me && state?.phase === 'tactics',
@@ -1172,11 +1428,11 @@
 </script>
 <script src="/tactics.js?v=swap-board-formations-1"></script>
 <script src="/sound.js?v=champions-anthem-3"></script>
-<script src="/evaluator.js?v=knockout-cinematic-1"></script>
+<script src="/evaluator.js?v=phase3-3d-9"></script>
 <script src="/tournament.js?v=live-broadcast-4"></script>
 <script src="/results.js?v=knockout-cinematic-1"></script>
 <script type="importmap">{"imports":{"three":"/assets/vendor/three.module.js","three/addons/loaders/GLTFLoader.js":"/assets/vendor/GLTFLoader.js?v=2"}}</script>
-<script type="module" src="/rivalry-3d.js?v=7"></script>
+<script type="module" src="/rivalry-3d.js?v=23"></script>
 
 </body>
 </html>

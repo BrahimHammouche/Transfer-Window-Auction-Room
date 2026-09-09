@@ -62,9 +62,5 @@
 #evaluationView .rivalry-3d-ready .rivalry-3d{display:block}
 #evaluationView .rivalry-3d-ready .rivalry-svg-fallback{display:none}
 
-/* Outcome cues pair with the glTF animation clips: celebration for #1, tears for lower ranks. */
-#evaluationView .eval-card.rank-1 .eval-rival-figure::after{content:'✦ ✦';position:absolute;z-index:5;right:-20px;top:18px;color:#e6ad31;font-size:18px;letter-spacing:8px;animation:celebrateSpark 1.3s ease-in-out infinite}
-#evaluationView .eval-card:not(.rank-1) .eval-rival-figure::after{content:'💧';position:absolute;z-index:5;right:15px;top:51px;font-size:19px;animation:tearFall 1.7s ease-in infinite}
-#evaluationView .rivalry-manager-right::after{content:'💧';position:absolute;z-index:6;top:108px;left:41%;font-size:19px;animation:tearFall 1.7s ease-in infinite .4s}
-#evaluationView .rivalry-manager-left::after{content:'✦';position:absolute;z-index:6;top:104px;right:28%;color:#f5cc56;font-size:25px;animation:celebrateSpark 1.3s ease-in-out infinite}
-@keyframes celebrateSpark{50%{transform:translateY(-8px) scale(1.25) rotate(20deg);opacity:.45}}@keyframes tearFall{0%{opacity:0;transform:translateY(-4px)}25%{opacity:1}100%{opacity:0;transform:translateY(24px)}}
+/* Character motion communicates the result; decorative particles and tears are removed. */
+#evaluationView .eval-rival-gesture,#evaluationView .eval-rival-window i{display:none}

@@ -264,7 +264,16 @@
       container.dataset.championKey = champion;
       reveal('And the champion is...', champion, '', true);
     }
-    container.querySelectorAll('.start-live-match').forEach(button => button.onclick = () => GAME()?.action?.('start_live_match', {name: button.dataset.match}).catch(() => {}));
+    container.querySelectorAll('.start-live-match').forEach(button => button.onclick = async () => {
+      if (button.disabled) return;
+      button.disabled = true;
+      try {
+        await GAME()?.playTournamentCinematic?.(button.dataset.match);
+        await GAME()?.action?.('start_live_match', {name: button.dataset.match});
+      } catch (_) {
+        button.disabled = false;
+      }
+    });
     container.querySelector('.open-results')?.addEventListener('click', () => GAME()?.action?.('open_final_results').catch(() => {}));
     container.querySelectorAll('.live-speed-btn').forEach(button => button.onclick = () => GAME()?.action?.('set_live_speed', {amount: Number(button.dataset.speed)}).catch(() => {}));
     container.querySelectorAll('.match-details').forEach(button => button.onclick = () => { clearInterval(replayTimer); delete container.dataset.replay; container.dataset.report = button.dataset.match; renderTournament(); });

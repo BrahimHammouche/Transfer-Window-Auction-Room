@@ -158,6 +158,7 @@
     setMusicVolume(value) { musicVolume = Math.max(0, Math.min(1, Number(value) || 0)); championsAnthem.volume = Math.min(.8, musicVolume); musicPlayer.volume = musicVolume; },
     setMusicEnabled(value) { musicEnabled = Boolean(value); if (!musicEnabled) { stopMusic(); musicPlayer.pause(); } },
     toggleMusic() { if (musicPlayer.paused) playTrack(trackIndex); else { musicPlayer.pause(); notifyTrack(); } },
+    previousTrack() { playTrack(trackIndex - 1, true); },
     nextTrack() { playTrack(trackIndex + 1, true); },
     seekMusic(progress) { if (Number.isFinite(musicPlayer.duration)) { musicPlayer.currentTime = Math.max(0, Math.min(musicPlayer.duration, Number(progress) * musicPlayer.duration)); notifyTrack(); } },
     syncRoomMusic(roomMusic) {
